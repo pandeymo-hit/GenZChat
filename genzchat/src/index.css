@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+* {
+  /* outline: 1px solid red !important; */
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  /* background-color: #0d0d12; */
+  background-color: black;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  position: relative;
+}
+
+/* Glow layer */
+:root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(42, 202, 255, 0.3), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(126, 130, 255, 0.3), transparent 20%);
+  filter: blur(20px);
+  z-index: -1; /* send behind everything */
+}
+.icon-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0; /* content ke peeche */
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-110vh);
+  }
+}
+
+/*  */
+
+/* glass btn property */
+
+.glass-btn {
+  /* background-color: oklch(54.117% 0.25481 303.192); */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  color: white;
+ 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  isolation: isolate;
+}
+
+.glass-btn::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -50%;
+  width: 300%;
+  height: 300%;
+  background: 
+    radial-gradient(
+      ellipse at center,
+      rgb(255, 4, 238) 30%,
+      rgb(93, 0, 255) 35%,
+      transparent 70%
+      ),
+      conic-gradient(
+        from 40deg,
+        transparent 5%,
+        rgba(236, 72, 153, 0.1) 15%,
+        rgba(167, 139, 250, 0.15) 30%,
+        transparent 45%,
+        transparent 55%,
+        rgba(192, 132, 252, 0.2) 70%,
+        rgba(124, 58, 237, 0.15) 85%,
+        transparent 100%
+        );
+        animation: diagonal-smoke 12s linear infinite;
+        z-index: -1;
+        opacity: 0.7;
+        border-radius: 40% 60% 60% 40% / 70% 50% 70% 70%;
+      }
+      
+      .glass-btn:hover::before {
+        opacity: 0.9;
+        animation-duration: 8s;
+      }
+      
+      @keyframes diagonal-smoke {
+        0%, 100% {
+          transform: translate(-25%, -25%) rotate(0deg) scale(1);
+          border-radius: 40% 60% 60% 40% / 70% 30% 70% 30%;
+        }
+        25% {
+          transform: translate(25%, -25%) rotate(90deg) scale(1.1);
+          border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+        50% {
+          transform: translate(25%, 25%) rotate(180deg) scale(1);
+          border-radius: 30% 70% 60% 40% / 50% 60% 30% 60%;
+        }
+        75% {
+          transform: translate(-25%, 25%) rotate(270deg) scale(1.1);
+          border-radius: 70% 30% 40% 60% / 30% 70% 60% 40%;
+        }
+      }
+      .glass-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(circle at center, rgb(227, 76, 222), rgba(255,255,255,0));
+        z-index: -2;
+      }
+
+      
+      .glass-btn span {
+        position: relative;
+        z-index: 1;
+        mix-blend-mode: screen;
+      }
+      
+      .gradient-text {
+        background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 50%, var(--purple) 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s linear infinite;
+      }
+      
+      @keyframes gradientShift {
+        to {
+          background-position: 200% center;
+        }
+      }
+      
+      
+      .badge-red {
+        @apply py-[2px] px-[5px] sm:py-[4px] sm:px-[10px] bg-red-500/10 border border-red-500/20 rounded-full text-[14px];
+}
+
+/* Custom fadeUp animation */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 2.0s ease forwards;
+}
+
+/* index.css */
+.nav-item {
+  position: relative;
+  color: white;            /* text-white */
+  cursor: pointer;         /* cursor-pointer */
+  transition: color 0.3s ease;
+}
+
+.nav-item::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: -4px;
+  background-color: #ddadff; /* underline color */
+  transition: width 0.3s ease;
+}
+
+
+
+.nav-item:hover::after {
+  width: 100%;
+}
+
+.whyus{
+    position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(28, 38, 42, 0.3), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(126, 130, 255, 0.3), transparent 20%);
+  filter: blur(20px);
+  z-index: -1;
+}
+
+
+/* border chmkeela  */
+
+
+
+/* Optional overrides */
+
