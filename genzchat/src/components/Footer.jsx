@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FaInstagram, FaFacebook, FaTwitter, FaYoutube, FaLinkedin } from "react-icons/fa";
-
+import { AuthContext } from "../context/AuthContext";
 const Footer = () => {
+
+  const { openForm } = useContext(AuthContext);
+
   const year = new Date().getFullYear();
 
   return (
@@ -9,7 +12,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto border border-white/10 bg-[#0b0b16]/10 backdrop-blur-xl p-6 md:p-8 
      shadow-[inset_20px_2px_6px_rgba(0,0,0,0.6),inset_-2px_-2px_6px_rgba(255,255,255,0.05)] rounded-2xl">
 
-      {/* <div className="max-w-6xl mx-auto border border-white/10 bg-[#0b0b16]/10 backdrop-blur-xl p-6 md:p-8"> */}
+        {/* <div className="max-w-6xl mx-auto border border-white/10 bg-[#0b0b16]/10 backdrop-blur-xl p-6 md:p-8"> */}
         {/* 1 → 2 → 3 columns, equal spacing on lg */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
           {/* Brand + blurb */}
@@ -31,23 +34,21 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-gray-300">
               <li><a className="hover:text-white transition" href="#">Legal & Privacy</a></li>
               <li><a className="hover:text-white transition" href="#">Contact</a></li>
-              <li><a className="hover:text-white transition" href="#">Gift Card</a></li>
-              <li><a className="hover:text-white transition" href="#">Customer Service</a></li>
             </ul>
           </div>
 
           {/* Subscribe → CTA button */}
           <div>
             <h3 className="text-white font-semibold mb-3">Subscribe Newsletter</h3>
-            <p className="text-sm text-gray-400">Get the latest updates and tips.</p>
+            <p className="text-sm text-gray-400 mb-2">Get the latest updates and tips.</p>
             <button
-              className="mt-4 inline-flex items-center justify-center rounded-3xl px-4 py-2
-                         bg-gradient-to-r from-violet-500 to-cyan-400 text-white font-medium
-                         shadow-[0_8px_24px_rgba(0,0,0,.35)]
-                         hover:shadow-[0_12px_32px_rgba(34,211,238,.25)]
-                         hover:-translate-y-0.5 active:translate-y-0 transition"
+              type="button"
+              onClick={openForm}
+              className="btn-aurora relative flex items-center justify-center overflow-hidden rounded-[100px] p-[2px] border-0"
             >
-              Sign up
+              <span className="btn-aurora__inner relative z-[1] rounded-[100px] px-6 py-2 text-white text-sm font-medium bg-black/75 backdrop-blur-xl">
+                Login
+              </span>
             </button>
           </div>
         </div>

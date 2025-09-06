@@ -4,9 +4,13 @@ import { AuthContext } from "../context/AuthContext";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import ProfileFormCard from "../components/ProfileFormCard";
-import mess from "../assets/mess.png";
-import forgot from "../assets/pass-icon.png";
-import signupp from "../assets/sicon.png";
+import mess from "../assets/mess.webp";
+import forgot from "../assets/pass-icon.webp";
+import signupp from "../assets/sicon.webp";
+import { ChatProvider } from "../context/ChatContext";
+import EvolvingText from "../components/EvolvingText";
+import ChatPAge from "./ChatPAge";
+
 
 export default function LoginPage() {
   const {
@@ -44,6 +48,37 @@ export default function LoginPage() {
     }, 2500);
     return () => clearInterval(interval);
   }, []);
+
+
+  // flipped timer
+
+  // --- 1s delayed visual flips + pre-flip scale ---
+  const [delayedIsFlipped, setDelayedIsFlipped] = useState(isFlipped);
+  const [delayedSignupFlipped, setDelayedSignupFlipped] = useState(signupFlipped);
+  const [delayedForgotFlipped, setDelayedForgotFlipped] = useState(forgotFlipped);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDelayedIsFlipped(isFlipped), 600);
+    return () => clearTimeout(t);
+  }, [isFlipped]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDelayedSignupFlipped(signupFlipped), 600);
+    return () => clearTimeout(t);
+  }, [signupFlipped]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDelayedForgotFlipped(forgotFlipped), 600);
+    return () => clearTimeout(t);
+  }, [forgotFlipped]);
+
+  // scale while we're *waiting* to flip (the 1s window)
+  const preMainFlip = isFlipped !== delayedIsFlipped;
+  const preSignupFlip = signupFlipped !== delayedSignupFlipped;
+  const preForgotFlip = forgotFlipped !== delayedForgotFlipped;
+
+
+
 
   // container height
   const containerRef = useRef(null);
@@ -94,10 +129,10 @@ export default function LoginPage() {
   useEffect(() => {
     const handleClick = (e) => {
       // Check if the click is on a button or link
-      if (e.target.tagName === 'BUTTON' || 
-          e.target.tagName === 'A' || 
-          e.target.closest('button') || 
-          e.target.closest('a')) {
+      if (e.target.tagName === 'BUTTON' ||
+        e.target.tagName === 'A' ||
+        e.target.closest('button') ||
+        e.target.closest('a')) {
         setHideGradient(true);
         setGradientCountdown(1); // Start 3-second countdown
       }
@@ -109,35 +144,35 @@ export default function LoginPage() {
 
   // Hide gradient during transitions
   useEffect(() => {
-    if (!mountedRef.current) { 
-      mountedRef.current = true; 
-      return; 
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
     }
-    
+
     // Hide gradient when any flip starts
     setHideGradient(true);
     setGradientCountdown(1); // Start 3-second countdown
-    
+
     // Set up transition end listeners
     const els = [outerFlipRef.current, signupStepFlipRef.current, forgotFlipRef.current].filter(Boolean);
     let ended = false;
-    
+
     const onTransitionEnd = (e) => {
       if (e.propertyName !== "transform") return;
       ended = true;
     };
-    
+
     els.forEach(el => {
       if (el) el.addEventListener("transitionend", onTransitionEnd);
     });
-    
+
     // Fallback in case transitionend doesn't fire
     const timeoutId = setTimeout(() => {
       if (!ended) {
         // Gradient will be shown after countdown completes
       }
     }, 1000);
-    
+
     return () => {
       els.forEach(el => {
         if (el) el.removeEventListener("transitionend", onTransitionEnd);
@@ -151,22 +186,22 @@ export default function LoginPage() {
   const passwordRef = useRef(null);
 
   // ---- handlers ----
-  const handleLogin = async (e) => { 
-    e.preventDefault(); 
-    setError(""); 
-    await login(); 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    await login();
   };
-  
+
   const handleSendOtpSignup = async (e) => {
-    e.preventDefault(); 
-    setError(""); 
+    e.preventDefault();
+    setError("");
     await sendSignupOtp();
   };
 
-  const handleVerifyOtpSignup = async (e) => { 
-    e.preventDefault(); 
-    setError(""); 
-    await verifySignupOtp(); 
+  const handleVerifyOtpSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+    await verifySignupOtp();
   };
 
   const handleSignupOtpChange = (index, value) => {
@@ -176,7 +211,7 @@ export default function LoginPage() {
     const nextInput = document.querySelector(`#signup-otp-${index + 1}`);
     if (value && nextInput) nextInput.focus();
   };
-  
+
   const handleSignupOtpKeyDown = (index, e) => {
     if (e.key === "Backspace" && !signupOtp[index]) {
       const prevInput = document.querySelector(`#signup-otp-${index - 1}`);
@@ -191,7 +226,7 @@ export default function LoginPage() {
     const nextInput = document.querySelector(`#forgot-otp-${index + 1}`);
     if (value && nextInput) nextInput.focus();
   };
-  
+
   const handleOtpKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index]) {
       const prevInput = document.querySelector(`#forgot-otp-${index - 1}`);
@@ -239,7 +274,7 @@ export default function LoginPage() {
         aria-hidden
         className="pointer-events-none absolute -top-20 -left-20 h-64 w-64
                    rounded-full blur-3xl opacity-100 mix-blend-screen
-                   bg-[radial-gradient(circle_at_35%_35%,rgba(28,38,42,0.3)_0%,rgba(28,38,42,0.3)_40%,transparent_85%)]"
+                   bg-[radial-gradient(circle_at_25%_20%,rgba(28,38,122,3)_0%,rgba(28,38,42,0.3)_40%,transparent_65%)]"
       />
 
       {/* Glow — bottom-right */}
@@ -247,13 +282,13 @@ export default function LoginPage() {
         aria-hidden
         className="pointer-events-none absolute -bottom-24 -right-20  h-64 w-64
                    rounded-full blur-3xl opacity-100 mix-blend-screen
-                   bg-[radial-gradient(circle_at_35%_35%,rgba(28,38,42,0.3)_0%,rgba(28,38,42,0.3)_40%,transparent_85%)]"
+                   bg-[radial-gradient(circle_at_80%_75%,rgba(28,38,82,3)_0%,rgba(28,38,42,0.3)_50%,transparent_25%)]"
       />
     </>
   );
 
   const LoginCard = (
-    <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden] backdrop-blur-[25px] bg-black overflow-hidden">
+    <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden]  backdrop-blur-[90px]  bg-black overflow-hidden">
       <GlowDecor />
       <button
         type="button"
@@ -270,8 +305,16 @@ export default function LoginPage() {
       <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-3 h-full">
         {/* Brand + evolving text */}
         <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">GenZChat</h1>
-        <div className="mb-1 px-3 rounded-2xl bg-white/10 border border-[#8B5CF6]/25 shadow-[0_0_24px_rgba(139,92,246,0.35)]">
-          <h2 className="font-semibold text-white text-lg transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">{evolvingTexts[evolvingIndex]}</h2>
+        <div className="mb-1 px-3 rounded-2xl bg-gray-700/10  ">
+          <EvolvingText
+            texts={evolvingTexts}
+            interval={2500}
+            fadeDuration={500}
+            className="font-semibold text-gray-500  text-[15px] transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]"
+          />
+          {/* <h2 className="font-semibold text-gray-500  text-[15px] transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">
+            {evolvingTexts[evolvingIndex]}
+            </h2> */}
         </div>
         <img src={mess} alt="messenger" className="w-[35px] h-[40px]" />
         <span className="w-full text-center text-2xl font-bold py-1.5 text-white">{resetMode ? "Reset & Login" : "Welcome Back!"}</span>
@@ -392,8 +435,8 @@ export default function LoginPage() {
         {/* Step 1: phone */}
         <form onSubmit={handleSendOtpSignup} className="absolute inset-0 flex flex-col justify-center items-center gap-3 [backface-visibility:hidden]">
           <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">GenZChat</h1>
-          <div className="mb-2 px-3 rounded-2xl bg-white/10 border border-[#8B5CF6]/25 shadow-[0_0_24px_rgba(139,92,246,0.35)]">
-            <h2 className="font-semibold text-white text-lg transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">{evolvingTexts[evolvingIndex]}</h2>
+          <div className="mb-1 px-3 rounded-2xl bg-gray-700/10  ">
+            <h2 className="font-semibold text-gray-500  text-[15px] transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">{evolvingTexts[evolvingIndex]}</h2>
           </div>
           <img src={signupp} alt="messenger" className="w-[65px] h-[65px]" />
           <span className="w-full text-center font-bold py-1.5 text-gray-300">Start Your Dating Evolution</span>
@@ -467,7 +510,7 @@ export default function LoginPage() {
 
           <button type="button" onClick={() => { setSignupFlipped(false); }} className="text-xs underline text-white/80 hover:text-white">
             Edit number
-            </button>
+          </button>
         </form>
       </div>
     </div>
@@ -495,8 +538,8 @@ export default function LoginPage() {
           </button>
           <form onSubmit={handleSendOtpForgot} className="flex flex-col justify-center items-center gap-3 h-full">
             <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">Forgot PassWord ?</h1>
-            <div className="mb-2 px-3 rounded-2xl bg-white/10 border border-[#8B5CF6]/25 shadow-[0_0_24px_rgba(139,92,246,0.35)]">
-              <h2 className="font-semibold text-white text-lg transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">{evolvingTexts[evolvingIndex]}</h2>
+            <div className="mb-1 px-3 rounded-2xl bg-gray-700/10  ">
+              <h2 className="font-semibold text-gray-500  text-[15px] transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">{evolvingTexts[evolvingIndex]}</h2>
             </div>
             <img src={forgot} alt="messenger" className="w-[55px] h-[50px]" />
             <span className="w-full text-center font-bold py-1.5 text-gray-700 ">Don't Worry 'GenZChat' Here </span>
@@ -571,9 +614,15 @@ export default function LoginPage() {
 
   // ---------- Main render ----------
   if (mode === "profile") return <ProfileFormCard />;
-
+  if (mode === "chat-page") {
+    return (
+      <ChatProvider>
+        <ChatPAge />
+      </ChatProvider>
+    );
+  }
   return (
-    <> 
+    <>
       <div className="min-h-screen w-full flex items-center justify-center 0 p-6 ">
         <div
           ref={containerRef}
@@ -582,21 +631,25 @@ export default function LoginPage() {
         >
           {/* Conic gradient background — hidden during flips */}
           <div
-            className={`pointer-events-none absolute inset-[-90px] -z-10
-                        bg-[conic-gradient(from_45deg,transparent_90%,#4210be_90%)]
+            className={`pointer-events-none absolute inset-[-70px] -z-10
+                        bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
                         ${showGradient ? "opacity-100" : "opacity-0"}
                         transition-opacity duration-300
-                        animate-[spin_6s_ease-in-out_infinite]`}
+                        animate-[spin_8s_ease-in-out_infinite]`}
           />
 
           {/* Countdown display */}
-         
+
 
           {mode !== "forgot" ? (
             <div
               ref={outerFlipRef}
-              className={`absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d] transition-transform duration-700 ease-in-out ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}
+              className={`absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]
+              transition-transform duration-700 ease-in-out
+              ${preMainFlip ? "scale-[0.98]" : ""}
+              ${delayedIsFlipped ? "[transform:rotateY(180deg)]" : ""}`}
             >
+
               {LoginCard}
               {SignupCard}
             </div>
@@ -612,3 +665,6 @@ export default function LoginPage() {
     </>
   );
 }
+
+// background: radial-gradient(circle at 0% 0%, rgba(87, 205, 255, 0.41), rgba(87, 205, 255, 0) 21%),
+// linear-gradient(to bottom right, rgba(30, 41, 59, 1), rgba(30, 41, 59, 1));

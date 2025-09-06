@@ -3,7 +3,6 @@ import { AuthContext } from '../context/AuthContext';
 import { FaPaperPlane } from 'react-icons/fa';
 import FadeUpSection from '../hooks/FadeUpSection';
 import TypewriterHeading from '../components/TypewriterHeading';
-import StatsBlock from '../components/StatsBlock';
 import girl from '../assets/girl.webp';
 import boy from '../assets/image.webp';
 
@@ -15,37 +14,43 @@ const MainSection = () => {
   const lastY = useRef(typeof window !== 'undefined' ? window.scrollY : 0);
   const ticking = useRef(false);
 
- useEffect(() => {
-  const onScroll = () => {
-    const y = window.scrollY;
-    const delta = y - lastY.current; // negative = scrolling up
-    lastY.current = y;
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY.current; // negative = scrolling up
+      lastY.current = y;
 
-    if (ticking.current) return;
-    ticking.current = true;
+      if (ticking.current) return;
+      ticking.current = true;
 
-    requestAnimationFrame(() => {
-      if (delta < -4) {
-        // ⬆️ scrolling UP → images go FAR (back to original)
-        setShiftVW(0);
-      } else if (delta > 4) {
-        // ⬇️ scrolling DOWN → images come CLOSER
-        setShiftVW(12); // tweak 8–16 as you like
-      }
-      ticking.current = false;
-    });
-  };
+      requestAnimationFrame(() => {
+        if (delta < -4) {
+          // ⬆️ scrolling UP → images go FAR (back to original)
+          setShiftVW(0);
+        } else if (delta > 4) {
+          // ⬇️ scrolling DOWN → images come CLOSER
+          setShiftVW(12); // tweak 8–16 as you like
+        }
+        ticking.current = false;
+      });
+    };
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  return () => window.removeEventListener('scroll', onScroll);
-}, []);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <FadeUpSection>
       <section
-        className="relative mx-auto mt-5 sm:mt-13 overflow-hidden pb-28 sm:pb-36 md:pb-44 lg:pb-88"
+        className="relative mx-auto mt-5 overflow-visible" // was overflow-hidden
+        style={{
+          // ek hi jagah size control — screen ke hisaab se auto
+          '--hero-img-h': 'clamp(170px, 30vw, 440px)',
+          // jitni jagah reserve karni (image height + thoda extra)
+          '--hero-reserve': 'calc(var(--hero-img-h) + 56px)',
+        }}
       >
-        <div className="relative z-10 max-w-6xl mx-auto mb-25 md:mb-1">
+        <div className="relative z-10 max-w-6xl mx-auto mb-8 pb-[var(--hero-reserve)]">
           <div className="text-center space-y-6 md:space-y-5">
             <div className="flex justify-center items-center gap-3 flex-wrap text-gray-400 text-base px-2 mb-6">
               <span className="badge-red">Left on Seen</span>
@@ -57,19 +62,22 @@ const MainSection = () => {
             <TypewriterHeading />
 
             <p className="text-gray-500 font-semibold leading-8 sm:leading-0 text-xl mx-auto pt-8 hidden sm:block">
-              Unlock the power of AI with our cutting-edge platform.
+              Stop getting left on seen.Start real conversations with GenZChat.
             </p>
 
             <div className="pt-3 sm:pt-6">
               <button
-                className="relative border border-gray-700 hover:border-[1.5px] hover:border-gray-400 transition-all duration-300 text-gray-100 px-8 py-3.5 rounded-4xl text-base sm:text-lg md:px-10 md:py-4 font-semibold shadow-md hover:shadow-purple-900/30 group flex items-center justify-center gap-2 mx-auto bg-gradient-to-r from-purple-500 to-blue-500"
                 onClick={openForm}
+                type="button"
+                className="btn-aurora relative inline-flex items-center justify-center overflow-hidden rounded-[100px] p-[2px]"
               >
-                <FaPaperPlane className="w-5 h-5" />
-                Start for free
+                <span className="relative z-[1] inline-flex items-center justify-center gap-2 rounded-[100px] px-8 py-3.5 md:px-10 md:py-4 text-gray-100 text-base sm:text-lg font-semibold bg-black/80 shadow-md">
+                  <FaPaperPlane className="w-5 h-5" />
+                  Start for free
+                </span>
               </button>
 
-              <StatsBlock />
+
             </div>
           </div>
         </div>
@@ -79,10 +87,10 @@ const MainSection = () => {
           src={girl}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-[1px] left-6 sm:left-0
-                     w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
-                     drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
-                     transition-transform duration-1500 ease-out will-change-transform  md:left-36"
+          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[75px] left-5 sm:left-22 
+          w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
+          drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
+          transition-transform duration-1500 ease-out will-change-transform  md:left-25 lg:left-50"
           style={{
             transform: `translateX(${shiftVW}vw)`,
           }}
@@ -93,10 +101,10 @@ const MainSection = () => {
           src={boy}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-[1px] right-6 sm:right-0
-                     w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
-                     drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
-                     transition-transform duration-1500 ease-out will-change-transform md:right-36"
+          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[75px] right-5 sm:right-22
+          w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
+          drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
+          transition-transform duration-1500 ease-out will-change-transform md:right-25 lg:right-50"
           style={{
             transform: `translateX(-${shiftVW}vw)`,
           }}

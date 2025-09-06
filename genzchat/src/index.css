@@ -219,3 +219,80 @@ html, body {
 
 /* Optional overrides */
 
+/* btn ring  */
+/* Animated conic border for .btn-aurora  */
+/* Custom props (smoothly animating angle & colors) */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --ring1 {
+  syntax: '<color>';
+  initial-value: rgba(139, 92, 246, 0.9); /* purple */
+  inherits: false;
+}
+@property --ring2 {
+  syntax: '<color>';
+  initial-value: rgba(96, 165, 250, 0.9); /* blue */
+  inherits: false;
+}
+
+@keyframes aurora-rotate {
+  to { --angle: 360deg; }
+}
+
+/* Base */
+.btn-aurora {
+  position: relative;
+  background: transparent;
+  border: none;
+}
+
+/* Two layers: a blurred glow + crisp ring */
+.btn-aurora::before,
+.btn-aurora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;           /* match the pill */
+  pointer-events: none;
+  background:
+    conic-gradient(
+      from var(--angle) at 50% 50%,
+      transparent 0%,
+      transparent 22%,
+      var(--ring1) 34%,
+      var(--ring2) 55%,
+      transparent 72%,
+      transparent 100%
+    );
+  animation: aurora-rotate 3s linear infinite;
+}
+
+.btn-aurora::before {
+  filter: blur(16px);             /* soft glow */
+  opacity: 0.9;
+}
+
+.btn-aurora::after {              /* sharp ring */
+  filter: blur(0);
+}
+
+/* Hover: brighten ring */
+.btn-aurora:hover {
+  --ring1: rgba(139, 92, 246, 1);
+  --ring2: rgba(96, 165, 250, 1);
+}
+
+/* Reduced motion users: stop rotation */
+@media (prefers-reduced-motion: reduce) {
+  .btn-aurora::before,
+  .btn-aurora::after {
+    animation: none;
+  }
+}
+
+
+
+

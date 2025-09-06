@@ -1,11 +1,11 @@
 import React from "react";
 
 // assets
-import Instagram from "../assets/instagram.png";
+import Instagram from "../assets/instagram.webp";
 import WhatsApp from "../assets/whatsapp.png";
-import Bumble from "../assets/bumble.png";
-import Hinge from "../assets/hinge.png";
-import Jambau from "../assets/jambau.png";
+import Bumble from "../assets/bumble.webp";
+import Hinge from "../assets/hinge.webp";
+import Jambau from "../assets/jambau.webp";
 import Tinder from "../assets/tinder.png";
 
 export default function SocialMedia() {

@@ -1,12 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+// src/components/MockUp.jsx
+import React, { useEffect, useRef, useState } from "react";
 import { MdNetworkCell, MdWifi, MdMoreVert, MdMic } from "react-icons/md";
 import { BiChevronLeft, BiImage } from "react-icons/bi";
 import { FiSend } from "react-icons/fi";
-import pfp1 from '../assets/pfp1.jpg';
-import pfp2 from '../assets/pfp2.avif';
-import pfp3 from '../assets/pfp3.jpg';
-import pfp4 from '../assets/pfp4.jpg';
-import pfp5 from '../assets/pfp5.webp';
+import pfp1 from "../assets/pfp1.webp";
+import pfp2 from "../assets/pfp2.webp";
+import pfp3 from "../assets/pfp3.jpg";
+import pfp4 from "../assets/pfp4.jpg";
+import pfp5 from "../assets/pfp5.webp";
 
 const profilePics = [pfp1, pfp2, pfp3, pfp4, pfp5];
 
@@ -16,96 +17,140 @@ const chatThreads = [
     name: "Blake 💫",
     avatar: pfp3,
     messages: [
-      { align: "left",  text: "hey you 👀 guess who just matched with a 10/10" },
-      { align: "right", text: "hmm… lucky you 😌 got a name?" },
-      { align: "left",  text: "maybe… but i answer only to coffee dates ☕️" },
-      { align: "right", text: "deal. i’ll bring coffee if you bring that smile 😏" },
-      { align: "left",  text: "bold. i like it. friday 7?" },
-      { align: "right", text: "it’s a date ✨" },
+      { align: "right", text: "Good morning 🌞" },
+      { align: "left", text: "(3 ghante baad)" },
+      { align: "left", text: "Morning 🙂" },
+      { align: "right", text: "Wah, tumhare “morning” ke liye toh suraj overtime kar raha hoga 😂" },
+      { align: "left", text: "😅 Sorry thoda busy thi" },
+      { align: "right", text: "Busy toh main bhi hoon… par tumhara reply ka wait karna full-time job ban gaya hai 😏" },
+      { align: "left", text: "Hahaha pagal ho tum" },
+      { align: "right", text: "Pagal toh hoon… warna 3 ghante baad bhi tumse baat karne ki excitement nahi hoti." },
+      { align: "left", text: "🤭 Acha acha, ab main fast reply dungi!" },
+      { align: "right", text: "Good, warna mujhe “slowest texter award” ka nomination dena padta tumhe 🏆😂" },
+      { align: "left", text: "Hahaha shut up!" },
     ],
   },
   {
-    name: "Aarav ⚡️",
+    name: "AArav⚡️",
     avatar: pfp1,
     messages: [
-      { align: "left",  text: "be honest—are you this cute offline too? 😇" },
-      { align: "right", text: "only when i’m texting you 😉" },
-      { align: "left",  text: "smooth. teach me your ways, sensei 😌" },
-      { align: "right", text: "lesson 1: compliments → dessert 🍨" },
-      { align: "left",  text: "uh-oh… now i want both 😅" },
-      { align: "right", text: "perfect, i’m pretty good company & i share dessert ✨" },
+      { align: "right", text: "Heyyy 👋" },
+      { align: "left", text: "Hii 🙂" },
+      { align: "right", text: "Kya kar rahi ho?" },
+      { align: "left", text: "Kuch nahi, bas chill" },
+      { align: "right", text: "Tumhare replies dekh ke lag raha hai ki chill ka matlab “boring mode on” hai 😂" },
+      { align: "left", text: "😅 haha" },
+      { align: "right", text: "Waise seriously, tumhara weekend kaise jaata hai usually?" },
+      { align: "left", text: "Bas ghar pe, movies dekhna ya so jana" },
+      { align: "right", text: "Matlab tum “Netflix + blanket” wali ho 😏" },
+      { align: "left", text: "Hahaha maybe" },
+      { align: "right", text: "Accha ek honest sawaal… agar tumhe choose karna ho: Netflix marathon ya ek unexpected long drive?" },
+      { align: "left", text: "Umm… long drive sounds fun 😅" },
+      { align: "right", text: "Perfect, fir tum ready ho ek proper boring-chat-rescue mission ke liye 😉" },
     ],
   },
 ];
 
 export default function MockUp() {
-  const [idx, setIdx] = useState(0);
+  const sectionRef = useRef(null);
+  const [inView, setInView] = useState(false);
 
-  // auto-switch chat every 5s
+  const STORAGE_KEY = "mockup:lastThreadIndex";
+  const [idx, setIdx] = useState(() => {
+    try {
+      const prev = parseInt(localStorage.getItem(STORAGE_KEY) ?? "-1", 10);
+      const next = isNaN(prev) ? 0 : (prev + 1) % chatThreads.length; +      localStorage.setItem(STORAGE_KEY, String(next)); // prepare next visit
+      return next; // show this visit
+    } catch {
+      return 0; // fallback if storage unavailable
+    }
+  });
+  // auto-switch chat every 6s
+
+  // Observe section visibility → toggle slide-in/out
+
+  const headRef = useRef(null);
+  const wrapRef = useRef(null);
+
+  const [headInView, setHeadInView] = useState(false);
+  const [wrapInView, setWrapInView] = useState(false);
+
+
   useEffect(() => {
-    const id = setInterval(() => setIdx((i) => (i + 1) % chatThreads.length), 5000);
-    return () => clearInterval(id);
+    const h = headRef.current;
+    const w = wrapRef.current;
+    if (!h || !w) return;
+
+    const mkObserver = (set) =>
+      new IntersectionObserver(
+        ([entry]) => set(entry.isIntersecting),  // retrigger on every enter/exit
+        { threshold: 0.01 }                      // "dikhtay hi" trigger
+      );
+
+    const headObs = mkObserver(setHeadInView);
+    const wrapObs = mkObserver(setWrapInView);
+
+    headObs.observe(h);
+    wrapObs.observe(w);
+
+    return () => {
+      headObs.disconnect();
+      wrapObs.disconnect();
+    };
   }, []);
+
 
   const { name, avatar, messages } = chatThreads[idx];
 
+  // Reusable transition classes
+  // Reusable classes
+  // ✅ use the right states
+  const headClasses = `fade-up ${headInView ? "in" : ""}`;
+  const wrapClasses = `fade-up ${wrapInView ? "in" : ""}`;
+
+
   return (
     <>
-      <section className="relative w-full text-white flex flex-col items-center justify-center px-3 mt-15 sm:mt-10 lg:mt-20 sm:px-4 sm:py-15 overflow-x-hidden">
-        {/* KEYFRAMES */}
+      <section
+        ref={sectionRef}
+        className="relative overflow-y-hidden w-full text-white flex flex-col items-center justify-center px-3 mt-1 sm:mt-1 lg:mt-20 sm:px-4 sm:py-10 overflow-x-hidden"
+      >
+        {/* KEYFRAMES (legacy helpers + utilities) */}
         <style>{`
-          @keyframes slideUp { 0%{opacity:0; transform:translateY(12px)} 100%{opacity:1; transform:translateY(0)} }
           .scrollbar-hide::-webkit-scrollbar{display:none}
           .fade-swap-enter{opacity:0; transform:translateY(6px)}
           .fade-swap-enter-active{opacity:1; transform:translateY(0); transition:opacity .3s ease, transform .3s ease}
         `}</style>
 
+        {/* Heading — slides up when section enters view, slides down on exit */}
         <div className="relative w-full z-0">
-  <h1
-    aria-hidden
-    className="
-      pointer-events-none select-none mx-auto text-center font-extrabold
-      tracking-tight
-      /* tighter line-height for compact look */
-      leading-[1.02] sm:leading-[0.98] md:leading-[0.94]
-      /* subtle gray tone like before */
-      text-gray-600/80
-      /* responsive size for the overall container (affects default children) */
-      text-[10vw] sm:text-[8.6vw] md:text-[6.6vw] lg:text-[4.6vw]
-      /* pull phone up on small screens (chipka) */
-      -mb-10 sm:-mb-12 md:-mb-16 lg:-mb-18
-      animate-[slideUp_.7s_ease-out_forwards]
-      relative
-    "
-  >
-    {/* line 1 */}
-    <span className="block ">
-      Make her fall in love with
-    </span>
+          <h1
+            aria-hidden
+            ref={headRef}
+            className={`pointer-events-none select-none mx-auto text-center font-extrabold tracking-tight
+              leading-[1.02] sm:leading-[0.98] md:leading-[0.94]
+              text-gray-600/80
+              text-[10vw] sm:text-[8.6vw] md:text-[6.6vw] lg:text-[4.6vw]
+              -mb-10 sm:-mb-12 md:-mb-16 lg:-mb-18
+              relative ${headClasses}`}
+            style={{ transitionDelay: headInView ? "0ms" : "0ms" }}
+          >
+            <span className="block">Turn dry chats into vibe -</span>
+            <span className="block text-[8.6vw] sm:text-[7.8vw] md:text-[6.2vw] lg:text-[4.2vw] mt-1">
+              filled conversations with
+            </span>
+            <span className="block text-[14vw] sm:text-[12.5vw] md:text-[10vw] lg:text-[7.5vw] mt-2 lg:pb-12">
+              Genzchat
+            </span>
+          </h1>
+        </div>
 
-    {/* line 2 – “your AI Buddy” (slightly smaller on tiny screens, then scales up) */}
-    <span className="block
-      text-[8.6vw] sm:text-[7.8vw] md:text-[6.2vw] lg:text-[4.2vw]
-      mt-1
-    ">
-      Your AI Buddy
-    </span>
-
-    {/* brand line – “Genzchat” (bigger & bold, same color vibe you had) */}
-    <span className="
-      block
-      text-[14vw] sm:text-[12.5vw] md:text-[10vw] lg:text-[7.5vw]
-      mt-2 lg:pb-12
-    ">
-      Genzchat
-    </span>
-  </h1>
-</div>
-
-
-        {/* CONTENT SCALE WRAPPER */}
-        <div className="relative z-10 origin-center sm:scale-90 md:scale-100 transition-transform duration-500 ease-out max-[460px]:scale-[0.70]">
-        {/* <div className="relative z-10 origin- sm:scale-90 md:scale-100 transition-transform duration-500 ease-out max-[460px]:scale-[0.70]"> */}
+        {/* CONTENT SCALE WRAPPER — slides up with slight delay; exits back down */}
+        <div
+          ref={wrapRef}
+          className={`relative z-10 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.70] ${wrapClasses}`}
+          style={{ transitionDelay: wrapInView ? "400ms" : "0ms" }}  // 1s after heading
+        >
           {/* PHONE + DECOR */}
           <div className="relative">
             <DecorChats />
@@ -145,7 +190,11 @@ export default function MockUp() {
                       <div className="flex items-center gap-1">
                         <BiChevronLeft size={35} className="text-white cursor-pointer" />
                         <div className="flex items-center gap-2">
-                          <img src={avatar} alt={`${name} profile`} className="w-9 h-9 rounded-full ring-2 ring-white/20 object-cover" />
+                          <img
+                            src={avatar}
+                            alt={`${name} profile`}
+                            className="w-9 h-9 rounded-full ring-2 ring-white/20 object-cover"
+                          />
                           <div>
                             <p className="text-sm font-semibold text-white leading-tight">{name}</p>
                             <p className="text-xs text-emerald-400">is online now</p>
@@ -155,21 +204,32 @@ export default function MockUp() {
                       <MdMoreVert size={20} className="text-white cursor-pointer" />
                     </div>
 
-                    {/* Messages (single thread visible; swaps every 5s) */}
-                    <div key={idx} className="h-[70%] overflow-y-auto space-y-4 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] pr-1 fade-swap-enter fade-swap-enter-active">
+                    {/* Messages (single thread visible; swaps every 6s) */}
+                    <div
+                      key={idx}
+                      className="h-[70%] overflow-y-auto space-y-4 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] pr-1 fade-swap-enter fade-swap-enter-active"
+                    >
                       {messages.map((m, i) => (
-                        <Bubble key={i} align={m.align}>{m.text}</Bubble>
+                        <Bubble key={i} align={m.align}>
+                          {m.text}
+                        </Bubble>
                       ))}
                     </div>
 
                     {/* Composer */}
                     <div className="absolute left-[6%] right-[6%] bottom-[7%]">
                       <div className="flex items-center gap-2 px-2">
-                        <button className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition" aria-label="Add image">
+                        <button
+                          className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition"
+                          aria-label="Add image"
+                        >
                           <BiImage className="text-white" size={20} />
                         </button>
 
-                        <button className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition" aria-label="Record voice">
+                        <button
+                          className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition"
+                          aria-label="Record voice"
+                        >
                           <MdMic className="text-white" size={20} />
                         </button>
 
@@ -182,7 +242,10 @@ export default function MockUp() {
                           />
                         </div>
 
-                        <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 transition" aria-label="Send">
+                        <button
+                          className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 transition"
+                          aria-label="Send"
+                        >
                           <FiSend className="text-white" size={18} />
                         </button>
                       </div>
@@ -199,6 +262,23 @@ export default function MockUp() {
           </div>
         </div>
       </section>
+
+      <style>{`
+  .fade-up{
+    opacity:0;
+    transform:translate3d(0,20px,0);
+    will-change:transform,opacity;
+    transition:
+      transform 600ms cubic-bezier(.22,.8,.25,1),
+      opacity   600ms ease;
+  }
+  .fade-up.in{
+    opacity:1;
+    transform:translate3d(0,0,0);
+  }
+`}</style>
+
+
     </>
   );
 }
@@ -221,40 +301,56 @@ function DecorChats() {
   return (
     <>
       <div className="absolute left-75 top-20 sm:top-28 sm:left-90 lg:left-100">
-        <MiniChat text="Check this out ! 👀" name="Emilie" />
+        <MiniChat text="Check this out ! 👀" name="Emilie" avatar={pfp4} />
       </div>
       <div className="absolute right-55 sm:right-80 lg:right-120 bottom-36 sm:bottom-40">
-        <MiniChat text="New song drop 🌻" name="Miles" />
+        <MiniChat text="New song drop 🌻" name="Miles" avatar={pfp2} />
       </div>
       <div className="absolute left-70 sm:left-100 lg:left-125 bottom-6">
-        <MiniChat text="Love the viiibe" name="Emma" />
+        <MiniChat text="Love the viiibe" name="Emma" avatar={pfp5} />
       </div>
       <div className="absolute right-60 sm:right-80 lg:right-150 top-5 sm:top-16">
-        <MiniChat text="I'm your man ✨" name="Luke" />
+        <MiniChat text="I'm your man ✨" name="Luke" avatar={pfp1} />
       </div>
       <div className="sm:hidden absolute left-50 sm:left-100 lg:left-90 -top-8">
-        <MiniChat text="Love the viiibe" name="Emma" />
+        <MiniChat text="Love the viiibe" name="Emma" avatar={pfp5} />
       </div>
       <div className="absolute right-55 sm:right-75 lg:right-80 top-1/2">
-        <MiniChat text="It's lit ! 🔥" name="Alina" />
+        <MiniChat text="It's lit ! 🔥" name="Alina" avatar={pfp3} />
       </div>
     </>
   );
 }
 
-function MiniChat({ text, name, dot }) {
-  const randomImg = profilePics[Math.floor(Math.random() * profilePics.length)];
+function MiniChat({ text = "", name = "", dot = false, avatar }) {
+  // deterministic fallback (stable across renders)
+  const hash = (s) =>
+    Array.from(s).reduce((a, c) => ((a << 5) - a + c.charCodeAt(0)) | 0, 0);
+
+  const pool = [pfp1, pfp2, pfp3, pfp4, pfp5];
+
+  const finalAvatar = React.useMemo(() => {
+    if (avatar) return avatar;
+    const i = Math.abs(hash(`${name}|${text}`)) % pool.length;
+    return pool[i];
+  }, [avatar, name, text]);
+
   return (
     <div className="flex flex-col items-center justify-center gap-2 scale-90 sm:scale-100 transition-transform duration-500">
-      <div className="rounded-2xl px-5 py-4 min-w-[220px] max-w-[280px] text-xs sm:text-sm bg-white/20  shadow animate-[slideUp_.6s_ease-out_forwards] break-words">
+      <div className="rounded-2xl px-5 py-4 min-w-[220px] max-w-[280px] text-xs sm:text-sm bg-white/20 shadow break-words">
         {text}
       </div>
       <div className="flex items-center gap-1 text-white/80 text-xs sm:text-sm">
-        <img src={randomImg} alt={name} className="inline-block w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover" />
+        <img
+          src={finalAvatar}
+          alt={name}
+          className="inline-block w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover"
+          loading="lazy"
+        />
         <span>{name}</span>
         {dot && (
           <span className="ml-1 inline-block w-4 h-4 rounded-full overflow-hidden">
-            <img src={randomImg} alt="" className="w-full h-full object-cover" />
+            <img src={finalAvatar} alt="" className="w-full h-full object-cover" loading="lazy" />
           </span>
         )}
       </div>

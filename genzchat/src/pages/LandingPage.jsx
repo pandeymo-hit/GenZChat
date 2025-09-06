@@ -27,10 +27,10 @@ const LandingPage = () => {
        <MainSection/>
        <SocialMedia/>
        <MockUp/>
-       <Stats/>
        <WhyUs/>
-       <ChatSuggestions/>
        <LanguageSection/>
+       {/* <ChatSuggestions/> */}
+       <Stats/>
        <CTASection/>
        <Footer/>
 

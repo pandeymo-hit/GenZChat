@@ -19,9 +19,9 @@ const NavBar = () => {
   };
 
   return (
-    <div className="backdrop-blur-2xl bg-[#08081e]/50">
-      <nav className="flex justify-between items-center p-5 border-b border-gray-800">
-        <div className="text-3xl font-black bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
+    <div className="backdrop-blur-2xl ">
+      <nav className="flex justify-between items-center p-3 md:p-5 bg-black/80 shadow-[0_0_10px_rgba(139,92,246,0.5)] ">
+        <div className="text-2xl font-black bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
           GenZChat
         </div>
 
@@ -49,7 +49,7 @@ const NavBar = () => {
           </ul>
         </div>
 
-        <button
+        {/* <button
           className="
             text-white px-6 py-2 rounded-3xl transition
             border border-gray-800/50 hover:border-white/70
@@ -59,7 +59,16 @@ const NavBar = () => {
           onClick={openForm}
         >
           Login
-        </button>
+        </button> */}
+        <button
+  type="button"
+  onClick={openForm}
+  className="btn-aurora relative flex items-center justify-center overflow-hidden rounded-[100px] p-[2px] border-0"
+>
+  <span className="btn-aurora__inner relative z-[1] rounded-[100px] px-6 py-2 text-white text-sm font-medium bg-black/75 backdrop-blur-xl">
+    Login
+  </span>
+</button>
       </nav>
     </div>
   );

@@ -209,7 +209,7 @@ export const AuthProvider = ({ children }) => {
       const payload = { username, password, phNumber, gender: (gender || "").toUpperCase(), dob, dp };
       const res = await api.post(`/user-onboarding`, payload);
       if (res.status === 201) {
-        alert("chat page khul gya");
+        setMode("chat-page");
       } else {
         setError(res.data?.message || "Something went wrong");
       }
@@ -239,21 +239,28 @@ export const AuthProvider = ({ children }) => {
 
     if (!password) { setError("Password cannot be empty"); return; }
 
-    if (!isInDB) {
-      setIsFlipped(true);
-      setMode("login");
-      return;
-    }
+    // if (!isInDB) {
+    //   setIsFlipped(true);
+    //   setMode("signup");
+    //   return;
+    // }
 
     setLoading(true);
     try {
       const res = await api.post(`/login`, {
-        phoneNumber: onlyDigits(loginPhone),
+        phNumber: onlyDigits(loginPhone),
         password,
       });
       const freshToken = res?.data;
       if (freshToken) setAuthToken(freshToken);
-      if (res.status === 200) return true;
+      if (res.status === 200) {
+        setMode("chat-page");
+         const tokenIn = res?.data;
+        if (!tokenIn) { setError("Token missing from server response"); return; }
+        setAuthToken(tokenIn);
+      }else {
+        setError(res.data?.message || "Something went wrong");
+      }
 
       setError(res.data?.message || "Login failed");
       return false;

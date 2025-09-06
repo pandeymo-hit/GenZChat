@@ -3,7 +3,7 @@ import React from "react";
 
 const CTASection = () => {
   return (
-    <div className="mt-18 md:mt-40 flex justify-center items-center px-6">
+    <div className="mt-22 md:mt-40 flex justify-center items-center px-6">
       <div
         className="relative bg-gradient-to-br from-[#1a1a1a] via-[#111111] to-[#1a1a1a]
                    rounded-3xl px-10 pb-10 pt-24 md:pt-28 max-w-2xl w-full text-center
@@ -37,8 +37,7 @@ const CTASection = () => {
 
         {/* Subtext */}
         <p className="text-gray-300/90 text-lg mb-8">
-          Join <span className="font-bold text-purple-400">25,000+ Indians</span> using AI to 
-          improve their dating life
+          Join <span className="font-bold text-purple-400">20,000+ Indians</span>who already unlocked better chats. 
         </p>
 
         {/* Button */}

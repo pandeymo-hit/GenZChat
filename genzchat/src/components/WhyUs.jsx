@@ -10,8 +10,8 @@ import {
 import toonimg from "../assets/toon.png";
 
 const features = [
-  { id: 1, title: "Smart Response Generation", description: "AI analyzes conversation context and generates flirty, engaging responses that match your personality and the vibe.", icon: <FaBrain className="text-purple-500 text-3xl" /> },
-  { id: 2, title: "Flirt Optimization", description: "Our AI understands the art of flirting and creates responses that build attraction while staying authentic to you.", icon: <FaHeart className="text-pink-500 text-3xl" /> },
+  // { id: 1, title: "Smart Response Generation", description: "AI analyzes conversation context and generates flirty, engaging responses that match your personality and the vibe.", icon: <FaBrain className="text-purple-500 text-3xl" /> },
+  // { id: 2, title: "Flirt Optimization", description: "Our AI understands the art of flirting and creates responses that build attraction while staying authentic to you.", icon: <FaHeart className="text-pink-500 text-3xl" /> },
   { id: 3, title: "Multi-Platform Support", description: "Works perfectly with WhatsApp, Instagram, Tinder, Bumble, and all major dating platforms and social apps.", icon: <FaComments className="text-blue-500 text-3xl" /> },
   { id: 4, title: "Real-Time Suggestions", description: "Get instant, contextual suggestions that keep conversations flowing naturally and build deeper connections.", icon: <FaClock className="text-purple-500 text-3xl" /> },
   { id: 5, title: "Privacy First", description: "Your conversations stay private. We don't store personal data, ensuring your dating life remains confidential.", icon: <FaShieldAlt className="text-pink-500 text-3xl" /> },
@@ -51,6 +51,7 @@ const WhyUs = () => {
 
           {/* Spacer: start cards at FIXED_TOP (190px) */}
           <div style={{ height: FIXED_TOP }} />
+
 
           {features.map((feature, i) => (
             <div
