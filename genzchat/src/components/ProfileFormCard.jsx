@@ -38,109 +38,71 @@ export default function ProfileFormCard() {
     return `${y}-01-01`;
   }, [age]);
 
-  const canSubmit = useMemo(() =>
-    username.trim().length >= 2 &&
-    password.length >= 6 &&
-    ["MALE", "FEMALE", "OTHER"].includes((gender || "").toUpperCase()) &&
-    age >= 13 && age <= 100 &&
-    terms
-  , [username, password, gender, age, terms]);
+  const canSubmit = useMemo(() => {
+    const isUsernameValid = username.trim().length >= 2;
+    const isPasswordValid = password.length >= 6;
+    const isGenderValid = ["MALE", "FEMALE", "OTHER"].includes((gender || "").toUpperCase());
+    const isAgeValid = age >= 13 && age <= 100;
+    const isTermsAccepted = terms;
+    
+    return isUsernameValid && isPasswordValid && isGenderValid && isAgeValid && isTermsAccepted;
+  }, [username, password, gender, age, terms]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!canSubmit || loading) {
+      return;
+    }
+    
     setDob(derivedDob);
-    await UserOnBoarding();
+    await UserOnBoarding(derivedDob);
   };
 
   const inputBase =
     "w-full h-10 rounded-xl bg-transparent text-white placeholder:text-gray-400 " +
     "border border-white/10 px-3 outline-none focus:border-white/30 transition";
 
+  const selectBase =
+    "w-full h-10 rounded-xl bg-black text-white " +
+    "border border-white/10 px-3 outline-none focus:border-white/30 transition";
+
+  // Custom CSS for select options
+  const selectStyles = `
+    .gender-select option {
+      background-color: #000000;
+      color: #ffffff;
+    }
+    .gender-select option:hover {
+      background-color: #1f1f1f;
+    }
+  `;
+
   return (
     <>
-      {/* Self-contained conic BORDER CSS (no inner conic, no shadows) */}
-      <style>{`
-        @keyframes gzc-aurora-rotate { to { --angle: 360deg; } }
-
-        .gzc-aurora-card {
-          position: relative;
-          isolation: isolate;
-          overflow: visible;           /* allow outer glow */
-          border-radius: 12px;         /* match rounded-xl */
-          --angle: 0deg;
-          --ring1: rgba(139, 92, 246, 0.9);
-          --ring2: rgba(96, 165, 250, 0.9);
-          --ring-thickness: 2px;
-        }
-        .gzc-aurora-card::before,
-        .gzc-aurora-card::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          pointer-events: none;
-          background:
-            conic-gradient(
-              from var(--angle) at 50% 50%,
-              transparent 0%,
-              transparent 22%,
-              var(--ring1) 34%,
-              var(--ring2) 55%,
-              transparent 72%,
-              transparent 100%
-            );
-          animation: gzc-aurora-rotate 3s linear infinite;
-        }
-        /* outer soft glow */
-        .gzc-aurora-card::before {
-          inset: -10px;
-          filter: blur(20px);
-          opacity: 0.7;
-          z-index: 20;
-        }
-        /* sharp border ring only */
-        .gzc-aurora-card::after {
-          padding: var(--ring-thickness);
-          -webkit-mask:
-            linear-gradient(#000 0 0) content-box,
-            linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor;
-                  mask-composite: exclude;
-          z-index: 30;
-        }
-        .gzc-aurora-card:hover {
-          --ring1: rgba(139, 92, 246, 1);
-          --ring2: rgba(96, 165, 250, 1);
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .gzc-aurora-card::before,
-          .gzc-aurora-card::after { animation: none; }
-        }
-      `}</style>
-
       <div className="relative min-h-screen w-full flex items-center justify-center p-6">
-        {/* OUTER: conic BORDER only; NO shadow */}
-        <div
-          className="gzc-aurora-card relative rounded-xl w-[316px] min-h-[520px]"
-          style={{
-            ["--ring1"]: "rgba(139, 92, 246, 0.9)",
-            ["--ring2"]: "rgba(96, 165, 250, 0.9)",
-            ["--ring-thickness"]: "2px",
-          }}
-        >
-          {/* INNER: pure black bg + corner glows only */}
-          <div className="absolute inset-0 rounded-xl p-7 h-full w-full bg-black overflow-hidden z-10">
-            {/* Top-left glow */}
+        <div className="relative overflow-hidden rounded-xl w-[316px] min-h-[520px] z-10">
+          {/* Animated conic gradient border - same as login page */}
+          <div
+            className="pointer-events-none absolute inset-[-70px] -z-10
+                        bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
+                        opacity-100 transition-opacity duration-300
+                        animate-[spin_8s_ease-in-out_infinite]"
+          />
+
+          {/* INNER: pure black bg */}
+          <div className="absolute inset-[1px] rounded-xl p-7 h-full w-full bg-black overflow-hidden z-10 relative">
+            {/* Corner glows */}
             <span
               aria-hidden
-              className="pointer-events-none absolute -top-24 -left-24 h-56 w-56 rounded-full blur-3xl opacity-70
-                         bg-[radial-gradient(closest-side,rgba(42,202,255,0.28),transparent_85%)]"
+              className="pointer-events-none absolute -top-20 -left-20 h-64 w-64
+                         rounded-full blur-3xl opacity-100 mix-blend-screen
+                         bg-[radial-gradient(circle_at_25%_20%,rgba(28,38,122,3)_0%,rgba(28,38,42,0.3)_40%,transparent_65%)]"
             />
-            {/* Bottom-right glow */}
             <span
               aria-hidden
-              className="pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full blur-3xl opacity-70
-                         bg-[radial-gradient(closest-side,rgba(126,130,255,0.30),transparent_85%)]"
+              className="pointer-events-none absolute -bottom-24 -right-20 h-64 w-64
+                         rounded-full blur-3xl opacity-100 mix-blend-screen
+                         bg-[radial-gradient(circle_at_80%_75%,rgba(28,38,82,3)_0%,rgba(28,38,42,0.3)_50%,transparent_25%)]"
             />
 
             {/* Header */}
@@ -202,7 +164,7 @@ export default function ProfileFormCard() {
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
-                  className={inputBase}
+                  className={`${selectBase} gender-select`}
                   required
                 >
                   <option value="" disabled>Choose</option>
@@ -215,7 +177,7 @@ export default function ProfileFormCard() {
                   <div className="flex items-center gap-2">
                     <input
                       type="range"
-                      min={18}
+                      min={13}
                       max={100}
                       value={age}
                       onChange={(e) => setAge(parseInt(e.target.value || "0", 10))}
@@ -270,6 +232,12 @@ export default function ProfileFormCard() {
             </form>
           </div>
         </div>
+
+        {/* Animation keyframes and select styles */}
+        <style>{`
+          @keyframes spin { to { transform: rotate(360deg) } }
+          ${selectStyles}
+        `}</style>
       </div>
     </>
   );

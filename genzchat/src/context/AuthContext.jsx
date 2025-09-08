@@ -1,13 +1,32 @@
 import React, { createContext, useEffect, useMemo, useState } from "react";
+// import React, { createContext, useEffect, useMemo, useState } from "react";
 import { api, setAuthHeader, clearAuthHeader } from "../services/api";
 import { isValidPhoneNumber } from "libphonenumber-js/min";
 
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [mode, setMode] = useState("profile");     // "login" | "signup" | "forgot" | "profile"
-  const [isFlipped, setIsFlipped] = useState(false);
+  // Get initial state from localStorage to persist across refreshes
+  const [showForm, setShowForm] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('showForm') === 'true';
+    }
+    return false;
+  });
+  
+  const [mode, setMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('authMode') || 'login';
+    }
+    return 'login';
+  });     // "login" | "signup" | "forgot" | "profile"
+  
+  const [isFlipped, setIsFlipped] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('isFlipped') === 'true';
+    }
+    return false;
+  });
 
   // Login
   const [loginPhone, setLoginPhone] = useState("+91");
@@ -81,9 +100,50 @@ export const AuthProvider = ({ children }) => {
     return d.length > 0 && d[d.length - 1] === "7";
   }, [loginPhone]);
 
-  // open/close form
-  const openForm = () => setShowForm(true);
-  const closeForm = () => setShowForm(false);
+  // open/close form with localStorage persistence
+  const openForm = (formMode = "login") => {
+    setShowForm(true);
+    setMode(formMode);
+    if (formMode === "signup") {
+      setIsFlipped(true);
+    } else {
+      setIsFlipped(false);
+    }
+    
+    // Persist to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('showForm', 'true');
+      localStorage.setItem('authMode', formMode);
+      localStorage.setItem('isFlipped', formMode === "signup" ? 'true' : 'false');
+    }
+  };
+  
+  const closeForm = () => {
+    setShowForm(false);
+    
+    // Clear from localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('showForm');
+      localStorage.removeItem('authMode');
+      localStorage.removeItem('isFlipped');
+    }
+  };
+
+  // Helper function to update mode and persist it
+  const updateMode = (newMode) => {
+    setMode(newMode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('authMode', newMode);
+    }
+  };
+  
+  // Helper function to update isFlipped and persist it
+  const updateIsFlipped = (flipped) => {
+    setIsFlipped(flipped);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('isFlipped', flipped ? 'true' : 'false');
+    }
+  };
 
   // SIGNUP FLOW
   const sendSignupOtp = async () => {
@@ -121,8 +181,8 @@ export const AuthProvider = ({ children }) => {
       // 🔧 FIX: use `status` (res is undefined in catch)
       if (status === 208) {
         setError("This number is already registered. Please log in.");
-        setIsFlipped(false);
-        setMode("login");
+        updateIsFlipped(false);
+        updateMode("login");
         setLoginPhone(toE164(signupPhone));
         return;
       }
@@ -165,7 +225,7 @@ export const AuthProvider = ({ children }) => {
         setSignupFlipped(false);
         setSignupTimerLeft(0);
         setSignupOtp(["", "", "", "", "", ""]);
-        setMode("profile");
+        updateMode("profile");
         return;
       }
 
@@ -195,21 +255,49 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ONBOARDING
-  const UserOnBoarding = async () => {
+  const UserOnBoarding = async (customDob = null) => {
     setError("");
-    if (!token) { setError("Session expired. Please login again."); return; }
-    if (username.trim().length < 2) { setError("Name must be at least 2 chars"); return; }
-    if (password.length < 6) { setError("Password must be at least 6 chars"); return; }
-    if (!["MALE", "FEMALE", "OTHER"].includes((gender || "").toUpperCase())) { setError("Select gender"); return; }
-    if (!dob) { setError("Pick a valid DOB"); return; }
-    if (!terms) { setError("Please accept Terms & Conditions"); return; }
+    setLoading(true);
+    
+    if (!token) { 
+      setError("Session expired. Please login again."); 
+      setLoading(false);
+      return; 
+    }
+    if (username.trim().length < 2) { 
+      setError("Name must be at least 2 chars"); 
+      setLoading(false);
+      return; 
+    }
+    if (password.length < 6) { 
+      setError("Password must be at least 6 chars"); 
+      setLoading(false);
+      return; 
+    }
+    if (!["MALE", "FEMALE", "OTHER"].includes((gender || "").toUpperCase())) { 
+      setError("Select gender"); 
+      setLoading(false);
+      return; 
+    }
+    
+    const dobToUse = customDob || dob;
+    if (!dobToUse) { 
+      setError("Pick a valid DOB"); 
+      setLoading(false);
+      return; 
+    }
+    if (!terms) { 
+      setError("Please accept Terms & Conditions"); 
+      setLoading(false);
+      return; 
+    }
 
     try {
       const phNumber = onlyDigits(signupPhone);
-      const payload = { username, password, phNumber, gender: (gender || "").toUpperCase(), dob, dp };
+      const payload = { username, password, phNumber, gender: (gender || "").toUpperCase(), dob: dobToUse, dp };
       const res = await api.post(`/user-onboarding`, payload);
       if (res.status === 201) {
-        setMode("chat-page");
+        updateMode("chat-page");
       } else {
         setError(res.data?.message || "Something went wrong");
       }
@@ -220,6 +308,8 @@ export const AuthProvider = ({ children }) => {
       } else {
         setError(e?.response?.data?.message || "Error saving profile");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -254,7 +344,7 @@ export const AuthProvider = ({ children }) => {
       const freshToken = res?.data;
       if (freshToken) setAuthToken(freshToken);
       if (res.status === 200) {
-        setMode("chat-page");
+        updateMode("chat-page");
          const tokenIn = res?.data;
         if (!tokenIn) { setError("Token missing from server response"); return; }
         setAuthToken(tokenIn);
@@ -279,7 +369,7 @@ export const AuthProvider = ({ children }) => {
 
   // FORGOT
   const startForgot = () => {
-    setMode("forgot");
+    updateMode("forgot");
     setForgotFlipped(false);
     setForgotPhone("");
     setOtp(["", "", "", "", "", ""]);
@@ -320,8 +410,8 @@ export const AuthProvider = ({ children }) => {
       await api.post(`/v1/authentication/forgot-password/verify-otp`, null, {
         params: { phoneNumber: onlyDigits(forgotPhone), otp: code },
       });
-      setMode("login");
-      setIsFlipped(false);
+      updateMode("login");
+      updateIsFlipped(false);
       setLoginPhone(forgotPhone);
       setResetMode(true);
       setTimerLeft(0);
@@ -340,6 +430,7 @@ export const AuthProvider = ({ children }) => {
 
         // view + flips
         mode, setMode, isFlipped, setIsFlipped,
+        updateMode, updateIsFlipped,
 
         // login
         loginPhone, setLoginPhone, password, setPassword,

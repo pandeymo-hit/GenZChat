@@ -17,6 +17,7 @@ export default function LoginPage() {
     showForm, closeForm, openForm,
     // view + flips
     mode, setMode, isFlipped, setIsFlipped,
+    updateMode, updateIsFlipped,
     // login
     loginPhone, setLoginPhone, password, setPassword,
     resetMode, newPass, setNewPass, confirmNewPass, setConfirmNewPass,
@@ -300,17 +301,6 @@ export default function LoginPage() {
   const LoginCard = (
     <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden]  backdrop-blur-[90px]  bg-black overflow-hidden">
       <GlowDecor />
-      <button
-        type="button"
-        onClick={closeForm}
-        aria-label="Close"
-        className="group absolute top-3 left-3 z-20"
-      >
-        <span className="relative grid place-items-center w-9 h-9 rounded-full bg-white/0 backdrop-blur-[30px] border border-white/10">
-          <span className="absolute inset-[-2px] rounded-full bg-black/10 blur-[4px] opacity-70 group-hover:opacity-95 transition" />
-          <span className="relative text-lg leading-none font-extrabold text-[#8B5CF6]">!</span>
-        </span>
-      </button>
 
       <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-3 h-full">
         {/* Brand + evolving text */}
@@ -387,7 +377,7 @@ export default function LoginPage() {
                 New user?{" "}
                 <button
                   type="button"
-                  onClick={() => { setIsFlipped(true); setMode("login"); }}
+                  onClick={() => { updateIsFlipped(true); updateMode("signup"); }}
                   className="font-semibold underline hover:text-white"
                 >
                   Sign up
@@ -395,10 +385,10 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                Number not found.{" "}
+                New User.{" "}
                 <button
                   type="button"
-                  onClick={() => { setIsFlipped(true); setMode("login"); }}
+                  onClick={() => { updateIsFlipped(true); updateMode("signup"); }}
                   className="font-semibold underline hover:text-white"
                 >
                   Create an account
@@ -424,19 +414,6 @@ export default function LoginPage() {
       className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden] [transform:rotateY(180deg)] backdrop-blur-[25px] bg-black overflow-hidden"
     >
       <GlowDecor />
-
-      {/* Close button */}
-      <button
-        type="button"
-        onClick={() => { setIsFlipped(false); setMode('login'); }}
-        aria-label="Close"
-        className="group absolute top-3 left-3 z-20"
-      >
-        <span className="relative grid place-items-center w-9 h-9 rounded-full bg-white/0 backdrop-blur-[30px] border border-white/10">
-          <span className="absolute inset-[-2px] rounded-full bg-black/10 blur-[4px] opacity-70 group-hover:opacity-95 transition" />
-          <span className="relative text-lg leading-none font-extrabold text-[#8B5CF6]">!</span>
-        </span>
-      </button>
 
       <div
         ref={signupStepFlipRef}
@@ -471,7 +448,7 @@ export default function LoginPage() {
             Already a user?
             <button
               type="button"
-              onClick={() => { setIsFlipped(false); setMode('login'); }}
+              onClick={() => { updateIsFlipped(false); updateMode('login'); }}
               className="font-semibold underline ml-1 hover:text-white"
             >
               Please login
@@ -517,10 +494,6 @@ export default function LoginPage() {
           <button type="submit" disabled={loading} className={subtleBtn}>
             {loading ? "Verifying..." : "Verify & Continue"}
           </button>
-
-          <button type="button" onClick={() => { setSignupFlipped(false); }} className="text-xs underline text-white/80 hover:text-white">
-            Edit number
-          </button>
         </form>
       </div>
     </div>
@@ -535,17 +508,6 @@ export default function LoginPage() {
       >
         {/* Step 1 */}
         <div className="absolute inset-0 rounded-xl p-2 h-full w-full [backface-visibility:hidden]">
-          <button
-            type="button"
-            onClick={() => { setIsFlipped(false); setMode('login'); }}
-            aria-label="Close"
-            className="group absolute top-3 left-3 z-20"
-          >
-            <span className="relative grid place-items-center w-9 h-9 rounded-full bg-white/0 backdrop-blur-[30px] border border-white/10">
-              <span className="absolute inset-[-2px] rounded-full bg-black/10 blur-[4px] opacity-70 group-hover:opacity-95 transition" />
-              <span className="relative text-lg leading-none font-extrabold text-[#8B5CF6]">!</span>
-            </span>
-          </button>
           <form onSubmit={handleSendOtpForgot} className="flex flex-col justify-center items-center gap-3 h-full">
             <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">Forgot PassWord ?</h1>
             <div className="mb-1 px-3 rounded-2xl bg-gray-700/10  ">
@@ -568,7 +530,12 @@ export default function LoginPage() {
             <button type="submit" disabled={loading} className={primaryBtn}>
               {loading ? "Sending..." : "Send OTP"}
             </button>
-            <button type="button" onClick={() => { setMode("login"); setIsFlipped(false); }} className="text-xs underline text-white/80 hover:text-white">
+            
+            <button 
+              type="button" 
+              onClick={() => { updateMode("login"); updateIsFlipped(false); }} 
+              className="text-xs underline text-white/80 hover:text-white"
+            >
               Back to login
             </button>
           </form>
@@ -612,8 +579,12 @@ export default function LoginPage() {
             <button type="submit" disabled={loading} className={subtleBtn}>
               {loading ? "Verifying..." : "Verify & Continue"}
             </button>
-
-            <button type="button" onClick={() => { setForgotFlipped(false); }} className="text-xs underline text-white/80 hover:text-white">
+            
+            <button 
+              type="button" 
+              onClick={() => { setForgotFlipped(false); }} 
+              className="text-xs underline text-white/80 hover:text-white"
+            >
               Edit number
             </button>
           </form>

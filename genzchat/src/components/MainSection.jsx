@@ -67,7 +67,7 @@ const MainSection = () => {
 
             <div className="pt-3 sm:pt-6">
               <button
-                onClick={openForm}
+                onClick={() => openForm("signup")}
                 type="button"
                 className="btn-aurora relative inline-flex items-center justify-center overflow-hidden rounded-[100px] p-[2px]"
               >

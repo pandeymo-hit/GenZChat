@@ -1,6 +1,7 @@
 // src/pages/ChatPAge.jsx
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChatContext } from "../context/ChatContext";
+import { AuthContext } from "../context/AuthContext";
 import MorePage from "./MorePage";
 import Razorpay from "../trail/Razorpay"; // <-- default export from src/trail/razorpay.jsx
 
@@ -30,6 +31,8 @@ export default function ChatPAge() {
     error,
     sending,     // 🔒 lock (NEW)
   } = useContext(ChatContext) || {};
+
+  const { closeForm } = useContext(AuthContext);
 
   const [view, setView] = useState("chat"); // "chat" | "more" | razorpay
   
@@ -110,8 +113,9 @@ if (view === "more") {
         aria-modal="true"
       >
         {/* Sidebar content */}
-        <div className="h-full overflow-y-auto p-4 space-y-4">
-          {/* 1) Profile card (glass) */}
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* 1) Profile card (glass) */}
           <div className="relative z-20 rounded-2xl border border-purple-900 bg-transparent backdrop-blur-3xl p-4 sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
             {/* Edit (top-right) */}
             <button
@@ -216,7 +220,25 @@ if (view === "more") {
             </button>
           </div>
 
-
+          </div>
+          
+          {/* Back button at bottom */}
+          <div className="p-4 border-t border-white/10">
+            <button
+              type="button"
+              onClick={closeForm}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 
+                         rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl 
+                         hover:bg-white/10 transition-colors text-white/80 hover:text-white"
+              aria-label="Back to landing page"
+              title="Back to landing page"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="text-sm font-medium">Back to Landing</span>
+            </button>
+          </div>
         </div>
       </div>
 
