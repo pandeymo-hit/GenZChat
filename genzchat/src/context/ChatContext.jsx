@@ -164,6 +164,14 @@ export function ChatProvider({ children }) {
     }
   };
 
+  // Reset connection state - useful when server comes back online
+  const resetConnectionState = () => {
+    console.log("Manually resetting connection state");
+    setMockMode(false);
+    setOfflineUsed(false);
+    setError("");
+  };
+
   /**
    * POST /api/send
    * payload: string OR { text, image: File }
@@ -195,9 +203,15 @@ export function ChatProvider({ children }) {
       return;
     }
     if (mockMode && offlineUsed) {
-      console.log("Mock mode and offline already used");
-      setError("Offline demo: only one message allowed.");
-      return;
+      console.log("Mock mode and offline message already sent - attempting to reconnect to server");
+      // Try to reconnect to server first before blocking the user
+      console.log("Attempting to reconnect to server...");
+      
+      // Reset mock mode temporarily to try the real API
+      setMockMode(false);
+      console.log("Temporarily disabled mock mode to test server connection");
+      
+      // Don't return early - let the function continue to try the real API
     }
 
     console.log("Setting sending and loading states to true");
@@ -231,17 +245,17 @@ export function ChatProvider({ children }) {
 
     // offline path
     if (mockMode) {
-      console.log("Using mock mode");
+      console.log("Using mock mode - one message allowed until server responds");
       setTimeout(() => {
         setChats((prev) => [
           ...prev,
           {
             sender: "ai",
-            text: "⚠️ Server is down. Please try after some time.",
+            text: "⚠️ Server is currently down. Please try again later. You can send another message once the server is back online.",
             time: new Date().toLocaleTimeString(),
           },
         ]);
-        setOfflineUsed(true);
+        setOfflineUsed(true); // Mark that offline message was sent
         clearTimeout(safety);
         setLoading(false);
         setSending(false);
@@ -306,6 +320,14 @@ export function ChatProvider({ children }) {
       clearTimeout(safety);
       setLoading(false);
       setSending(false);
+      
+      // Reset offline usage when we get a successful API response
+      if (mockMode) {
+        console.log("Successful API response - resetting mock mode and offline usage");
+        setMockMode(false);
+        setOfflineUsed(false);
+      }
+      
       console.log("Message sent successfully");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -331,11 +353,12 @@ export function ChatProvider({ children }) {
       // flip to offline one-shot only for actual server errors
       console.log("Flipping to mock mode due to error");
       setMockMode(true);
+      // Don't set offlineUsed yet - only set it after showing the mock response
       if (offlineUsed) {
         clearTimeout(safety);
         setLoading(false);
         setSending(false);
-        setError("Offline demo: only one message allowed.");
+        setError("Please wait for the server to respond before sending another message.");
         return;
       }
       setTimeout(() => {
@@ -343,11 +366,11 @@ export function ChatProvider({ children }) {
           ...prev,
           {
             sender: "ai",
-            text: "⚠️ Server is down. Please try after some time.",
+            text: "⚠️ Server is down. Please try after some time. You can send another message once the server is back online.",
             time: new Date().toLocaleTimeString(),
           },
         ]);
-        setOfflineUsed(true);
+        setOfflineUsed(true); // Now mark that offline message was sent
         clearTimeout(safety);
         setLoading(false);
         setSending(false);
@@ -401,6 +424,7 @@ export function ChatProvider({ children }) {
         fetchCredits,
         fetchPreviousChats,
         sendMessage,
+        resetConnectionState,
 
         // bonus derived
         isAuthed,

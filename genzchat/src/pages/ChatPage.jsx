@@ -32,6 +32,7 @@ export default function ChatPAge() {
     loading,
     error,
     sending,     // 🔒 lock (NEW)
+    resetConnectionState, // NEW: Reset connection when server is back
   } = useContext(ChatContext) || {};
 
   const { closeForm } = useContext(AuthContext);
@@ -245,20 +246,8 @@ if (view === "more") {
           
           {/* Back button at bottom */}
           <div className="p-4 border-t border-white/10">
-            <button
-              type="button"
-              onClick={closeForm}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 
-                         rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl 
-                         hover:bg-white/10 transition-colors text-white/80 hover:text-white"
-              aria-label="Back to landing page"
-              title="Back to landing page"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="text-sm font-medium">Back to Landing</span>
-            </button>
+           
+            
           </div>
         </div>
       </div>
@@ -312,9 +301,20 @@ if (view === "more") {
         {!!error && (
           <div className="fixed top-20 inset-x-4 z-30 max-w-md mx-auto">
             <div className="bg-red-900/80 backdrop-blur-sm border border-red-700/50 text-red-200 text-sm px-4 py-3 rounded-xl shadow-lg">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0" />
-                <span>{error}</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+                {(error.includes("wait for") || error.includes("Server") || error.includes("connect")) && (
+                  <button
+                    onClick={resetConnectionState}
+                    className="ml-3 px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs font-medium transition-colors flex-shrink-0"
+                    title="Reset connection and try again"
+                  >
+                    Retry
+                  </button>
+                )}
               </div>
             </div>
           </div>
