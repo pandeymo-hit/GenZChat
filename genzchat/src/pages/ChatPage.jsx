@@ -35,7 +35,7 @@ export default function ChatPAge() {
     resetConnectionState, // NEW: Reset connection when server is back
   } = useContext(ChatContext) || {};
 
-  const { closeForm } = useContext(AuthContext);
+  const { closeForm, logout, username } = useContext(AuthContext);
 
   const [view, setView] = useState("chat"); // "chat" | "more" | razorpay
   
@@ -126,7 +126,14 @@ if (view === "razorpay") {
   return <Razorpay onBack={() => setView("chat")} />; // show full-screen Razorpay page
 }
 if (view === "more") {
-  return <MorePage onBack={() => setView("chat")} />;
+  return (
+    <MorePage 
+      onBack={() => setView("chat")} 
+      onLogout={logout}
+      username={username || user?.name || "Guest"}
+      signupDate={user?.signupDate || "N/A"}
+    />
+  );
 }
 
 

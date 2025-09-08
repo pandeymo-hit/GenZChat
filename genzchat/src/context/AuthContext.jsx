@@ -420,7 +420,24 @@ export const AuthProvider = ({ children }) => {
     } finally { setLoading(false); }
   };
 
-  const logout = () => setAuthToken(null);
+  const logout = () => {
+    setAuthToken(null);
+    // Clear form state
+    setShowForm(true);
+    setMode('login');
+    setIsFlipped(false);
+    
+    // Clear localStorage auth state
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('showForm', 'true');
+      localStorage.setItem('authMode', 'login');
+      localStorage.setItem('isFlipped', 'false');
+      // Clear chat data on logout
+      localStorage.removeItem('chat.user');
+      localStorage.removeItem('chat.items');
+      localStorage.removeItem('chat.credits');
+    }
+  };
 
   return (
     <AuthContext.Provider

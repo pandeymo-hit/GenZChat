@@ -1,10 +1,12 @@
 // src/components/MoreSection.jsx
 import React from "react";
-import { User2, LogOut, CalendarDays } from "lucide-react";
+import { User2, LogOut, CalendarDays, ArrowLeft } from "lucide-react";
 
 export default function MorePage({
   username = "user name",
   signupDate = "12 Jan 2025",
+  onLogout,
+  onBack,
 }) {
   return (
     <section className="min-h-screen w-full ">
@@ -15,8 +17,20 @@ export default function MorePage({
       <div className="relative h-screen w-full flex items-center justify-center p-4 ">
         {/* Container with glass effect */}
         <div className="relative w-full max-w-md h-full md:h-[92vh] bg-black/20 text-white border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+          {/* Back button */}
+          <div className="absolute top-4 left-4 z-10">
+            <button
+              type="button"
+              onClick={onBack}
+              className="p-2 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 hover:bg-black/60 transition-all duration-300"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+          </div>
+          
           {/* vertical layout */}
-          <div className="h-full flex flex-col ">
+          <div className="h-full flex flex-col pt-16">
             {/* Top user card - improved layout */}
             <div className="p-5 pb-3">
               <GlassCard className="p-5">
@@ -43,21 +57,29 @@ export default function MorePage({
               <SplitBox registration={signupDate} username={username} />
               <SplitBox registration={signupDate} username={username} tall />
 
-              {/* Logout button */}
-                <div className="flex items-center justify-center">
-                  <button
-                    type="button"
-                    aria-label="Log out"
-                    onClick={() => console.log("logout")}
-                    className="group relative p-[2px] rounded-full "
-                  >
-                    {/* soft pulse */}
-                    <span className="pointer-events-none absolute inset-0 -z-10 rounded-full " />
-                    {/* inner circle */}
-                    <span className="block rounded-full bg-black/50 backdrop-blur-xl border border-white/10 p-3 transition-all duration-300  hover:scale-105 hover:shadow-[0_0px_10px_rgba(99,102,241,0.35)]">
-                      <LogOut className="w-5 h-5 text-red-800" />
-                    </span>
-                  </button>
+              {/* Logout button with confirmation */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="text-center">
+                    <p className="text-sm text-white/70 mb-2">Ready to sign out?</p>
+                    <button
+                      type="button"
+                      aria-label="Log out"
+                      onClick={() => {
+                        if (onLogout && confirm('Are you sure you want to logout?')) {
+                          onLogout();
+                        }
+                      }}
+                      className="group relative p-[2px] rounded-full hover:scale-105 transition-transform duration-300"
+                    >
+                      {/* soft pulse */}
+                      <span className="pointer-events-none absolute inset-0 -z-10 rounded-full " />
+                      {/* inner circle */}
+                      <span className="block rounded-full bg-red-900/40 backdrop-blur-xl border border-red-600/30 p-4 transition-all duration-300 hover:bg-red-900/60 hover:border-red-500/50 hover:shadow-[0_0px_15px_rgba(239,68,68,0.4)]">
+                        <LogOut className="w-6 h-6 text-red-300 group-hover:text-red-200" />
+                      </span>
+                    </button>
+                    <p className="text-xs text-white/50 mt-2">Logout</p>
+                  </div>
                 </div>
             </div>
           </div>
