@@ -1,22 +1,35 @@
 import React from "react";
+import HighlightCard from "../components/HighlightCard";
 import {
-  FaBrain,
-  FaHeart,
-  FaComments,
-  FaClock,
   FaShieldAlt,
-  FaPenFancy,
 } from "react-icons/fa";
 import toonimg from "../assets/toon.png";
 
 const features = [
-  // { id: 1, title: "Smart Response Generation", description: "AI analyzes conversation context and generates flirty, engaging responses that match your personality and the vibe.", icon: <FaBrain className="text-purple-500 text-3xl" /> },
-  // { id: 2, title: "Flirt Optimization", description: "Our AI understands the art of flirting and creates responses that build attraction while staying authentic to you.", icon: <FaHeart className="text-pink-500 text-3xl" /> },
-  { id: 3, title: "Multi-Platform Support", description: "Works perfectly with WhatsApp, Instagram, Tinder, Bumble, and all major dating platforms and social apps.", icon: <FaComments className="text-blue-500 text-3xl" /> },
-  { id: 4, title: "Real-Time Suggestions", description: "Get instant, contextual suggestions that keep conversations flowing naturally and build deeper connections.", icon: <FaClock className="text-purple-500 text-3xl" /> },
-  { id: 5, title: "Privacy First", description: "Your conversations stay private. We don't store personal data, ensuring your dating life remains confidential.", icon: <FaShieldAlt className="text-pink-500 text-3xl" /> },
-  { id: 6, title: "Personality Matching", description: "AI adapts to your unique style and the person you're talking to, creating perfectly matched conversation flow.", icon: <FaPenFancy className="text-blue-500 text-3xl" /> },
+  
+  {
+    id: 1,
+    title: "Multi-Platform Support",
+    description: `“One buddy, all apps.”
+    Whether it’s WhatsApp, Instagram DMs, Tinder, or Bumble — GenZChat works seamlessly everywhere.`,
+    icon: <span role="img" aria-label="phone" className="text-3xl">📱</span>,
+  },
+  {
+    id: 2,
+    title: "Real-Time Suggestions",
+    description: `“Instant replies, zero overthinking.”
+    Get real-time suggestions the moment a message drops, keeping the convo flowing and fun.`,
+    icon: <span role="img" aria-label="zap" className="text-3xl">⚡</span>,
+  },
+  {
+    id: 3,
+    title: "Privacy First",
+    description: `“Your secrets stay with you.”
+    We don’t store your data. Everything stays private, safe, and only between you and your chats.`,
+    icon: <span role="img" aria-label="shield" className="text-3xl"><FaShieldAlt className="text-pink-500 text-3xl" /></span>,
+  },
 ];
+
 
 const WhyUs = () => {
   // ✅ Fixed sticky behavior
@@ -24,6 +37,8 @@ const WhyUs = () => {
   const GAP_PER_CARD = 22; // vertical stacking gap
 
   return (
+    <>
+    <HighlightCard />
     <section id="about" className="min-h-screen py-16">
       <div className="max-w-5xl mx-auto px-4">
         {/* Heading */}
@@ -81,39 +96,46 @@ const WhyUs = () => {
         </div>
 
         {/* === GRID: sm and up (untouched) === */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 relative mt-45">
-          {features.map((feature, i) => (
-            <div key={feature.id} className="relative z-0 mt-6 ">
-              {i === 1 && (
-                <img
-                  src={toonimg}
-                  alt="GenZChat Mascot"
-                  className="
-                    hidden sm:block 
-                    absolute -top-58 left-1/2 -translate-x-1/2
-                    h-auto min-w-96 pointer-events-none select-none z-[-1] 
-                  "
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
-              <div
-                className="
-                  bg-[#0b0b12] hover:shadow-[0_0_50px_rgba(139,92,246,0.5)] transform-gpu origin-center
-                will-change-transform rounded-xl p-6
-                  flex flex-col gap-4 hover:border-gray-400
-                  hover:scale-[1.02] transition-transform duration-300 ease-in-out
-                "
-              >
-                {feature.icon}
-                <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 relative mt-45 items-stretch auto-rows-fr">
+  {features.map((feature, i) => (
+    <div key={feature.id} className="relative z-0 mt-6 h-full">
+      {i === 0 && (
+        <img
+          src={toonimg}
+          alt="GenZChat Mascot"
+          className="
+            hidden sm:block 
+            absolute -top-58 left-1/2 -translate-x-1/2
+            h-auto min-w-96 pointer-events-none select-none z-[-1]
+          "
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+
+      <div
+        className="
+          h-full bg-[#0b0b12]
+          hover:shadow-[0_0_50px_rgba(139,92,246,0.5)]
+          transform-gpu origin-center will-change-transform
+          rounded-xl p-6 flex flex-col
+          hover:border-gray-400 border border-transparent
+          hover:scale-[1.02] transition-transform duration-300 ease-in-out
+        "
+      >
+        <div className="text-3xl">{feature.icon}</div>
+        <h3 className="text-lg font-semibold text-white mt-1">{feature.title}</h3>
+        <p className="text-gray-400 text-sm leading-relaxed mt-2 flex-1 whitespace-pre-line">
+          {feature.description}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+
       </div>
     </section>
+    </>
   );
 };
 

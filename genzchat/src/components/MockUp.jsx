@@ -1,5 +1,5 @@
 // src/components/MockUp.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { MdNetworkCell, MdWifi, MdMoreVert, MdMic } from "react-icons/md";
 import { BiChevronLeft, BiImage } from "react-icons/bi";
 import { FiSend } from "react-icons/fi";
@@ -14,7 +14,7 @@ const profilePics = [pfp1, pfp2, pfp3, pfp4, pfp5];
 // ✨ 2 flirty chat threads (light, playful)
 const chatThreads = [
   {
-    name: "Blake 💫",
+    name: "Ananya 💫",
     avatar: pfp3,
     messages: [
       { align: "right", text: "Good morning 🌞" },
@@ -52,110 +52,59 @@ const chatThreads = [
 ];
 
 export default function MockUp() {
-  const sectionRef = useRef(null);
-  const [inView, setInView] = useState(false);
-
   const STORAGE_KEY = "mockup:lastThreadIndex";
-  const [idx, setIdx] = useState(() => {
-    try {
-      const prev = parseInt(localStorage.getItem(STORAGE_KEY) ?? "-1", 10);
-      const next = isNaN(prev) ? 0 : (prev + 1) % chatThreads.length; +      localStorage.setItem(STORAGE_KEY, String(next)); // prepare next visit
-      return next; // show this visit
-    } catch {
-      return 0; // fallback if storage unavailable
-    }
-  });
-  // auto-switch chat every 6s
-
-  // Observe section visibility → toggle slide-in/out
-
-  const headRef = useRef(null);
-  const wrapRef = useRef(null);
-
-  const [headInView, setHeadInView] = useState(false);
-  const [wrapInView, setWrapInView] = useState(false);
-
+  const [idx, setIdx] = useState(0);
+  const ran = useRef(false); // guard for React 18 StrictMode
 
   useEffect(() => {
-    const h = headRef.current;
-    const w = wrapRef.current;
-    if (!h || !w) return;
+    if (ran.current) return;
+    ran.current = true;
 
-    const mkObserver = (set) =>
-      new IntersectionObserver(
-        ([entry]) => set(entry.isIntersecting),  // retrigger on every enter/exit
-        { threshold: 0.01 }                      // "dikhtay hi" trigger
-      );
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+      const parsed = raw !== null ? parseInt(raw, 10) : NaN;
+      const lastShown = Number.isInteger(parsed) ? parsed : -1;
 
-    const headObs = mkObserver(setHeadInView);
-    const wrapObs = mkObserver(setWrapInView);
-
-    headObs.observe(h);
-    wrapObs.observe(w);
-
-    return () => {
-      headObs.disconnect();
-      wrapObs.disconnect();
-    };
+      const toShow = (lastShown + 1) % chatThreads.length;
+      setIdx(toShow);
+      localStorage.setItem(STORAGE_KEY, String(toShow));
+    } catch {
+      setIdx(0);
+    }
   }, []);
-
 
   const { name, avatar, messages } = chatThreads[idx];
 
-  // Reusable transition classes
-  // Reusable classes
-  // ✅ use the right states
-  const headClasses = `fade-up ${headInView ? "in" : ""}`;
-  const wrapClasses = `fade-up ${wrapInView ? "in" : ""}`;
-
-
   return (
     <>
-      <section
-        ref={sectionRef}
-        className="relative overflow-y-hidden w-full text-white flex flex-col items-center justify-center px-3 mt-1 sm:mt-1 lg:mt-20 sm:px-4 sm:py-10 overflow-x-hidden"
-      >
-        {/* KEYFRAMES (legacy helpers + utilities) */}
-        <style>{`
-          .scrollbar-hide::-webkit-scrollbar{display:none}
-          .fade-swap-enter{opacity:0; transform:translateY(6px)}
-          .fade-swap-enter-active{opacity:1; transform:translateY(0); transition:opacity .3s ease, transform .3s ease}
-        `}</style>
+      <section className="relative overflow-y-hidden w-full text-white flex flex-col items-center justify-center px-3 mt-1 sm:mt-1 lg:mt-20 sm:px-4 sm:py-10 overflow-x-hidden">
+        <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
-        {/* Heading — slides up when section enters view, slides down on exit */}
-        <div className="relative w-full z-0">
-          <h1
-            aria-hidden
-            ref={headRef}
-            className={`pointer-events-none select-none mx-auto text-center font-extrabold tracking-tight
-              leading-[1.02] sm:leading-[0.98] md:leading-[0.94]
-              text-gray-600/80
-              text-[10vw] sm:text-[8.6vw] md:text-[6.6vw] lg:text-[4.6vw]
-              -mb-10 sm:-mb-12 md:-mb-16 lg:-mb-18
-              relative ${headClasses}`}
-            style={{ transitionDelay: headInView ? "0ms" : "0ms" }}
-          >
-            <span className="block">Turn dry chats into vibe -</span>
-            <span className="block text-[8.6vw] sm:text-[7.8vw] md:text-[6.2vw] lg:text-[4.2vw] mt-1">
-              filled conversations with
-            </span>
-            <span className="block text-[14vw] sm:text-[12.5vw] md:text-[10vw] lg:text-[7.5vw] mt-2 lg:pb-12">
-              Genzchat
-            </span>
-          </h1>
-        </div>
+       {/* HERO HEADING — stacked + masked like the ref */}
+<div
+  className="relative w-full z-0 
+             h-[60vw] sm:h-[46vw] md:h-[36vw] lg:h-[32vw]"
+>
+  <div className="absolute inset-0 flex items-center justify-center">
+    <h1
+      aria-hidden
+      className="pointer-events-none select-none text-[#464646] uppercase font-extrabold
+                 text-center tracking-[-0.04em] leading-[0.86]"
+    >
+      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">EXPAND</span>
+      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">YOUR WORLD</span>
+      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">MEET</span>
+      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">NEW</span>
+      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">FRIENDS</span>
+      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">ON GENZCHAT</span>
+    </h1>
+  </div>
+</div>
 
-        {/* CONTENT SCALE WRAPPER — slides up with slight delay; exits back down */}
-        <div
-          ref={wrapRef}
-          className={`relative z-10 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.70] ${wrapClasses}`}
-          style={{ transitionDelay: wrapInView ? "400ms" : "0ms" }}  // 1s after heading
-        >
-          {/* PHONE + DECOR */}
+
+        <div className="relative z-10 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.70]">
           <div className="relative">
             <DecorChats />
-
-            {/* PHONE WRAPPER */}
             <div className="relative">
               <div className="relative w-[min(92vw,360px)] aspect-[9/19.5] sm:w-[min(92vw,390px)]">
                 {/* Bezel */}
@@ -163,9 +112,8 @@ export default function MockUp() {
                   <div className="h-full w-full rounded-[40px]" />
                 </div>
 
-                {/* Screen (Midnight Neon) */}
+                {/* Screen */}
                 <div className="absolute inset-[5.5%] rounded-[36px] mt-3 mb-3 overflow-hidden bg-[radial-gradient(110%_110%_at_20%_-10%,#1e3a8a_0%,#0f172a_45%,#0b1020_100%)]">
-                  {/* overlays */}
                   <div className="pointer-events-none absolute inset-0 bg-[conic-gradient(from_220deg_at_80%_20%,rgba(59,130,246,0.12),transparent_25%,rgba(168,85,247,0.10),transparent_55%,rgba(34,197,94,0.08),transparent_85%)]" />
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_110%_at_50%_0%,rgba(255,255,255,0.08),transparent_60%)]" />
 
@@ -204,11 +152,8 @@ export default function MockUp() {
                       <MdMoreVert size={20} className="text-white cursor-pointer" />
                     </div>
 
-                    {/* Messages (single thread visible; swaps every 6s) */}
-                    <div
-                      key={idx}
-                      className="h-[70%] overflow-y-auto space-y-4 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] pr-1 fade-swap-enter fade-swap-enter-active"
-                    >
+                    {/* Messages */}
+                    <div className="h-[70%] overflow-y-auto space-y-4 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] pr-1">
                       {messages.map((m, i) => (
                         <Bubble key={i} align={m.align}>
                           {m.text}
@@ -262,23 +207,6 @@ export default function MockUp() {
           </div>
         </div>
       </section>
-
-      <style>{`
-  .fade-up{
-    opacity:0;
-    transform:translate3d(0,20px,0);
-    will-change:transform,opacity;
-    transition:
-      transform 600ms cubic-bezier(.22,.8,.25,1),
-      opacity   600ms ease;
-  }
-  .fade-up.in{
-    opacity:1;
-    transform:translate3d(0,0,0);
-  }
-`}</style>
-
-
     </>
   );
 }

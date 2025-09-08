@@ -7,16 +7,16 @@ export default function MorePage({
   signupDate = "12 Jan 2025",
 }) {
   return (
-    <section className="min-h-screen w-full bg-gradient-to-br from-indigo-900/70 via-purple-900/50 to-blue-900/70">
+    <section className="min-h-screen w-full ">
       {/* Full-screen glass overlay */}
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl" />
+      <div className="absolute inset-0 bg-transparent backdrop-blur-3xl" />
       
       {/* center content */}
-      <div className="relative h-screen w-full flex items-center justify-center p-4">
+      <div className="relative h-screen w-full flex items-center justify-center p-4 ">
         {/* Container with glass effect */}
-        <div className="relative w-full max-w-md h-full md:h-[92vh] bg-black/20 text-white border border-white/10 md:rounded-2xl overflow-hidden backdrop-blur-md">
+        <div className="relative w-full max-w-md h-full md:h-[92vh] bg-black/20 text-white border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
           {/* vertical layout */}
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col ">
             {/* Top user card - improved layout */}
             <div className="p-5 pb-3">
               <GlassCard className="p-5">
@@ -44,23 +44,21 @@ export default function MorePage({
               <SplitBox registration={signupDate} username={username} tall />
 
               {/* Logout button */}
-              <GlassCard className="p-4">
                 <div className="flex items-center justify-center">
                   <button
                     type="button"
                     aria-label="Log out"
                     onClick={() => console.log("logout")}
-                    className="group relative p-[2px] rounded-full bg-gradient-to-r from-violet-500/70 to-blue-500/70"
+                    className="group relative p-[2px] rounded-full "
                   >
                     {/* soft pulse */}
-                    <span className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-violet-500/30 to-blue-500/30 animate-[ringPulse_2.4s_ease-out_infinite]" />
+                    <span className="pointer-events-none absolute inset-0 -z-10 rounded-full " />
                     {/* inner circle */}
-                    <span className="block rounded-full bg-black/80 backdrop-blur-xl border border-white/10 p-3 transition-all duration-300 shadow-[0_8px_28px_rgba(59,130,246,0.25)] group-hover:-translate-y-0.5 group-hover:shadow-[0_16px_38px_rgba(99,102,241,0.35)]">
-                      <LogOut className="w-5 h-5 text-white" />
+                    <span className="block rounded-full bg-black/50 backdrop-blur-xl border border-white/10 p-3 transition-all duration-300  hover:scale-105 hover:shadow-[0_0px_10px_rgba(99,102,241,0.35)]">
+                      <LogOut className="w-5 h-5 text-red-800" />
                     </span>
                   </button>
                 </div>
-              </GlassCard>
             </div>
           </div>
         </div>

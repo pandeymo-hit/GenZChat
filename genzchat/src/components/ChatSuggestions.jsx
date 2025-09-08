@@ -39,7 +39,7 @@ export default function ChatSuggestions() {
 
   return (
     <FadeUpSection>
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-12">
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-10 md:py-12 mb-6">
         <div className="rounded-3xl border border-white/10 bg-transparent backdrop-blur-6xl p-6 sm:p-8 md:p-10 shadow-[0_0_10px_rgba(139,92,246,0.5)]">
           {/* Top center pill — stays in same place, now rotating/fading */}
           <div className="mb-8 flex justify-center">

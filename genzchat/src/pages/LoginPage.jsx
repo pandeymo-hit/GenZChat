@@ -35,6 +35,10 @@ export default function LoginPage() {
     isInDB,
   } = useContext(AuthContext);
 
+  // dont reset mode after refres
+
+  
+
   // Rotating-Text
   const evolvingTexts = [
     "Start Your Dating Evolution",
@@ -249,10 +253,16 @@ export default function LoginPage() {
     [&_.react-international-phone-input]:!bg-transparent
     [&_.react-international-phone-input]:!py-1
     [&_.react-international-phone-input]:!text-white
+    [&_.react-international-phone-input]:!text-[15px]
     [&_.react-international-phone-input]:!placeholder:text-gray-400
     [&_.react-international-phone-country-selector-button]:!bg-transparent
     [&_.react-international-phone-input-container_.react-international-phone-country-selector-button]:!border-none
     [&_.react-international-phone-country-selector-button]:!text-white
+[&_.react-international-phone-country-selector-button]:!border-l
+[&_.react-international-phone-country-selector-button]:!border-l-2
+[&_.react-international-phone-country-selector-button]:!border-l-gray-300
+[&_.react-international-phone-input-container .react-international-phone-country-selector-button]:!border-none
+
     [&_.react-international-phone-country-selector-button:focus]:!bg-[#3a3a3a]
     [&_.react-international-phone-country-selector-button.react-international-phone-country-selector-button--open]:!bg-[#3a3a3a]
     [&_.react-international-phone-country-selector-dropdown]:!bg-[#2f2f2f]
@@ -487,7 +497,7 @@ export default function LoginPage() {
                 onKeyDown={(e) => handleSignupOtpKeyDown(i, e)}
                 inputMode="numeric"
                 maxLength={1}
-                className="w-9 h-10 text-center rounded-lg bg-[#3a3a3a] text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
+                className="w-9 h-10 text-center rounded-lg bg-transparent backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
               />
             ))}
           </div>
