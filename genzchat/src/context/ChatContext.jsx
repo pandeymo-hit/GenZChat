@@ -170,23 +170,37 @@ export function ChatProvider({ children }) {
    * Locks until reply or safety timeout (20s).
    */
   const sendMessage = async (payload) => {
-    if (sending) return;
+    console.log("sendMessage called with payload:", payload);
+    console.log("Current state - sending:", sending, "mockMode:", mockMode, "credits:", credits);
+    
+    if (sending) {
+      console.log("Already sending, returning early");
+      return;
+    }
 
     const text =
       typeof payload === "string" ? payload : payload?.text || "";
     const imageFile =
       typeof payload === "object" ? payload?.image || null : null;
 
-    if (!text.trim() && !imageFile) return;
+    console.log("Extracted text:", text, "imageFile:", imageFile);
+
+    if (!text.trim() && !imageFile) {
+      console.log("No text or image, returning early");
+      return;
+    }
     if (credits <= 0) {
+      console.log("No credits left");
       setError("No credits left.");
       return;
     }
     if (mockMode && offlineUsed) {
+      console.log("Mock mode and offline already used");
       setError("Offline demo: only one message allowed.");
       return;
     }
 
+    console.log("Setting sending and loading states to true");
     setSending(true);
     setLoading(true);
     setError("");
@@ -194,6 +208,7 @@ export function ChatProvider({ children }) {
     const now = new Date().toLocaleTimeString();
     const localUrl = imageFile ? URL.createObjectURL(imageFile) : null;
 
+    console.log("Adding user message to chat");
     // show user's message instantly
     setChats((prev) => [
       ...prev,
@@ -208,6 +223,7 @@ export function ChatProvider({ children }) {
 
     // safety unlock (network hang)
     const safety = setTimeout(() => {
+      console.log("Safety timeout triggered");
       setSending(false);
       setLoading(false);
       setError("Request timed out. Please try again.");
@@ -215,6 +231,7 @@ export function ChatProvider({ children }) {
 
     // offline path
     if (mockMode) {
+      console.log("Using mock mode");
       setTimeout(() => {
         setChats((prev) => [
           ...prev,
@@ -233,9 +250,11 @@ export function ChatProvider({ children }) {
     }
 
     // live path
+    console.log("Starting live API call");
     try {
       let res;
       if (imageFile) {
+        console.log("Sending with image");
         const form = new FormData();
         form.append("message", text || "");
         form.append("image", imageFile);
@@ -243,6 +262,7 @@ export function ChatProvider({ children }) {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
+        console.log("Sending text message to /chat endpoint");
         res = await safePost("/chat", { userMessage: text || "" });
       }
       console.log("Send message API response:", res.data);
@@ -272,6 +292,7 @@ export function ChatProvider({ children }) {
       
       const replyImg = res?.data?.imageUrl;
 
+      console.log("Adding AI response to chat");
       setChats((prev) => [
         ...prev,
         {
@@ -285,6 +306,7 @@ export function ChatProvider({ children }) {
       clearTimeout(safety);
       setLoading(false);
       setSending(false);
+      console.log("Message sent successfully");
     } catch (error) {
       console.error("Error sending message:", error);
       
@@ -307,6 +329,7 @@ export function ChatProvider({ children }) {
       }
       
       // flip to offline one-shot only for actual server errors
+      console.log("Flipping to mock mode due to error");
       setMockMode(true);
       if (offlineUsed) {
         clearTimeout(safety);
