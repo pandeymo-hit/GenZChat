@@ -7,7 +7,7 @@ import girl from '../assets/girl.webp';
 import boy from '../assets/image.webp';
 
 const MainSection = () => {
-  const { openForm } = useContext(AuthContext);
+  const { openSignupForm } = useContext(AuthContext);
 
   // shift in vw: 0 = original, e.g. 12 = close together
   const [shiftVW, setShiftVW] = useState(0);
@@ -67,7 +67,7 @@ const MainSection = () => {
 
             <div className="pt-3 sm:pt-6">
               <button
-                onClick={openForm}
+                onClick={openSignupForm}
                 type="button"
                 className="btn-aurora relative inline-flex items-center justify-center overflow-hidden rounded-[100px] p-[2px]"
               >
@@ -82,15 +82,15 @@ const MainSection = () => {
           </div>
         </div>
 
-        {/* Left (girl) */}
+         {/* Left (girl) */}
         <img
           src={girl}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[75px] left-5 sm:left-22 
-          w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
+          className="pointer-events-none select-none absolute bottom-0 left-5 sm:left-22 
+          w-[clamp(160px,30vw,450px)] h-[clamp(200px,35vw,500px)] object-contain z-0
           drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
-          transition-transform duration-1500 ease-out will-change-transform  md:left-25 lg:left-50"
+          transition-transform duration-1500 ease-out will-change-transform md:left-25 lg:left-50"
           style={{
             transform: `translateX(${shiftVW}vw)`,
           }}
@@ -101,8 +101,8 @@ const MainSection = () => {
           src={boy}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[75px] right-5 sm:right-22
-          w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
+          className="pointer-events-none select-none absolute bottom-0 right-5 sm:right-22
+          w-[clamp(160px,30vw,450px)] h-[clamp(200px,35vw,500px)] object-contain z-0
           drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
           transition-transform duration-1500 ease-out will-change-transform md:right-25 lg:right-50"
           style={{

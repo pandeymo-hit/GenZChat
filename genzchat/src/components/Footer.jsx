@@ -3,7 +3,7 @@ import { FaInstagram, FaFacebook, FaTwitter, FaYoutube, FaLinkedin } from "react
 import { AuthContext } from "../context/AuthContext";
 const Footer = () => {
 
-  const { openForm } = useContext(AuthContext);
+  const { openSignupForm } = useContext(AuthContext);
 
   const year = new Date().getFullYear();
 
@@ -43,11 +43,11 @@ const Footer = () => {
             <p className="text-sm text-gray-400 mb-2">Get the latest updates and tips.</p>
             <button
               type="button"
-              onClick={openForm}
+              onClick={openSignupForm}
               className="btn-aurora relative flex items-center justify-center overflow-hidden rounded-[100px] p-[2px] border-0"
             >
               <span className="btn-aurora__inner relative z-[1] rounded-[100px] px-6 py-2 text-white text-sm font-medium bg-black/75 backdrop-blur-xl">
-                Login
+                Sign Up
               </span>
             </button>
           </div>

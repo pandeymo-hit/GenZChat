@@ -10,6 +10,11 @@ import signupp from "../assets/sicon.webp";
 import { ChatProvider } from "../context/ChatContext";
 import EvolvingText from "../components/EvolvingText";
 import ChatPAge from "./ChatPAge";
+// imgages
+import boy from "../assets/boyy.webp";
+import girl from "../assets/girl.webp";
+import tog from "../assets/tog.webp";
+
 
 
 export default function LoginPage() {
@@ -223,6 +228,24 @@ export default function LoginPage() {
     }
   };
 
+  const handleSignupOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, ''); // Only digits
+    if (pastedData.length <= 6) {
+      const newOtp = Array(6).fill('');
+      for (let i = 0; i < Math.min(pastedData.length, 6); i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setSignupOtp(newOtp);
+      
+      // Focus on the next empty field or last field
+      const nextEmptyIndex = newOtp.findIndex(val => val === '');
+      const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : Math.min(pastedData.length, 5);
+      const targetInput = document.querySelector(`#signup-otp-${focusIndex}`);
+      if (targetInput) targetInput.focus();
+    }
+  };
+
   const handleOtpChange = (index, value) => {
     const isDigit = value === "" || (value.length === 1 && value >= "0" && value <= "9");
     if (!isDigit) return;
@@ -238,6 +261,24 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, ''); // Only digits
+    if (pastedData.length <= 6) {
+      const newOtp = Array(6).fill('');
+      for (let i = 0; i < Math.min(pastedData.length, 6); i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setOtp(newOtp);
+      
+      // Focus on the next empty field or last field
+      const nextEmptyIndex = newOtp.findIndex(val => val === '');
+      const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : Math.min(pastedData.length, 5);
+      const targetInput = document.querySelector(`#forgot-otp-${focusIndex}`);
+      if (targetInput) targetInput.focus();
+    }
+  };
+
   const handleSendOtpForgot = async (e) => {
     e.preventDefault();
     setError("");
@@ -247,34 +288,41 @@ export default function LoginPage() {
   if (!showForm) return null;
 
   // Shared classes
-  const phoneWrapperClass = `w-full flex items-center gap-2 backdrop-blur-[60px] rounded-xl px-1 py-1 text-white
+  const phoneWrapperClass = `w-full flex items-center backdrop-blur-[60px] rounded-xl px-2 py-1.5 sm:py-3 text-white
     border border-white/10 transition focus-within:ring-1 focus-within:ring-[#8B5CF6]
-    focus-within:shadow-[0_0_50px_rgba(139,92,246,0.5)]
+    focus-within:shadow-[0_0_50px_rgba(139,92,246,0.5)] min-w-0
+    [&_.react-international-phone-input-container]:!flex
+    [&_.react-international-phone-input-container]:!w-full
+    [&_.react-international-phone-input-container]:!min-w-0
     [&_.react-international-phone-input]:!bg-transparent
-    [&_.react-international-phone-input]:!py-1
+    [&_.react-international-phone-input]:!py-0
     [&_.react-international-phone-input]:!text-white
     [&_.react-international-phone-input]:!text-[15px]
     [&_.react-international-phone-input]:!placeholder:text-gray-400
+    [&_.react-international-phone-input]:!flex-1
+    [&_.react-international-phone-input]:!min-w-0
     [&_.react-international-phone-country-selector-button]:!bg-transparent
-    [&_.react-international-phone-input-container_.react-international-phone-country-selector-button]:!border-none
     [&_.react-international-phone-country-selector-button]:!text-white
-[&_.react-international-phone-country-selector-button]:!border-l
-[&_.react-international-phone-country-selector-button]:!border-l-2
-[&_.react-international-phone-country-selector-button]:!border-l-gray-300
-[&_.react-international-phone-input-container .react-international-phone-country-selector-button]:!border-none
-
+    [&_.react-international-phone-country-selector-button]:!border-none
+    [&_.react-international-phone-country-selector-button]:!flex-shrink-0
+    [&_.react-international-phone-country-selector-button]:!min-w-[auto]
+    [&_.react-international-phone-country-selector-button]:!px-1
+    [&_.react-international-phone-country-selector-button]:!mr-2
+    [&_.react-international-phone-country-selector-button]:!border-r
+    [&_.react-international-phone-country-selector-button]:!border-r-white/20
     [&_.react-international-phone-country-selector-button:focus]:!bg-[#3a3a3a]
     [&_.react-international-phone-country-selector-button.react-international-phone-country-selector-button--open]:!bg-[#3a3a3a]
     [&_.react-international-phone-country-selector-dropdown]:!bg-[#2f2f2f]
-    [&_.react-international-phone-country-selector-dropdown]:!w-50
-    [&_.react-international-phone-country-selector-dropdown]:!h-35
+    [&_.react-international-phone-country-selector-dropdown]:!max-w-[200px]
+    [&_.react-international-phone-country-selector-dropdown]:!max-h-[200px]
     [&_.react-international-phone-country-selector-dropdown]:!text-white
+    [&_.react-international-phone-country-selector-dropdown]:!overflow-auto
     [&_.react-international-phone-country-selector-option]:!text-white
     [&_.react-international-phone-country-selector-option--highlighted]:!bg-zinc-700`;
 
   const inputBase = "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm focus:ring-1 focus:ring-[#8B5CF6] focus:shadow-[0_0_40px_rgba(139,92,246,0.45)]";
   const primaryBtn = "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-gradient-to-r from-purple-800 to-blue-500 text-white transition mt-1 hover:bg-white/25 disabled:opacity-60 disabled:cursor-not-allowed";
-  const subtleBtn = "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-[#373737] text-white transition mt-1 hover:bg-white/25";
+  const subtleBtn = "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-gradient-to-r from-purple-800 to-blue-500 text-white transition mt-1 hover:bg-white/25";
 
   // ---------- Cards ----------
   const GlowDecor = () => (
@@ -296,11 +344,12 @@ export default function LoginPage() {
       />
     </>
   );
+  
 
   const LoginCard = (
     <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden]  backdrop-blur-[90px]  bg-black overflow-hidden">
       <GlowDecor />
-      <button
+      {/* <button
         type="button"
         onClick={closeForm}
         aria-label="Close"
@@ -310,7 +359,7 @@ export default function LoginPage() {
           <span className="absolute inset-[-2px] rounded-full bg-black/10 blur-[4px] opacity-70 group-hover:opacity-95 transition" />
           <span className="relative text-lg leading-none font-extrabold text-[#8B5CF6]">!</span>
         </span>
-      </button>
+      </button> */}
 
       <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-3 h-full">
         {/* Brand + evolving text */}
@@ -495,9 +544,10 @@ export default function LoginPage() {
                 value={d}
                 onChange={(e) => handleSignupOtpChange(i, e.target.value)}
                 onKeyDown={(e) => handleSignupOtpKeyDown(i, e)}
+                onPaste={i === 0 ? handleSignupOtpPaste : (e) => e.preventDefault()}
                 inputMode="numeric"
                 maxLength={1}
-                className="w-9 h-10 text-center rounded-lg bg-transparent backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
+                className="w-9 h-10 text-center rounded-lg bg-gray-700/50 backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
               />
             ))}
           </div>
@@ -590,9 +640,10 @@ export default function LoginPage() {
                   value={d}
                   onChange={(e) => handleOtpChange(i, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                  onPaste={i === 0 ? handleForgotOtpPaste : (e) => e.preventDefault()}
                   inputMode="numeric"
                   maxLength={1}
-                  className="w-9 h-10 text-center rounded-lg bg-[#3a3a3a] text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
+                  className="w-9 h-10 text-center rounded-lg bg-white/80 text-white outline-none border border-gray-700 focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
                 />
               ))}
             </div>
@@ -634,6 +685,42 @@ export default function LoginPage() {
   return (
     <>
       <div className="min-h-screen w-full flex items-center justify-center 0 p-6 ">
+         <div className="relative flex flex-col items-center">
+        
+        {/* Mobile (xs) : top image only */}
+        <div className="sm:hidden ">
+          <img
+            src={tog}
+            alt="GenZChat support"
+            loading="lazy"
+            className="h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
+          />
+        </div>
+
+        {/* Desktop/Tablet (>= sm): side images */}
+        {/* Left side - boy */}
+        <img
+          src={boy}
+          alt="Support - him"
+          loading="lazy"
+          aria-hidden="true"
+          className="hidden sm:block pointer-events-none select-none 
+                     absolute right-full -mr-[60px] top-52
+                      md:top-60 md:h-60
+                     h-70 md:h-52 lg:h-68 lg:top-55 w-auto
+                     drop-shadow-[0_0px_10px_rgba(59,130,246,0.35)] z-20"
+        />
+        {/* Right side - girl */}
+        <img
+          src={girl}
+          alt="Support - her"
+          loading="lazy"
+          aria-hidden="true"
+          className="hidden sm:block pointer-events-none select-none
+                     absolute left-full -ml-[60px] top-52 md:top-60
+                     h-70 md:h-60 lg:h-68 lg:top-55 w-auto
+                     drop-shadow-[0_0px_10px_rgba(236,72,153,0.35)] z-20"
+        />
         <div
           ref={containerRef}
           className="relative overflow-hidden rounded-xl w-[316px] z-10 transition-[height] duration-300"
@@ -645,7 +732,7 @@ export default function LoginPage() {
                         bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
                         ${showGradient ? "opacity-100" : "opacity-0"}
                         transition-opacity duration-300
-                        animate-[spin_8s_ease-in-out_infinite]`}
+                        animate-[spin_4s_linear_infinite] blur-md`}
           />
 
           {/* Countdown display */}
@@ -669,8 +756,15 @@ export default function LoginPage() {
             </div>
           )}
 
-          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+          <style>{`
+            @keyframes spin { 
+              from { transform: rotate(0deg); } 
+              to { transform: rotate(360deg); } 
+            }
+          `}</style>
+
         </div>
+      </div>
       </div>
     </>
   );

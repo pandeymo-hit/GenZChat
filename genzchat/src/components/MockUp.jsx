@@ -69,7 +69,8 @@ export default function MockUp() {
         const windowHeight = window.innerHeight;
 
         // Calculate scroll progress based on how much the user has scrolled
-        const scrollProgress = Math.max(0, Math.min(1, -sectionTop / (sectionHeight * 0.8)));
+        // Precise timing: wrapper covers heading exactly when heading reaches top with minimal scroll
+        const scrollProgress = Math.max(0, Math.min(1, -sectionTop / (windowHeight * 0.3)));
         setScrollY(scrollProgress);
 
         // Set visibility based on scroll position
@@ -102,8 +103,8 @@ export default function MockUp() {
 
   const { name, avatar, messages } = chatThreads[idx];
 
-  // Calculate transform values based on scroll - only move the wrapper, keep section static
-  const mockupTransform = `translateY(${scrollY * -60}vh)`;
+  // Calculate transform values based on scroll - wrapper covers heading with minimal scroll
+  const mockupTransform = `translateY(${scrollY * -21}vh)`;
 
   return (
     <>
@@ -114,20 +115,20 @@ export default function MockUp() {
         <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
         {/* HERO HEADING — stacked + masked like the ref */}
-        <div className="relative w-full z-0 mb-8 sm:mb-12">
+        <div className="relative w-full z-0 mb-8 sm:mb-12 mt-50 sm:mt-10">
           <div className="flex flex-col items-center justify-center">
             <h1
               aria-hidden
               className="pointer-events-none select-none text-[#464646] uppercase font-extrabold
                  text-center tracking-[-0.04em] leading-[0.86]"
             >
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">TURN</span>
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">DRY CHATS</span>
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">INTO</span>
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">VIBE</span>
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">CONVERSATIONS</span>
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">WITH </span>
-              <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw] bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">TURN</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">DRY CHATS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">INTO</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">VIBE</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">CONVERSATIONS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">WITH </span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw] bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
                 GENZCHAT
               </span>
             </h1>
@@ -136,7 +137,7 @@ export default function MockUp() {
 
 
         <div
-          className="relative z-10 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.80]"
+          className="relative z-20 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.80]"
           style={{
             transform: mockupTransform,
             transition: 'transform 0.15s ease-out'

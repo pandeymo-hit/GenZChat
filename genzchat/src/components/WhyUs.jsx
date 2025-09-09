@@ -4,6 +4,7 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 import toonimg from "../assets/toon.png";
+import HighlightCard2 from "./HighlightCard2";
 
 const features = [
   
@@ -38,18 +39,19 @@ const WhyUs = () => {
 
   return (
     <>
-    <HighlightCard />
-    <section id="about" className="min-h-screen py-16">
-      <div className="max-w-5xl mx-auto px-4">
         {/* Heading */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl pb-2 font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+          <h2 className="text-3xl sm:text-6xl md:text-extrabold pb-2 font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
             Why GenZChat Works
           </h2>
           <p className="text-gray-400 mt-3">
             AI-powered features designed to make your dating conversations irresistible
           </p>
         </div>
+    <HighlightCard />
+    <HighlightCard2/>
+    <section id="about" className="min-h-[60vh] py-16">
+      <div className="max-w-5xl mx-auto px-4">
 
         {/* === MOBILE: sticky mascot + stacked sticky cards === */}
         <div className="block sm:hidden px-5 relative">
