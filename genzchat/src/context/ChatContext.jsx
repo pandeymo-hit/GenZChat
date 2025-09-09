@@ -55,9 +55,7 @@ export function ChatProvider({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // offline fallback controller
-  const [mockMode, setMockMode] = useState(
-    () => localStorage.getItem(LS.mock) === "1"
-  );
+  const [mockMode, setMockMode] = useState(false); // Start with false, don't use localStorage initially
   const [offlineUsed, setOfflineUsed] = useState(
     () => localStorage.getItem(LS.offlineOnce) === "1"
   );
@@ -94,8 +92,12 @@ export function ChatProvider({ children }) {
   const safeGet = async (url, opts) => {
     if (mockMode) throw new Error("Mock mode");
     try {
-      return await api.get(url, opts);
+      console.log(`Making GET request to: ${url}`);
+      const response = await api.get(url, opts);
+      console.log(`GET ${url} success:`, response.status, response.data);
+      return response;
     } catch (e) {
+      console.error(`GET ${url} failed:`, e.response?.status, e.response?.data, e.message);
       setMockMode(true);
       throw e;
     }
@@ -103,8 +105,12 @@ export function ChatProvider({ children }) {
   const safePost = async (url, body, opts) => {
     if (mockMode) throw new Error("Mock mode");
     try {
-      return await api.post(url, body, opts);
+      console.log(`Making POST request to: ${url}`, body);
+      const response = await api.post(url, body, opts);
+      console.log(`POST ${url} success:`, response.status, response.data);
+      return response;
     } catch (e) {
+      console.error(`POST ${url} failed:`, e.response?.status, e.response?.data, e.message);
       setMockMode(true);
       throw e;
     }
@@ -113,34 +119,57 @@ export function ChatProvider({ children }) {
   // -------- these are the ONLY backend calls --------
   const fetchUser = async () => {
     setError("");
-    try {
-      const { data } = await safeGet("/api/user");
-      setUser(data || null);
-    } catch {
-      // go mock, keep local user if any
-      setMockMode(true);
-    }
+    // Skip user API call since it doesn't exist - user info comes from auth
+    console.log("Skipping user API call - using existing user state");
   };
 
   const fetchCredits = async () => {
     setError("");
-    try {
-      const { data } = await safeGet("/api/credits");
-      const n = Number(data?.credits);
-      if (Number.isFinite(n)) setCredits(n);
-    } catch {
-      setMockMode(true);
-    }
+    // Skip credits API call since it doesn't exist - credits come with each chat response
+    console.log("Skipping credits API call - credits will be updated from chat responses");
   };
 
   const fetchPreviousChats = async () => {
     setError("");
+    console.log("Fetching previous chats...");
     try {
       const { data } = await safeGet("/chat/history");
-      setChats(normalizeChats(data));
-    } catch {
-      setMockMode(true);
+      console.log("Chat history API response:", data);
+      // Transform the API response to match UI expectations
+      const transformedChats = [];
+      if (Array.isArray(data)) {
+        data.forEach((item) => {
+          if (item.userMessage) {
+            transformedChats.push({
+              sender: "user",
+              text: item.userMessage,
+              time: new Date().toLocaleTimeString(), // You can enhance this with actual timestamps if available
+            });
+          }
+          if (item.botMessage) {
+            transformedChats.push({
+              sender: "ai",
+              text: item.botMessage,
+              time: new Date().toLocaleTimeString(),
+            });
+          }
+        });
+      }
+      console.log("Transformed chats:", transformedChats);
+      setChats(transformedChats);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+      console.log("fetchPreviousChats failed, keeping existing chats");
+      // Don't automatically enable mock mode for chat history failure
     }
+  };
+
+  // Reset connection state - useful when server comes back online
+  const resetConnectionState = () => {
+    console.log("Manually resetting connection state");
+    setMockMode(false);
+    setOfflineUsed(false);
+    setError("");
   };
 
   /**
@@ -149,23 +178,43 @@ export function ChatProvider({ children }) {
    * Locks until reply or safety timeout (20s).
    */
   const sendMessage = async (payload) => {
-    if (sending) return;
+    console.log("sendMessage called with payload:", payload);
+    console.log("Current state - sending:", sending, "mockMode:", mockMode, "credits:", credits);
+    
+    if (sending) {
+      console.log("Already sending, returning early");
+      return;
+    }
 
     const text =
       typeof payload === "string" ? payload : payload?.text || "";
     const imageFile =
       typeof payload === "object" ? payload?.image || null : null;
 
-    if (!text.trim() && !imageFile) return;
+    console.log("Extracted text:", text, "imageFile:", imageFile);
+
+    if (!text.trim() && !imageFile) {
+      console.log("No text or image, returning early");
+      return;
+    }
     if (credits <= 0) {
+      console.log("No credits left");
       setError("No credits left.");
       return;
     }
     if (mockMode && offlineUsed) {
-      setError("Offline demo: only one message allowed.");
-      return;
+      console.log("Mock mode and offline message already sent - attempting to reconnect to server");
+      // Try to reconnect to server first before blocking the user
+      console.log("Attempting to reconnect to server...");
+      
+      // Reset mock mode temporarily to try the real API
+      setMockMode(false);
+      console.log("Temporarily disabled mock mode to test server connection");
+      
+      // Don't return early - let the function continue to try the real API
     }
 
+    console.log("Setting sending and loading states to true");
     setSending(true);
     setLoading(true);
     setError("");
@@ -173,6 +222,7 @@ export function ChatProvider({ children }) {
     const now = new Date().toLocaleTimeString();
     const localUrl = imageFile ? URL.createObjectURL(imageFile) : null;
 
+    console.log("Adding user message to chat");
     // show user's message instantly
     setChats((prev) => [
       ...prev,
@@ -183,10 +233,11 @@ export function ChatProvider({ children }) {
         ...(localUrl ? { imageUrl: localUrl } : {}),
       },
     ]);
-    setCredits((c) => Math.max(0, c - 1));
+    // Don't decrement credits locally - server will return the updated count
 
     // safety unlock (network hang)
     const safety = setTimeout(() => {
+      console.log("Safety timeout triggered");
       setSending(false);
       setLoading(false);
       setError("Request timed out. Please try again.");
@@ -194,16 +245,17 @@ export function ChatProvider({ children }) {
 
     // offline path
     if (mockMode) {
+      console.log("Using mock mode - one message allowed until server responds");
       setTimeout(() => {
         setChats((prev) => [
           ...prev,
           {
             sender: "ai",
-            text: "⚠️ Server is down. Please try after some time.",
+            text: "⚠️ Server is currently down. Please try again later. You can send another message once the server is back online.",
             time: new Date().toLocaleTimeString(),
           },
         ]);
-        setOfflineUsed(true);
+        setOfflineUsed(true); // Mark that offline message was sent
         clearTimeout(safety);
         setLoading(false);
         setSending(false);
@@ -212,9 +264,11 @@ export function ChatProvider({ children }) {
     }
 
     // live path
+    console.log("Starting live API call");
     try {
       let res;
       if (imageFile) {
+        console.log("Sending with image");
         const form = new FormData();
         form.append("message", text || "");
         form.append("image", imageFile);
@@ -222,13 +276,37 @@ export function ChatProvider({ children }) {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
+        console.log("Sending text message to /chat endpoint");
         res = await safePost("/chat", { userMessage: text || "" });
       }
-      console.log(res)
+      console.log("Send message API response:", res.data);
 
-      const replyText = res?.data;
+      // Extract the reply text and remaining queries from the response
+      let replyText = "";
+      let remainingQueries = null;
+      
+      if (res.data && typeof res.data === 'object') {
+        // Response format: { "botMessage": "...", "queriesRemaining": 12 }
+        replyText = res.data.botMessage || "";
+        remainingQueries = res.data.queriesRemaining;
+        
+        console.log("Extracted botMessage:", replyText);
+        console.log("Extracted queriesRemaining:", remainingQueries);
+        
+        // Update credits from response
+        if (typeof remainingQueries === 'number' && remainingQueries >= 0) {
+          console.log("Updating credits to:", remainingQueries);
+          setCredits(remainingQueries);
+        }
+      } else {
+        // Fallback - treat response as plain text
+        replyText = String(res.data || "");
+        console.log("Using fallback - treating response as plain text:", replyText);
+      }
+      
       const replyImg = res?.data?.imageUrl;
 
+      console.log("Adding AI response to chat");
       setChats((prev) => [
         ...prev,
         {
@@ -242,14 +320,45 @@ export function ChatProvider({ children }) {
       clearTimeout(safety);
       setLoading(false);
       setSending(false);
-    } catch {
-      // flip to offline one-shot
+      
+      // Reset offline usage when we get a successful API response
+      if (mockMode) {
+        console.log("Successful API response - resetting mock mode and offline usage");
+        setMockMode(false);
+        setOfflineUsed(false);
+      }
+      
+      console.log("Message sent successfully");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      
+      // Check if it's a network error
+      if (!error.response) {
+        setError(`Cannot connect to server at ${api.defaults.baseURL}. Please check if the backend server is running.`);
+      } else if (error.response.status === 401 || error.response.status === 403) {
+        setError("Authentication failed. Please login again.");
+      } else {
+        setError(`Server error: ${error.response.status} - ${error.response.data?.message || error.message}`);
+      }
+      
+      // Don't flip to mock mode immediately for auth/network issues
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        // Authentication issue - don't use mock mode
+        clearTimeout(safety);
+        setLoading(false);
+        setSending(false);
+        return;
+      }
+      
+      // flip to offline one-shot only for actual server errors
+      console.log("Flipping to mock mode due to error");
       setMockMode(true);
+      // Don't set offlineUsed yet - only set it after showing the mock response
       if (offlineUsed) {
         clearTimeout(safety);
         setLoading(false);
         setSending(false);
-        setError("Offline demo: only one message allowed.");
+        setError("Please wait for the server to respond before sending another message.");
         return;
       }
       setTimeout(() => {
@@ -257,11 +366,11 @@ export function ChatProvider({ children }) {
           ...prev,
           {
             sender: "ai",
-            text: "⚠️ Server is down. Please try after some time.",
+            text: "⚠️ Server is down. Please try after some time. You can send another message once the server is back online.",
             time: new Date().toLocaleTimeString(),
           },
         ]);
-        setOfflineUsed(true);
+        setOfflineUsed(true); // Now mark that offline message was sent
         clearTimeout(safety);
         setLoading(false);
         setSending(false);
@@ -269,17 +378,20 @@ export function ChatProvider({ children }) {
     }
   };
 
-  // -------- boot: call only the 3 GETs above --------
+  // -------- boot: call only the working APIs --------
   useEffect(() => {
     (async () => {
+      console.log("Initializing ChatProvider...");
       try {
-        await Promise.all([
-          fetchUser(),
-          fetchCredits(),
-          fetchPreviousChats(),
-        ]);
-      } catch {
-        // mockMode already toggled inside wrappers on failure
+        // Only call fetchPreviousChats since other APIs don't exist
+        await fetchPreviousChats();
+        console.log("ChatProvider initialization completed successfully");
+      } catch (error) {
+        console.error("ChatProvider initialization failed:", error);
+        // Don't automatically enable mock mode if it's just an auth issue
+        if (error.message !== "Mock mode") {
+          console.log("Chat history fetch failed, but not enabling mock mode yet");
+        }
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -312,6 +424,7 @@ export function ChatProvider({ children }) {
         fetchCredits,
         fetchPreviousChats,
         sendMessage,
+        resetConnectionState,
 
         // bonus derived
         isAuthed,

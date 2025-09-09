@@ -43,6 +43,15 @@ export default function ProfileFormCard() {
     return `${y}-01-01`;
   }, [age]);
 
+  const canSubmit = useMemo(() => {
+    const isUsernameValid = username.trim().length >= 2;
+    const isPasswordValid = password.length >= 6;
+    const isGenderValid = ["MALE", "FEMALE", "OTHER"].includes((gender || "").toUpperCase());
+    const isAgeValid = age >= 13 && age <= 100;
+    const isTermsAccepted = terms;
+    
+    return isUsernameValid && isPasswordValid && isGenderValid && isAgeValid && isTermsAccepted;
+  }, [username, password, gender, age, terms]);
   const canSubmit = useMemo(
     () =>
       username.trim().length >= 2 &&
@@ -56,8 +65,12 @@ export default function ProfileFormCard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!canSubmit || loading) {
+      return;
+    }
+    
     setDob(derivedDob);
-    await UserOnBoarding();
+    await UserOnBoarding(derivedDob);
   };
 
   // Unified input look = same as gender select
@@ -65,9 +78,48 @@ export default function ProfileFormCard() {
     "w-full h-10 rounded-xl bg-gray-300/10 text-white placeholder:text-gray-400 " +
     "border border-white/10 px-3 outline-none focus:border-white/30 transition";
 
+  const selectBase =
+    "w-full h-10 rounded-xl bg-black text-white " +
+    "border border-white/10 px-3 outline-none focus:border-white/30 transition";
+
+  // Custom CSS for select options
+  const selectStyles = `
+    .gender-select option {
+      background-color: #000000;
+      color: #ffffff;
+    }
+    .gender-select option:hover {
+      background-color: #1f1f1f;
+    }
+  `;
+
   return (
     <>
       <div className="relative min-h-screen w-full flex items-center justify-center p-6">
+        <div className="relative overflow-hidden rounded-xl w-[316px] min-h-[520px] z-10">
+          {/* Animated conic gradient border - same as login page */}
+          <div
+            className="pointer-events-none absolute inset-[-70px] -z-10
+                        bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
+                        opacity-100 transition-opacity duration-300
+                        animate-[spin_8s_ease-in-out_infinite]"
+          />
+
+          {/* INNER: pure black bg */}
+          <div className="absolute inset-[1px] rounded-xl p-7 h-full w-full bg-black overflow-hidden z-10 relative">
+            {/* Corner glows */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -top-20 -left-20 h-64 w-64
+                         rounded-full blur-3xl opacity-100 mix-blend-screen
+                         bg-[radial-gradient(circle_at_25%_20%,rgba(28,38,122,3)_0%,rgba(28,38,42,0.3)_40%,transparent_65%)]"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -bottom-24 -right-20 h-64 w-64
+                         rounded-full blur-3xl opacity-100 mix-blend-screen
+                         bg-[radial-gradient(circle_at_80%_75%,rgba(28,38,82,3)_0%,rgba(28,38,42,0.3)_50%,transparent_25%)]"
+            />
         {/* Wrapper to anchor side avatars relative to the card */}
         <div className="relative inline-block isolate">
           {/* Mobile (xs) : top image only */}
@@ -189,6 +241,18 @@ export default function ProfileFormCard() {
                   minLength={6}
                 />
 
+              <div className="grid grid-cols-2 gap-3">
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className={`${selectBase} gender-select`}
+                  required
+                >
+                  <option value="" disabled>Choose</option>
+                  <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                  <option value="OTHER">Other</option>
+                </select>
                 <div className="grid grid-cols-2 gap-3">
                   {/* gender (same style as inputs) */}
                   <select
@@ -203,6 +267,30 @@ export default function ProfileFormCard() {
                     <option value="OTHER">Other</option>
                   </select>
 
+                <div className="rounded-xl px-3 py-2 border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="range"
+                      min={13}
+                      max={100}
+                      value={age}
+                      onChange={(e) => setAge(parseInt(e.target.value || "0", 10))}
+                      className="w-full accent-white"
+                    />
+                    <input
+                      type="number"
+                      min={13}
+                      max={100}
+                      value={age}
+                      onChange={(e) => {
+                        const v = Math.max(13, Math.min(100, parseInt(e.target.value || "0", 10)));
+                        setAge(Number.isNaN(v) ? 13 : v);
+                      }}
+                      className="w-14 rounded-md bg-transparent border border-white/10 text-white text-sm px-2 py-1 outline-none focus:border-white/30 text-center"
+                    />
+                  </div>
+                </div>
+              </div>
                   {/* age slider + number (boxed like input/select) */}
                   <div className="rounded-xl border border-white/10 bg-gray-300/10 px-3 py-1">
                     <div className="flex items-center gap-2">
@@ -257,6 +345,18 @@ export default function ProfileFormCard() {
                   {loading ? "Saving…" : "Create account"}
                 </button>
 
+              <p className="text-[10px] text-white/40 text-center mt-1">
+                By continuing, you agree to our Privacy Policy.
+              </p>
+            </form>
+          </div>
+        </div>
+
+        {/* Animation keyframes and select styles */}
+        <style>{`
+          @keyframes spin { to { transform: rotate(360deg) } }
+          ${selectStyles}
+        `}</style>
                 <p className="text-[10px] text-white/40 text-center mt-1">
                   By continuing, you agree to our Privacy Policy.
                 </p>

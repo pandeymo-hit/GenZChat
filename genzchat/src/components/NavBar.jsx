@@ -62,7 +62,7 @@ const NavBar = () => {
         </button> */}
         <button
   type="button"
-  onClick={openForm}
+  onClick={() => openForm("login")}
   className="btn-aurora relative flex items-center justify-center overflow-hidden rounded-[100px] p-[2px] border-0"
 >
   <span className="btn-aurora__inner relative z-[1] rounded-[100px] px-6 py-2 text-white text-sm font-medium bg-black/75 backdrop-blur-xl">
