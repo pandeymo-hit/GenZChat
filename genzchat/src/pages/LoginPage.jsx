@@ -123,8 +123,8 @@ export default function LoginPage() {
     mode === "forgot"
       ? "forgot-card"
       : isFlipped
-      ? "signup-card"
-      : "login-card";
+        ? "signup-card"
+        : "login-card";
 
   useEffect(() => {
     const measure = () => {
@@ -301,7 +301,7 @@ export default function LoginPage() {
         newOtp[i] = pastedData[i];
       }
       setSignupOtp(newOtp);
-      
+
       // Focus on the next empty field or last field
       const nextEmptyIndex = newOtp.findIndex(val => val === '');
       const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : Math.min(pastedData.length, 5);
@@ -337,7 +337,7 @@ export default function LoginPage() {
         newOtp[i] = pastedData[i];
       }
       setOtp(newOtp);
-      
+
       // Focus on the next empty field or last field
       const nextEmptyIndex = newOtp.findIndex(val => val === '');
       const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : Math.min(pastedData.length, 5);
@@ -414,7 +414,7 @@ export default function LoginPage() {
       />
     </>
   );
-  
+
 
   const LoginCard = (
     <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden]  backdrop-blur-[90px]  bg-black overflow-hidden">
@@ -424,19 +424,6 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         className="flex flex-col justify-center items-center gap-3 h-full"
       >
-      {/* <button
-        type="button"
-        onClick={closeForm}
-        aria-label="Close"
-        className="group absolute top-3 left-3 z-20"
-      >
-        <span className="relative grid place-items-center w-9 h-9 rounded-full bg-white/0 backdrop-blur-[30px] border border-white/10">
-          <span className="absolute inset-[-2px] rounded-full bg-black/10 blur-[4px] opacity-70 group-hover:opacity-95 transition" />
-          <span className="relative text-lg leading-none font-extrabold text-[#8B5CF6]">!</span>
-        </span>
-      </button> */}
-
-      <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-3 h-full">
         {/* Brand + evolving text */}
         <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">
           GenZChat
@@ -448,9 +435,6 @@ export default function LoginPage() {
             fadeDuration={500}
             className="font-semibold text-gray-500  text-[15px] transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]"
           />
-          {/* <h2 className="font-semibold text-gray-500  text-[15px] transition-opacity duration-500 [text-shadow:0_0_16px_rgba(139,92,246,0.35)]">
-            {evolvingTexts[evolvingIndex]}
-            </h2> */}
         </div>
         <img src={mess} alt="messenger" className="w-[35px] h-[40px]" />
         <span className="w-full text-center text-2xl font-bold py-1.5 text-white">
@@ -510,8 +494,8 @@ export default function LoginPage() {
           {resetMode
             ? "Reset & Sign In"
             : loading
-            ? "Signing in..."
-            : "Sign In"}
+              ? "Signing in..."
+              : "Sign In"}
         </button>
 
         {error && <p className="text-xs text-red-300 mt-1">{error}</p>}
@@ -563,21 +547,21 @@ export default function LoginPage() {
     </div>
   );
 
+
   const SignupCard = (
     <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden] [transform:rotateY(180deg)] backdrop-blur-[25px] bg-black overflow-hidden">
       <GlowDecor />
 
       <div
         ref={signupStepFlipRef}
-        className={`relative z-10 h-full w-full [transform-style:preserve-3d] transition-transform duration-700 ease-in-out ${
-          signupFlipped ? "[transform:rotateY(180deg)]" : ""
+        className={`relative z-10 h-full w-full [transform-style:preserve-3d] transition-transform duration-700 ease-in-out ${signupFlipped ? "[transform:rotateY(180deg)]" : ""
         }`}
-      >
+        >
         {/* Step 1: phone */}
         <form
           onSubmit={handleSendOtpSignup}
           className="absolute inset-0 flex flex-col justify-center items-center gap-3 [backface-visibility:hidden]"
-        >
+          >
           <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">
             GenZChat
           </h1>
@@ -604,7 +588,7 @@ export default function LoginPage() {
               inputClassName="!bg-transparent !text-white placeholder:!text-white/50 !border-transparent !outline-none !shadow-none"
               className="signup-phone"
               forceDialCode
-            />
+              />
           </div>
 
           <button type="submit" disabled={loading} className={primaryBtn}>
@@ -620,7 +604,7 @@ export default function LoginPage() {
                 updateMode("login");
               }}
               className="font-semibold underline ml-1 hover:text-white"
-            >
+              >
               Please login
             </button>
           </p>
@@ -634,7 +618,7 @@ export default function LoginPage() {
               e.preventDefault();
           }}
           className="absolute inset-0 flex flex-col justify-center items-center gap-3 [backface-visibility:hidden] [transform:rotateY(180deg)]"
-        >
+          >
           <span className="w-full text-center text-2xl font-bold py-1.5 text-white">
             Verify OTP
           </span>
@@ -642,15 +626,15 @@ export default function LoginPage() {
           <div className="flex gap-2">
             {signupOtp.map((d, i) => (
               <input
-                key={i}
-                id={`signup-otp-${i}`}
-                value={d}
-                onChange={(e) => handleSignupOtpChange(i, e.target.value)}
-                onKeyDown={(e) => handleSignupOtpKeyDown(i, e)}
-                onPaste={i === 0 ? handleSignupOtpPaste : (e) => e.preventDefault()}
-                inputMode="numeric"
-                maxLength={1}
-                className="w-9 h-10 text-center rounded-lg bg-gray-700/50 backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
+              key={i}
+              id={`signup-otp-${i}`}
+              value={d}
+              onChange={(e) => handleSignupOtpChange(i, e.target.value)}
+              onKeyDown={(e) => handleSignupOtpKeyDown(i, e)}
+              onPaste={i === 0 ? handleSignupOtpPaste : (e) => e.preventDefault()}
+              inputMode="numeric"
+              maxLength={1}
+              className="w-9 h-10 text-center rounded-lg bg-gray-700/50 backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
               />
             ))}
           </div>
@@ -661,12 +645,11 @@ export default function LoginPage() {
               type="button"
               onClick={resendSignupOtp}
               disabled={signupTimerLeft > 0}
-              className={`underline font-semibold ${
-                signupTimerLeft > 0
-                  ? "opacity-50 cursor-not-allowed"
+              className={`underline font-semibold ${signupTimerLeft > 0
+                ? "opacity-50 cursor-not-allowed"
                   : "hover:text-white"
-              }`}
-            >
+                }`}
+                >
               {signupTimerLeft > 0
                 ? `Resend OTP (${signupTimerLeft}s)`
                 : "Resend OTP"}
@@ -686,16 +669,15 @@ export default function LoginPage() {
       <GlowDecor />
       <div
         ref={forgotFlipRef}
-        className={`absolute inset-0 transition-transform duration-700 ease-in-out [transform-style:preserve-3d] ${
-          forgotFlipped ? "[transform:rotateY(180deg)]" : ""
+        className={`absolute inset-0 transition-transform duration-700 ease-in-out [transform-style:preserve-3d] ${forgotFlipped ? "[transform:rotateY(180deg)]" : ""
         }`}
-      >
+        >
         {/* Step 1 */}
         <div className="absolute inset-0 rounded-xl p-2 h-full w-full [backface-visibility:hidden]">
           <form
             onSubmit={handleSendOtpForgot}
             className="flex flex-col justify-center items-center gap-3 h-full"
-          >
+            >
             <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">
               Forgot PassWord ?
             </h1>
@@ -721,7 +703,7 @@ export default function LoginPage() {
                   required: true,
                 }}
                 forceDialCode
-              />
+                />
             </div>
 
             <button type="submit" disabled={loading} className={primaryBtn}>
@@ -735,7 +717,7 @@ export default function LoginPage() {
                 updateIsFlipped(false);
               }}
               className="text-xs underline text-white/80 hover:text-white"
-            >
+              >
               Back to login
             </button>
           </form>
@@ -750,24 +732,24 @@ export default function LoginPage() {
                 e.preventDefault();
             }}
             className="flex flex-col justify-center items-center gap-3 h-full"
-          >
+            >
             <span className="w-full text-center text-2xl font-bold py-1.5 text-white">
               Verify OTP
             </span>
             <div className="flex gap-2">
               {otp.map((d, i) => (
                 <input
-                  key={i}
-                  id={`forgot-otp-${i}`}
-                  value={d}
+                key={i}
+                id={`forgot-otp-${i}`}
+                value={d}
                   onChange={(e) => handleOtpChange(i, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(i, e)}
                   onPaste={i === 0 ? handleForgotOtpPaste : (e) => e.preventDefault()}
                   inputMode="numeric"
                   maxLength={1}
                   className="w-9 h-10 text-center rounded-lg bg-white/80 text-white outline-none border border-gray-700 focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
-                />
-              ))}
+                  />
+                ))}
             </div>
 
             <div className="text-xs text-white/80">
@@ -776,12 +758,11 @@ export default function LoginPage() {
                 type="button"
                 onClick={resendForgotOtp}
                 disabled={timerLeft > 0}
-                className={`underline font-semibold ${
-                  timerLeft > 0
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:text-white"
+                className={`underline font-semibold ${timerLeft > 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:text-white"
                 }`}
-              >
+                >
                 {timerLeft > 0 ? `Resend OTP (${timerLeft}s)` : "Resend OTP"}
               </button>
             </div>
@@ -796,7 +777,7 @@ export default function LoginPage() {
                 setForgotFlipped(false);
               }}
               className="text-xs underline text-white/80 hover:text-white"
-            >
+              >
               Edit number
             </button>
           </form>
@@ -817,84 +798,82 @@ export default function LoginPage() {
   return (
     <>
       <div className="min-h-screen w-full flex items-center justify-center 0 p-6 ">
-         <div className="relative flex flex-col items-center">
-        
-        {/* Mobile (xs) : top image only */}
-        <div className="sm:hidden ">
+        <div className="relative flex flex-col items-center">
+
+          {/* Mobile (xs) : top image only */}
+          <div className="sm:hidden ">
+            <img
+              src={tog}
+              alt="GenZChat support"
+              loading="lazy"
+              className="h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
+            />
+          </div>
+
+          {/* Desktop/Tablet (>= sm): side images */}
+          {/* Left side - boy */}
           <img
-            src={tog}
-            alt="GenZChat support"
+            src={boy}
+            alt="Support - him"
             loading="lazy"
-            className="h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
+            aria-hidden="true"
+            className="hidden sm:block pointer-events-none select-none 
+            absolute right-full -mr-[60px] top-52
+            md:top-60 md:h-60
+            h-70 md:h-52 lg:h-68 lg:top-55 w-auto
+            drop-shadow-[0_0px_10px_rgba(59,130,246,0.35)] z-20"
           />
-        </div>
-
-        {/* Desktop/Tablet (>= sm): side images */}
-        {/* Left side - boy */}
-        <img
-          src={boy}
-          alt="Support - him"
-          loading="lazy"
-          aria-hidden="true"
-          className="hidden sm:block pointer-events-none select-none 
-                     absolute right-full -mr-[60px] top-52
-                      md:top-60 md:h-60
-                     h-70 md:h-52 lg:h-68 lg:top-55 w-auto
-                     drop-shadow-[0_0px_10px_rgba(59,130,246,0.35)] z-20"
-        />
-        {/* Right side - girl */}
-        <img
-          src={girl}
-          alt="Support - her"
-          loading="lazy"
-          aria-hidden="true"
-          className="hidden sm:block pointer-events-none select-none
-                     absolute left-full -ml-[60px] top-52 md:top-60
-                     h-70 md:h-60 lg:h-68 lg:top-55 w-auto
-                     drop-shadow-[0_0px_10px_rgba(236,72,153,0.35)] z-20"
-        />
-        <div
-          ref={containerRef}
-          className="relative overflow-hidden rounded-xl w-[316px] z-10 transition-[height] duration-300"
-          style={{ height: containerHeight }}
-        >
-          {/* Conic gradient background — hidden during flips */}
+          {/* Right side - girl */}
+          <img
+            src={girl}
+            alt="Support - her"
+            loading="lazy"
+            aria-hidden="true"
+            className="hidden sm:block pointer-events-none select-none
+            absolute left-full -ml-[60px] top-52 md:top-60
+            h-70 md:h-60 lg:h-68 lg:top-55 w-auto
+            drop-shadow-[0_0px_10px_rgba(236,72,153,0.35)] z-20"
+          />
           <div
-            className={`pointer-events-none absolute inset-[-70px] -z-10
-                        bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
-                        ${showGradient ? "opacity-100" : "opacity-0"}
-                        transition-opacity duration-300
-                        animate-[spin_4s_linear_infinite] blur-md`}
-          />
-
-          {/* Countdown display */}
-
-          {mode !== "forgot" ? (
+            ref={containerRef}
+            className="relative overflow-hidden rounded-xl w-[316px] z-10 transition-[height] duration-300"
+            style={{ height: containerHeight }}
+          >
+            {/* Conic gradient background — hidden during flips */}
             <div
-              ref={outerFlipRef}
-              className={`absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]
-              transition-transform duration-700 ease-in-out
-              ${preMainFlip ? "scale-[0.98]" : ""}
-              ${delayedIsFlipped ? "[transform:rotateY(180deg)]" : ""}`}
-            >
-              {LoginCard}
-              {SignupCard}
-            </div>
-          ) : (
-            <div className="absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]">
-              {ForgotCard}
-            </div>
-          )}
+              className={`pointer-events-none absolute inset-[-70px] -z-10
+                bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
+                ${showGradient ? "opacity-100" : "opacity-0"}
+                transition-opacity duration-300
+                animate-[spin_4s_linear_infinite] blur-md`}
+            />
 
-          <style>{`
-            @keyframes spin { 
-              from { transform: rotate(0deg); } 
-              to { transform: rotate(360deg); } 
-            }
-          `}</style>
+            {mode !== "forgot" ? (
+              <div
+                ref={outerFlipRef}
+                className={`absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]
+                  transition-transform duration-700 ease-in-out
+                  ${preMainFlip ? "scale-[0.98]" : ""}
+                ${delayedIsFlipped ? "[transform:rotateY(180deg)]" : ""}`}
+              >
+                {LoginCard}
+                {SignupCard}
+              </div>
+            ) : (
+              <div className="absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]">
+                {ForgotCard}
+              </div>
+            )}
 
+            <style>{`
+              @keyframes spin { 
+                from { transform: rotate(0deg); } 
+                to { transform: rotate(360deg); } 
+              }
+            `}</style>
+
+          </div>
         </div>
-      </div>
       </div>
     </>
   );

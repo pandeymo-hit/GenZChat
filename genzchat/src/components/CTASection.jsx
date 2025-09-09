@@ -1,12 +1,10 @@
 import React,{ useContext} from "react";
 import { AuthContext } from '../context/AuthContext';
 import cartoon from '../assets/couple.png';
-import React, { useContext } from "react";
-import { AuthContext } from '../context/AuthContext';
 
 
 const CTASection = () => {
-  const { openForm } = useContext(AuthContext);
+  const { openSignupForm } = useContext(AuthContext);
   return (
     <div className="mt-22 md:mt-40 flex justify-center items-center px-6">
       <div
@@ -47,7 +45,6 @@ const CTASection = () => {
 
         {/* Button */}
         <button
-          onClick={() => openForm("signup")}
         onClick={ openSignupForm }
           className="bg-gradient-to-r from-purple-500 to-blue-500
                      text-white font-semibold py-3 px-8 rounded-xl

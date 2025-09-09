@@ -145,13 +145,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // New function to specifically open signup form
-  const openSignupForm = () => {
-    setShowForm(true);
-    setMode("login");
-    setIsFlipped(true);
-  };
-
   // SIGNUP FLOW
   const sendSignupOtp = async () => {
     setError("");
@@ -450,7 +443,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         // show/hide form
-        showForm, openForm, closeForm, openSignupForm,
+        showForm, openForm, closeForm,
 
         // view + flips
         mode, setMode, isFlipped, setIsFlipped,

@@ -3,7 +3,8 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChatContext } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
 import MorePage from "./MorePage";
-import Razorpay from "../trail/razorpay"; // <-- default export from src/trail/razorpay.jsx
+import Razorpay from "../trail/Razorpay"; // <-- default export from src/trail/razorpay.jsx
+
 
 import {
   FiLogOut,
@@ -13,7 +14,7 @@ import {
   FiZap,
   FiImage,
   FiX,
-  FiHelpCircle,
+  FiHelpCircle, 
   FiFileText,
   FiCheck,
 } from "react-icons/fi";
@@ -30,23 +31,24 @@ export default function ChatPAge() {
     sendMessage, // accepts string or { text, image }
     loading,
     error,
-    sending, // 🔒 lock (NEW)
+    sending,     // 🔒 lock (NEW)
     resetConnectionState, // NEW: Reset connection when server is back
   } = useContext(ChatContext) || {};
 
   const { closeForm, logout, username } = useContext(AuthContext);
 
   const [view, setView] = useState("chat"); // "chat" | "more" | razorpay
-
+  
   // Auto-scroll refs (not needed in reverse layout but keeping for future use)
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
-
+  
   // No auto-scroll needed in reverse layout - newest messages appear at bottom automatically
-
+  
   // razorpay offer open k liye
 
   const openRazorpay = () => setView("razorpay");
+
 
   const [message, setMessage] = useState("");
   const [showEditBlocked, setShowEditBlocked] = useState(false);
@@ -92,7 +94,7 @@ export default function ChatPAge() {
     const hasText = Boolean(message.trim());
     const hasImage = Boolean(imageFile);
     if (!hasText && !hasImage) return;
-
+    
     try {
       if (hasImage) {
         await sendMessage?.({ text: message.trim(), image: imageFile });
@@ -120,19 +122,20 @@ export default function ChatPAge() {
   //   clearImage();
   // };
 
-  if (view === "razorpay") {
-    return <Razorpay onBack={() => setView("chat")} />; // show full-screen Razorpay page
-  }
-  if (view === "more") {
-    return (
-      <MorePage
-        onBack={() => setView("chat")}
-        onLogout={logout}
-        username={username || user?.name || "Guest"}
-        signupDate={user?.signupDate || "N/A"}
-      />
-    );
-  }
+if (view === "razorpay") {
+  return <Razorpay onBack={() => setView("chat")} />; // show full-screen Razorpay page
+}
+if (view === "more") {
+  return (
+    <MorePage 
+      onBack={() => setView("chat")} 
+      onLogout={logout}
+      username={username || user?.name || "Guest"}
+      signupDate={user?.signupDate || "N/A"}
+    />
+  );
+}
+
 
   return (
     <div className="flex h-[100dvh] bg-black text-white relative overflow-hidden">
@@ -151,133 +154,122 @@ export default function ChatPAge() {
         <div className="h-full flex flex-col">
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* 1) Profile card (glass) */}
-            <div className="relative z-20 rounded-2xl border border-purple-900 bg-transparent backdrop-blur-3xl p-4 sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-              {/* Edit (top-right) */}
-              <button
-                onClick={handleEditClick}
-                className="absolute top-3 right-3 p-1 rounded-lg hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-600"
-                aria-label="Edit profile"
-                title="Edit profile"
-              >
-                <FiEdit2 className="w-4 h-4 text-gray-300" />
-              </button>
+          <div className="relative z-20 rounded-2xl border border-purple-900 bg-transparent backdrop-blur-3xl p-4 sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+            {/* Edit (top-right) */}
+            <button
+              onClick={handleEditClick}
+              className="absolute top-3 right-3 p-1 rounded-lg hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+              aria-label="Edit profile"
+              title="Edit profile"
+            >
+              <FiEdit2 className="w-4 h-4 text-gray-300" />
+            </button>
 
-              {/* Avatar + Name + Date */}
-              <div className="flex  items-center text-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
-                  <FiUser className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <p className="font-semibold">{user?.name || "Guest"}</p>
-                  <p className="text-xs text-gray-400">
-                    SignUp: {user?.signupDate || "N/A"}
-                  </p>
-                </div>
+            {/* Avatar + Name + Date */}
+            <div className="flex  items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
+                <FiUser className="w-7 h-7 text-white" />
               </div>
-
-              {/* Bubble: can't change before 15 days */}
-              {showEditBlocked && (
-                <div className="absolute -bottom-3 right-3 translate-y-full text-xs bg-black text-gray-200 border border-zinc-700 rounded-md px-3 py-2 shadow-xl">
-                  <span className="mr-1">🔒</span>
-                  Can’t change username before 15 days.
-                </div>
-              )}
+              <div>
+                <p className="font-semibold">{user?.name || "Guest"}</p>
+                <p className="text-xs text-gray-400">SignUp: {user?.signupDate || "N/A"}</p>
+              </div>
             </div>
 
-            {/* 2) Active Plan card (glass) */}
-            {/* 2) Active Plan — colorful like the screenshot */}
-            <div className="relative">
-              {/* gradient border + outer glow */}
-              <div className="rounded-2xl p-[1.5px] bg-gradient-to-r from-cyan-400/20 via-violet-500/10 to-cyan-400/20 shadow-[0_8px_40px_rgba(37,99,235,0.35)]">
-                {/* inner glass panel */}
-                <div className="rounded-2xl bg-black/50 backdrop-blur-xl px-4 py-3">
-                  {/* top row: label */}
-                  <p className="text-[11px]">
-                    <span className="font-semibold  tracking-wide text-blue-200">
-                      Active Plan
-                    </span>
-                    <span className="mx-1 text-gray-500">:</span>
-                    <span className="text-gray-400 font-medium bg-gray-600/30 px-2 py-[5px] rounded-2xl">
-                      none
-                    </span>
-                  </p>
+            {/* Bubble: can't change before 15 days */}
+            {showEditBlocked && (
+              <div className="absolute -bottom-3 right-3 translate-y-full text-xs bg-black text-gray-200 border border-zinc-700 rounded-md px-3 py-2 shadow-xl">
+                <span className="mr-1">🔒</span>
+                Can’t change username before 15 days.
+              </div>
+            )}
+          </div>
 
-                  {/* credits line (FiZap + number from backend) + “None” */}
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 ring-1 ring-blue-400/40">
-                      <FiZap className="w-3.5 h-3.5 text-blue-300" />
-                    </span>
-                    <span className="text-gray-200 font-medium">{credits}</span>
-                    <span className="text-gray-400 text-xs">free Chats</span>
-                  </div>
+          {/* 2) Active Plan card (glass) */}
+          {/* 2) Active Plan — colorful like the screenshot */}
+          <div className="relative">
+            {/* gradient border + outer glow */}
+            <div className="rounded-2xl p-[1.5px] bg-gradient-to-r from-cyan-400/20 via-violet-500/10 to-cyan-400/20 shadow-[0_8px_40px_rgba(37,99,235,0.35)]">
+              {/* inner glass panel */}
+              <div className="rounded-2xl bg-black/50 backdrop-blur-xl px-4 py-3">
+                {/* top row: label */}
+                <p className="text-[11px]">
+                  <span className="font-semibold  tracking-wide text-blue-200">Active Plan</span>
+                  <span className="mx-1 text-gray-500">:</span>
+                  <span className="text-gray-400 font-medium bg-gray-600/30 px-2 py-[5px] rounded-2xl">none</span>
+                </p>
 
-                  {/* tiny progress pill (purely visual) */}
-                  <div className="mt-3 h-3 rounded-full bg-white/10 overflow-hidden">
-                    <div className="h-full w-1/4 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500" />
-                  </div>
 
-                  {/* Upgrade button */}
-                  <button
-                    onClick={openRazorpay}
-                    type="button"
-                    className="mt-4 w-full rounded-2xl py-2 text-sm font-medium 
+                {/* credits line (FiZap + number from backend) + “None” */}
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 ring-1 ring-blue-400/40">
+                    <FiZap className="w-3.5 h-3.5 text-blue-300" />
+                  </span>
+                  <span className="text-gray-200 font-medium">{credits}</span>
+                  <span className="text-gray-400 text-xs">free Chats</span>
+                </div>
+
+                {/* tiny progress pill (purely visual) */}
+                <div className="mt-3 h-3 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-full w-1/4 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500" />
+                </div>
+
+                {/* Upgrade button */}
+                <button
+                 onClick={openRazorpay}
+                  type="button"
+                  className="mt-4 w-full rounded-2xl py-2 text-sm font-medium 
                    bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110"
-                  >
-                    Upgrade
-                  </button>
-                </div>
+                >
+                  Upgrade
+                </button>
               </div>
-            </div>
-
-            {/* 3) Links card (glass) */}
-            <div className="rounded-2xl text-gray-400 border border-white/10 bg-white/5 backdrop-blur-xl sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-              <button
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
-                type="button"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <FiHelpCircle className="w-4 h-4 text-white" />
-                  <span>FAQ</span>
-                </span>
-              </button>
-
-              <button
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
-                type="button"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <FiFileText className="w-4 h-4 text-white" />
-                  <span>Terms &amp; Conditions</span>
-                </span>
-              </button>
-
-              <button
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
-                type="button"
-                onClick={() => setView("more")}
-                title="Open profile"
-                aria-label="Open profile"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <FiUser className="w-4 h-4 text-white" />
-                  <span>My Profile</span>
-                </span>
-              </button>
             </div>
           </div>
 
+
+          {/* 3) Links card (glass) */}
+          <div className="rounded-2xl text-gray-400 border border-white/10 bg-white/5 backdrop-blur-xl sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+            <button className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5" type="button">
+              <span className="inline-flex items-center gap-2">
+                <FiHelpCircle className="w-4 h-4 text-white" />
+                <span>FAQ</span>
+              </span>
+            </button>
+
+            <button className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5" type="button">
+              <span className="inline-flex items-center gap-2">
+                <FiFileText className="w-4 h-4 text-white" />
+                <span>Terms &amp; Conditions</span>
+              </span>
+            </button>
+
+            <button
+              className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
+              type="button"
+              onClick={() => setView("more")}
+              title="Open profile"
+              aria-label="Open profile"
+            >
+              <span className="inline-flex items-center gap-2">
+                <FiUser className="w-4 h-4 text-white" />
+                <span>My Profile</span>
+              </span>
+            </button>
+          </div>
+
+          </div>
+          
           {/* Back button at bottom */}
-          <div className="p-4 border-t border-white/10"></div>
+          <div className="p-4 border-t border-white/10">
+            
+          </div>
         </div>
       </div>
 
       {/* Backdrop */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30"
-          onClick={closeSidebar}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 bg-black/50 z-30" onClick={closeSidebar} aria-hidden="true" />
       )}
 
       {/* Main */}
@@ -285,21 +277,19 @@ export default function ChatPAge() {
         {/* Topbar (fixed) */}
         <div className="fixed top-0 inset-x-0 z-20 h-15  lg:h-20 flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-15  bg-zinc-950/95 shadow-[0_0_20px_rgba(139,92,246,0.5)] backdrop-blur">
           <div className="flex items-center gap-3">
-            <span className="text-lg sm:text-2xl md:text-4xl  font-bold tracking-tight bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
-              GenZChat
-            </span>
+            <span className="text-lg sm:text-2xl md:text-4xl  font-bold tracking-tight bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">GenZChat</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
             <button
-              onClick={openRazorpay}
-              type="button"
-              className="btn-aurora relative w-full overflow-hidden rounded-2xl p-[2px]"
-            >
-              <span className="relative z-[1] block w-full rounded-2xl px-4 py-2 text-sm font-medium text-white bg-black/80 hover:brightness-110">
-                Upgrade
-              </span>
-            </button>
+                  onClick={openRazorpay}
+                  type="button"
+                  className="btn-aurora relative w-full overflow-hidden rounded-2xl p-[2px]"
+                >
+                  <span className="relative z-[1] block w-full rounded-2xl px-4 py-2 text-sm font-medium text-white bg-black/80 hover:brightness-110">
+                    Upgrade
+                  </span>
+                </button>
             <span
               className="inline-flex relative items-center justify-center w-8 h-8   transition-transform duration-300 hover:scale-110"
               title={`Credits: ${credits}`}
@@ -331,9 +321,7 @@ export default function ChatPAge() {
                   <div className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0" />
                   <span>{error}</span>
                 </div>
-                {(error.includes("wait for") ||
-                  error.includes("Server") ||
-                  error.includes("connect")) && (
+                {(error.includes("wait for") || error.includes("Server") || error.includes("connect")) && (
                   <button
                     onClick={resetConnectionState}
                     className="ml-3 px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs font-medium transition-colors flex-shrink-0"
@@ -348,12 +336,12 @@ export default function ChatPAge() {
         )}
 
         {/* Messages Area with improved styling - Reverse layout */}
-        <div
+        <div 
           ref={messagesContainerRef}
-          className="messages-container flex-1 overflow-y-auto overscroll-contain pt-18 px-6 sm:px-8 mt-6 md:mt-10 lg:mt-14 pb-[calc(env(safe-area-inset-bottom)+120px)] flex flex-col-reverse"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          className="messages-container flex-1 overflow-y-auto overscroll-contain pt-18 px-6 sm:px-8 mt-6 md:mt-10 lg:mt-14 pb-[calc(env(safe-area-inset-bottom)+120px)] flex flex-col"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          <div className="max-w-4xl mx-auto space-y-4 px-2 flex flex-col-reverse">
+          <div className="max-w-4xl mx-auto space-y-4 px-2 flex flex-col">
             {/* Loading indicator - appears at top in normal view (bottom in reverse) */}
             {loading && (
               <div className="flex justify-start mb-4 message-bubble">
@@ -379,35 +367,20 @@ export default function ChatPAge() {
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center mb-4">
                   <span className="text-2xl">💭</span>
                 </div>
-                <p className="text-gray-400 text-lg font-medium mb-2">
-                  Start a conversation
-                </p>
-                <p className="text-gray-600 text-sm">
-                  Ask me anything - I'm here to help!
-                </p>
+                <p className="text-gray-400 text-lg font-medium mb-2">Start a conversation</p>
+                <p className="text-gray-600 text-sm">Ask me anything - I'm here to help!</p>
               </div>
             )}
 
             {safeChats.map((chat, idx) => (
-              <div
-                key={idx}
-                className={`flex message-bubble ${
-                  chat.sender === "user" ? "justify-end" : "justify-start"
-                } mb-4`}
-              >
-                <div
-                  className={`flex items-start gap-3 max-w-[85%] ${
-                    chat.sender === "user" ? "flex-row-reverse" : "flex-row"
-                  }`}
-                >
+              <div key={idx} className={`flex message-bubble ${chat.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
+                <div className={`flex items-start gap-3 max-w-[85%] ${chat.sender === "user" ? "flex-row" : "flex-row"}`}>
                   {/* Avatar */}
-                  <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      chat.sender === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-blue-500"
-                        : "bg-gradient-to-br from-gray-600 to-gray-700"
-                    }`}
-                  >
+                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                    chat.sender === "user" 
+                      ? "bg-gradient-to-br from-purple-500 to-blue-500" 
+                      : "bg-gradient-to-br from-gray-600 to-gray-700"
+                  }`}>
                     {chat.sender === "user" ? (
                       <FiUser className="w-4 h-4 text-white" />
                     ) : (
@@ -416,21 +389,18 @@ export default function ChatPAge() {
                   </div>
 
                   {/* Message Bubble */}
-                  <div
-                    className={`relative ${
-                      chat.sender === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-blue-500 text-white"
-                        : "bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 text-gray-100"
-                    } rounded-2xl px-4 py-3 shadow-lg`}
-                  >
+                  <div className={`relative ${
+                    chat.sender === "user" 
+                      ? "bg-gradient-to-br from-purple-500 to-blue-500 text-white" 
+                      : "bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 text-gray-100"
+                  } rounded-2xl px-4 py-3 shadow-lg`}>
+                    
                     {/* Message tail */}
-                    <div
-                      className={`absolute top-3 w-3 h-3 transform rotate-45 ${
-                        chat.sender === "user"
-                          ? "bg-gradient-to-br from-purple-500 to-blue-500 -right-1"
-                          : "bg-gray-800/60 border-l border-t border-gray-700/50 -left-1"
-                      }`}
-                    />
+                    <div className={`absolute top-3 w-3 h-3 transform rotate-45 ${
+                      chat.sender === "user"
+                        ? "bg-gradient-to-br from-purple-500 to-blue-500 -right-1"
+                        : "bg-gray-800/60 border-l border-t border-gray-700/50 -left-1"
+                    }`} />
 
                     {/* Message content */}
                     {chat.text && (
@@ -451,13 +421,9 @@ export default function ChatPAge() {
                     )}
 
                     {/* Timestamp */}
-                    <div
-                      className={`flex items-center gap-1 mt-2 text-[10px] ${
-                        chat.sender === "user"
-                          ? "text-purple-100"
-                          : "text-gray-400"
-                      }`}
-                    >
+                    <div className={`flex items-center gap-1 mt-2 text-[10px] ${
+                      chat.sender === "user" ? "text-purple-100" : "text-gray-400"
+                    }`}>
                       <span>{chat.time}</span>
                       {chat.sender === "user" && (
                         <FiCheck className="w-3 h-3" />
@@ -499,25 +465,20 @@ export default function ChatPAge() {
               )}
 
               {/* Input container */}
-              <div
-                className="relative flex items-center gap-2 sm:gap-3
+              <div className="relative flex items-center gap-2 sm:gap-3
                 rounded-2xl border border-gray-700/50
                 bg-gray-900/80 backdrop-blur-xl
                 px-3 sm:px-4 py-2.5 sm:py-3
                 shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-                hover:border-gray-600/50 transition-colors"
-              >
+                hover:border-gray-600/50 transition-colors">
+                
                 {/* Text input */}
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && !e.shiftKey && handleSendMessage()
-                  }
-                  placeholder={
-                    credits > 0 ? "Message GenZChat..." : "No credits left!"
-                  }
+                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
+                  placeholder={credits > 0 ? "Message GenZChat..." : "No credits left!"}
                   disabled={credits <= 0 || sending}
                   className="flex-1 bg-transparent text-white text-sm sm:text-base
                     placeholder-gray-400 focus:outline-none
@@ -553,9 +514,7 @@ export default function ChatPAge() {
                   {/* Send button */}
                   <button
                     onClick={handleSendMessage}
-                    disabled={
-                      credits <= 0 || sending || (!message.trim() && !imageFile)
-                    }
+                    disabled={credits <= 0 || sending || (!message.trim() && !imageFile)}
                     className="inline-flex items-center justify-center
                       w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex-shrink-0
                       bg-gradient-to-r from-purple-500 to-blue-500
@@ -577,15 +536,11 @@ export default function ChatPAge() {
 
               {/* Credits indicator */}
               <div className="flex items-center justify-center mt-3">
-                <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full
                   bg-gray-800/60 backdrop-blur-sm border border-gray-700/50
-                  text-xs text-gray-300"
-                >
+                  text-xs text-gray-300">
                   <FiZap className="w-3.5 h-3.5 text-blue-400" />
-                  <span className="hidden sm:inline">
-                    {credits} messages remaining
-                  </span>
+                  <span className="hidden sm:inline">{credits} messages remaining</span>
                   <span className="sm:hidden">{credits} left</span>
                 </div>
               </div>
@@ -593,7 +548,7 @@ export default function ChatPAge() {
           </div>
         </div>
       </div>
-
+      
       {/* Custom CSS to hide scrollbars completely */}
       <style>{`
         .messages-container {

@@ -52,16 +52,6 @@ export default function ProfileFormCard() {
     
     return isUsernameValid && isPasswordValid && isGenderValid && isAgeValid && isTermsAccepted;
   }, [username, password, gender, age, terms]);
-  const canSubmit = useMemo(
-    () =>
-      username.trim().length >= 2 &&
-      password.length >= 6 &&
-      ["MALE", "FEMALE", "OTHER"].includes((gender || "").toUpperCase()) &&
-      age >= 13 &&
-      age <= 100 &&
-      terms,
-    [username, password, gender, age, terms]
-  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +65,7 @@ export default function ProfileFormCard() {
 
   // Unified input look = same as gender select
   const inputBase =
-    "w-full h-10 rounded-xl bg-gray-300/10 text-white placeholder:text-gray-400 " +
+    "w-full h-10 rounded-xl bg-transparent text-white placeholder:text-gray-400 " +
     "border border-white/10 px-3 outline-none focus:border-white/30 transition";
 
   const selectBase =
@@ -120,68 +110,6 @@ export default function ProfileFormCard() {
                          rounded-full blur-3xl opacity-100 mix-blend-screen
                          bg-[radial-gradient(circle_at_80%_75%,rgba(28,38,82,3)_0%,rgba(28,38,42,0.3)_50%,transparent_25%)]"
             />
-        {/* Wrapper to anchor side avatars relative to the card */}
-        <div className="relative inline-block isolate">
-          {/* Mobile (xs) : top image only */}
-          <div className="sm:hidden ">
-            <img
-              src={tog}
-              alt="GenZChat support"
-              loading="lazy"
-              className="h-40 w-auto mx-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
-            />
-          </div>
-
-          {/* Desktop/Tablet (>= sm): side images */}
-          <img
-            src={boy}
-            alt="Support - him"
-            loading="lazy"
-            aria-hidden="true"
-            className="hidden sm:block pointer-events-none select-none 
-                              absolute right-full -mr-[60px] top-62
-                               md:top-58 md:h-60
-                              h-70 md:h-75 lg:h-68 lg:top-62 w-auto
-                              drop-shadow-[0_0px_10px_rgba(59,130,246,0.35)] z-20"
-          />
-          {/* Right side - girl */}
-          <img
-            src={girl}
-            alt="Support - her"
-            loading="lazy"
-            aria-hidden="true"
-            className="hidden sm:block pointer-events-none select-none
-                              absolute left-full -ml-[60px] top-62 md:top-58
-                              h-70 md:h-75 lg:h-68 lg:top-62 w-auto
-                              drop-shadow-[0_0px_10px_rgba(236,72,153,0.35)] z-20"
-          />
-
-          {/* CARD */}
-          <div className="relative overflow-hidden rounded-xl w-[316px] min-h-[520px] z-10">
-            {/* Conic gradient background — same as LoginPage */}
-            <div
-              className={`pointer-events-none absolute inset-[-70px] -z-10
-                          bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
-                          opacity-100
-                          animate-[spin_4s_linear_infinite] blur-md`}
-            />
-
-            {/* INNER: pure black bg + corner glows only */}
-            <div className="absolute inset-[1px] rounded-xl p-7 h-full w-full backdrop-blur-[90px] bg-black overflow-hidden z-10">
-              {/* Top-left glow */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -top-20 -left-20 h-64 w-64
-                           rounded-full blur-3xl opacity-100 mix-blend-screen
-                           bg-[radial-gradient(circle_at_25%_20%,rgba(28,38,122,3)_0%,rgba(28,38,42,0.3)_40%,transparent_65%)]"
-              />
-              {/* Bottom-right glow */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -bottom-24 -right-20  h-64 w-64
-                           rounded-full blur-3xl opacity-100 mix-blend-screen
-                           bg-[radial-gradient(circle_at_80%_75%,rgba(28,38,82,3)_0%,rgba(28,38,42,0.3)_50%,transparent_25%)]"
-              />
 
               {/* Header */}
               <div className="relative z-10 flex flex-col items-center">
@@ -253,19 +181,6 @@ export default function ProfileFormCard() {
                   <option value="FEMALE">Female</option>
                   <option value="OTHER">Other</option>
                 </select>
-                <div className="grid grid-cols-2 gap-3">
-                  {/* gender (same style as inputs) */}
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    className="w-full h-10 rounded-xl bg-gray-300/10 text-white border border-white/10 px-3 outline-none focus:border-white/30 transition"
-                    required
-                  >
-                    <option value="" disabled>Choose</option>
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                    <option value="OTHER">Other</option>
-                  </select>
 
                 <div className="rounded-xl px-3 py-2 border border-white/10">
                   <div className="flex items-center gap-2">
@@ -291,31 +206,6 @@ export default function ProfileFormCard() {
                   </div>
                 </div>
               </div>
-                  {/* age slider + number (boxed like input/select) */}
-                  <div className="rounded-xl border border-white/10 bg-gray-300/10 px-3 py-1">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="range"
-                        min={18}
-                        max={100}
-                        value={age}
-                        onChange={(e) => setAge(parseInt(e.target.value || "0", 10))}
-                        className="w-full accent-white"
-                      />
-                      <input
-                        type="number"
-                        min={13}
-                        max={100}
-                        value={age}
-                        onChange={(e) => {
-                          const v = Math.max(13, Math.min(100, parseInt(e.target.value || "0", 10)));
-                          setAge(Number.isNaN(v) ? 13 : v);
-                        }}
-                        className="w-14 h-10 rounded-md bg-gray-300/10 border border-white/10 text-white text-sm px-2 outline-none focus:border-white/30 text-center"
-                      />
-                    </div>
-                  </div>
-                </div>
 
                 <label className="flex items-center gap-2 text-white/80 text-xs">
                   <input
@@ -356,25 +246,6 @@ export default function ProfileFormCard() {
         <style>{`
           @keyframes spin { to { transform: rotate(360deg) } }
           ${selectStyles}
-        `}</style>
-                <p className="text-[10px] text-white/40 text-center mt-1">
-                  By continuing, you agree to our Privacy Policy.
-                </p>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <style>{`
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          /* Gender select dropdown options background */
-          select option, select optgroup {
-            background-color: #1f2937; /* bg-gray-800 */
-            color: #ffffff;
-          }
         `}</style>
       </div>
     </>
