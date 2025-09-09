@@ -4,9 +4,9 @@ html, body {
   height: 100%;
   margin: 0;
 }
-* {
+/* * {
   outline: 1px solid red !important;
-}
+} */
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

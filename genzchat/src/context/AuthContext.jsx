@@ -6,7 +6,7 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [showForm, setShowForm] = useState(false);
-  const [mode, setMode] = useState("profile");     // "login" | "signup" | "forgot" | "profile"
+  const [mode, setMode] = useState("login");     // "login" | "signup" | "forgot" | "profile"
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Login
