@@ -172,6 +172,9 @@ export default function LoginPage() {
   const forgotFlipRef = useRef(null);
   const mountedRef = useRef(false);
 
+    const inputBase = "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm focus:ring-1 focus:ring-[#8B5CF6] focus:shadow-[0_0_40px_rgba(139,92,246,0.45)]";
+    const primaryBtn = "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-gradient-to-r from-purple-800 to-blue-500 text-white transition mt-1 hover:bg-white/25 disabled:opacity-60 disabled:cursor-not-allowed";
+    const subtleBtn = "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-[#373737] text-white transition mt-1 hover:bg-white/25 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500";
   // Countdown timer for gradient reappearance
   useEffect(() => {
     let countdownInterval;
@@ -344,12 +347,6 @@ export default function LoginPage() {
     [&_.react-international-phone-country-selector-option]:!text-white
     [&_.react-international-phone-country-selector-option--highlighted]:!bg-zinc-700`;
 
-  const inputBase =
-    "w-full p-2.5 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm focus:ring-1 focus:ring-[#8B5CF6] focus:shadow-[0_0_40px_rgba(139,92,246,0.45)]";
-  const primaryBtn =
-    "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-gradient-to-r from-purple-800 to-blue-500 text-white transition mt-1 hover:bg-white/25 disabled:opacity-60 disabled:cursor-not-allowed";
-  const subtleBtn =
-    "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-[#373737] text-white transition mt-1 hover:bg-white/25";
 
   // ---------- Cards ----------
   const GlowDecor = () => (
@@ -592,7 +589,7 @@ export default function LoginPage() {
                 onKeyDown={(e) => handleSignupOtpKeyDown(i, e)}
                 inputMode="numeric"
                 maxLength={1}
-                className="w-9 h-10 text-center rounded-lg bg-transparent backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
+                className="w-9 h-10 text-center rounded-lg bg-gray-700/10 backdrop-blur-3xl text-white outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:shadow-[0_0_35px_rgba(139,92,246,0.45)]"
               />
             ))}
           </div>
@@ -603,7 +600,7 @@ export default function LoginPage() {
               type="button"
               onClick={resendSignupOtp}
               disabled={signupTimerLeft > 0}
-              className={`underline font-semibold ${
+              className={`underline font-semibold  ${
                 signupTimerLeft > 0
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:text-white"
