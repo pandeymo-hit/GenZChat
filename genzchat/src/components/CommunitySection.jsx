@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee"; // npm i react-fast-marquee
 
 /** 👉 Replace with your image URLs (more items = richer loop) */
@@ -20,7 +20,61 @@ const testimonials = [
 
 export default function CommunitySection() {
   const imageSpeed = 50;      // Top & bottom image carousels
-  const testimonialSpeed = 25; // Center—slower for readability
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Get cards per view based on screen size
+  const getCardsPerView = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1024) return 3; // lg screens - 3 cards
+      if (window.innerWidth >= 768) return 2;  // md screens - 2 cards
+      return 1; // sm screens - 1 card
+    }
+    return 3;
+  };
+
+  const [cardsPerView, setCardsPerView] = useState(getCardsPerView());
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setCardsPerView(getCardsPerView());
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-advance testimonials every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        // For continuous loop, reset to 0 when reaching the end
+        return (prevIndex + 1) % testimonials.length;
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Calculate transform percentage for continuous loop
+  const getTransformX = () => {
+    if (cardsPerView === 1) {
+      // For single card view, show one card at a time with continuous loop
+      return currentIndex * 100;
+    } else {
+      // For multiple cards view, use the existing logic
+      const maxIndex = testimonials.length - cardsPerView;
+      const adjustedIndex = currentIndex > maxIndex ? maxIndex : currentIndex;
+      return (adjustedIndex * (100 / cardsPerView));
+    }
+  };
+
+  // Get center card index for scaling effect  
+  const getCenterCardIndex = () => {
+    if (cardsPerView === 1) {
+      return currentIndex % testimonials.length;
+    }
+    return Math.floor(currentIndex + (cardsPerView / 2));
+  };
 
   return (
     <section className="relative w-full bg-black/10 backdrop-blur-md text-white overflow-x-hidden overflow-y-visible py-16 sm:py-20 md:py-24">
@@ -57,26 +111,25 @@ export default function CommunitySection() {
           {/* Padding inside the reserved row => left/right spacing without changing angle */}
           <div className="absolute inset-0 px-4 sm:px-6 md:px-8">
             <div className="h-full w-full mask-x overflow-hidden scrollbar-hide -rotate-[5deg] origin-center translate-y-2 z-[5]">
-              <Marquee speed={imageSpeed} gradient={false} autoFill className="scrollbar-hide">
-                {images.map((src, i) => (
-                  <div
-                    key={`top-${i}`}
-                    className="first:ml-0 last:mr-0 mx-6 sm:mx-8 md:mx-10 w-[88px] h-[140px] sm:w-[108px] sm:h-[172px] md:w-[118px] md:h-[188px]
-                               rounded-3xl overflow-hidden ring-1 ring-white/20 transition-all duration-300 transform-gpu hover:scale-105"
-                    style={{
-                      transform: `rotate(${i % 2 ? -2 : 2}deg)`,
-                      filter: "brightness(0.9) saturate(1.1)",
-                    }}
-                  >
-                    <img
-                      src={src}
-                      alt="Community member"
-                      className="w-full h-full object-cover transition-all duration-300 hover:brightness-110"
-                      loading="lazy"
-                    />
-                  </div>
-                ))}
-              </Marquee>
+                <Marquee speed={imageSpeed} gradient={false} autoFill className="scrollbar-hide">
+                    {images.map((src, i) => (
+                        <div
+                            key={`top-${i}`}
+                            className="first:ml-0 last:mr-4 mx-6 sm:mx-8 md:mx-10 w-[76px] h-[120px] sm:w-[96px] sm:h-[152px] md:w-[106px] md:h-[168px]
+             rounded-xl overflow-hidden ring-1 ring-white/20 transition-all duration-300
+             transform-gpu hover:scale-105 will-change-transform"
+                            style={{ filter: "brightness(0.9) saturate(1.1)" }}   // ⬅️ no rotate here
+                        >
+                            <img
+                                src={src}
+                                alt="Community member"
+                                className="w-full h-full object-cover transition-all duration-300 hover:brightness-110"
+                                loading="lazy"
+                            />
+                        </div>
+
+                    ))}
+                </Marquee>
             </div>
           </div>
         </div>
@@ -84,7 +137,7 @@ export default function CommunitySection() {
         {/* ===== CENTER CONTENT ===== */}
         <div className="relative text-center my-12 sm:my-16 md:my-20 z-10">
           <div className="mb-8">
-            <h2 className="font-black tracking-tight leading-none text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
+            <h2 className="font-black tracking-tight leading-none text-4xl sm:text-6xl ">
               <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
                 OUR
               </span>
@@ -103,40 +156,8 @@ export default function CommunitySection() {
             </p>
           </div>
 
-          {/* Testimonials marquee */}
-          <div className="mt-10 sm:mt-12">
-            <Marquee speed={testimonialSpeed} gradient={false} autoFill className="scrollbar-hide">
-              {[...testimonials, ...testimonials].map((t, idx) => (
-                <div
-                  key={`testimonial-${idx}`}
-                  className="first:ml-0 last:mr-0 mx-10  sm:mx-16 md:mx-20 w-[300px] sm:w-[340px] md:w-[360px]
-                             rounded-3xl p-6 sm:p-7
-                             bg-gradient-to-br from-purple-500/25 via-pink-500/20 to-blue-500/25 
-                             backdrop-blur-2xl border border-white/15 hover:border-purple-400/50
-                             transition-all duration-300 hover:scale-105 transform-gpu"
-                >
-                  {/* User info header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="text-2xl">{t.avatar}</div>
-                    <div className="text-left">
-                      <h3 className="font-bold text-white text-base">{t.name}</h3>
-                      <p className="text-purple-300 text-sm font-medium">{t.age} years old</p>
-                    </div>
-                  </div>
-
-                  <p className="text-sm sm:text-base leading-relaxed text-white/95 font-medium">
-                    "{t.text}"
-                  </p>
-
-                  <div className="flex gap-1 mt-4 justify-center">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-sm">★</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </Marquee>
-          </div>
+          {/* Testimonials carousel */}
+         
 
           {/* CTA */}
           <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -145,12 +166,6 @@ export default function CommunitySection() {
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </button>
 
-            <button className="group flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/10 hover:border-purple-400/50">
-              <span>Meet Our Ambassadors</span>
-              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -160,22 +175,21 @@ export default function CommunitySection() {
             <div className="h-full w-full mask-x overflow-hidden scrollbar-hide rotate-[5deg] origin-center -translate-y-2 z-[5]">
               <Marquee speed={imageSpeed} gradient={false} direction="right" autoFill className="scrollbar-hide">
                 {images.slice().reverse().map((src, i) => (
-                  <div
-                    key={`bottom-${i}`}
-                    className="first:ml-0 last:mr-0 mx-6 sm:mx-8 md:mx-10 w-[88px] h-[140px] sm:w-[108px] sm:h-[172px] md:w-[118px] md:h-[188px]
-                               rounded-3xl overflow-hidden ring-1 ring-white/20 transition-all duration-300 transform-gpu hover:scale-105"
-                    style={{
-                      transform: `rotate(${i % 2 ? 2 : -2}deg)`,
-                      filter: "brightness(0.9) saturate(1.1)",
-                    }}
-                  >
-                    <img
-                      src={src}
-                      alt="Community member"
-                      className="w-full h-full object-cover transition-all duration-300 hover:brightness-110"
-                      loading="lazy"
-                    />
-                  </div>
+                    <div
+                        key={`bottom-${i}`}
+                        className="first:ml-0 last:mr-4 mx-4 sm:mx-12 md:mx-14 w-[88px] h-[140px] sm:w-[108px] sm:h-[172px] md:w-[118px] md:h-[188px]
+             rounded-xl overflow-hidden ring-1 ring-white/20 transition-all duration-300
+             transform-gpu hover:scale-105 will-change-transform"
+                        style={{ filter: "brightness(0.9) saturate(1.1)" }}   // ⬅️ no rotate here
+                    >
+                        <img
+                            src={src}
+                            alt="Community member"
+                            className="w-full h-full object-cover transition-all duration-300 hover:brightness-110"
+                            loading="lazy"
+                        />
+                    </div>
+
                 ))}
               </Marquee>
             </div>

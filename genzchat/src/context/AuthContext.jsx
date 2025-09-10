@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useMemo, useState } from "react";
-// import React, { createContext, useEffect, useMemo, useState } from "react";
 import { api, setAuthHeader, clearAuthHeader } from "../services/api";
 import { isValidPhoneNumber } from "libphonenumber-js/min";
 
@@ -55,7 +54,6 @@ export const AuthProvider = ({ children }) => {
   const [timerLeft, setTimerLeft] = useState(0);
 
   // chat page state 
-
   const[userChat,setUserChat]=useState("hello")
   const[aiChat,setAiChat]=useState("hii buddy")
 
@@ -177,8 +175,7 @@ export const AuthProvider = ({ children }) => {
         }
         return;
       }
-
-      // 🔧 FIX: use `status` (res is undefined in catch)
+      
       if (status === 208) {
         setError("This number is already registered. Please log in.");
         updateIsFlipped(false);
@@ -317,23 +314,7 @@ export const AuthProvider = ({ children }) => {
   const login = async () => {
     setError("");
     if (!isValidLoginPhone) { setError("Please enter a valid phone number"); return; }
-
-    if (resetMode) {
-      if (newPass.length < 6) return setError("New password must be at least 6 chars");
-      if (newPass !== confirmNewPass) return setError("Passwords do not match");
-      alert("Login successful (password reset)");
-      setResetMode(false);
-      setPassword(""); setNewPass(""); setConfirmNewPass("");
-      return;
-    }
-
     if (!password) { setError("Password cannot be empty"); return; }
-
-    // if (!isInDB) {
-    //   setIsFlipped(true);
-    //   setMode("signup");
-    //   return;
-    // }
 
     setLoading(true);
     try {
@@ -341,18 +322,20 @@ export const AuthProvider = ({ children }) => {
         phNumber: onlyDigits(loginPhone),
         password,
       });
-      const freshToken = res?.data;
-      if (freshToken) setAuthToken(freshToken);
+      
       if (res.status === 200) {
-        updateMode("chat-page");
-         const tokenIn = res?.data;
-        if (!tokenIn) { setError("Token missing from server response"); return; }
+        const tokenIn = res?.data;
+        if (!tokenIn) { 
+          setError("Token missing from server response"); 
+          return; 
+        }
         setAuthToken(tokenIn);
-      }else {
+        updateMode("chat-page");
+        return true;
+      } else {
         setError(res.data?.message || "Something went wrong");
       }
-
-      setError(res.data?.message || "Login failed");
+      
       return false;
     } catch (err) {
       const msg = (err?.response?.data?.message || err?.message || "").toLowerCase();
@@ -367,7 +350,40 @@ export const AuthProvider = ({ children }) => {
     } finally { setLoading(false); }
   };
 
-  // FORGOT
+  // PASSWORD RESET
+  const resetPassword = async () => {
+    setError("");
+    if (newPass.length < 6) {
+      setError("New password must be at least 6 characters");
+      return;
+    }
+    if (newPass !== confirmNewPass) {
+      setError("Passwords do not match");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await api.post('/reset-password', { newPassword: newPass });
+      
+      if (res.status === 200) {
+        alert("Password reset successfully! Please log in with your new password.");
+        setResetMode(false);
+        setPassword("");
+        setNewPass("");
+        setConfirmNewPass("");
+        logout(); 
+        updateMode('login');
+      } else {
+        setError(res.data?.message || "Could not reset password.");
+      }
+    } catch (e) {
+      setError(e?.response?.data?.message || "An error occurred during password reset.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // FORGOT PASSWORD FLOW
   const startForgot = () => {
     updateMode("forgot");
     setForgotFlipped(false);
@@ -407,14 +423,22 @@ export const AuthProvider = ({ children }) => {
     if (code.length !== 6) { setError("Enter 6-digit OTP"); return; }
     setLoading(true);
     try {
-      await api.post(`/v1/authentication/forgot-password/verify-otp`, null, {
+      const res = await api.post(`/v1/authentication/verify-otp`, null, {
         params: { phoneNumber: onlyDigits(forgotPhone), otp: code },
       });
-      updateMode("login");
-      updateIsFlipped(false);
-      setLoginPhone(forgotPhone);
-      setResetMode(true);
-      setTimerLeft(0);
+
+      if (res.status === 200 && res.data) {
+        const forgotToken = res.data;
+        setAuthToken(forgotToken);
+
+        updateMode("login");
+        updateIsFlipped(false);
+        setLoginPhone(forgotPhone);
+        setResetMode(true); 
+        setTimerLeft(0);
+      } else {
+         setError(res.data?.message || "Invalid OTP or missing token from server.");
+      }
     } catch (e) {
       setError(e?.response?.data?.message || "Invalid OTP");
     } finally { setLoading(false); }
@@ -422,17 +446,14 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setAuthToken(null);
-    // Clear form state
     setShowForm(true);
     setMode('login');
     setIsFlipped(false);
     
-    // Clear localStorage auth state
     if (typeof window !== 'undefined') {
       localStorage.setItem('showForm', 'true');
       localStorage.setItem('authMode', 'login');
       localStorage.setItem('isFlipped', 'false');
-      // Clear chat data on logout
       localStorage.removeItem('chat.user');
       localStorage.removeItem('chat.items');
       localStorage.removeItem('chat.credits');
@@ -442,44 +463,25 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        // show/hide form
         showForm, openForm, closeForm,
-
-        // view + flips
         mode, setMode, isFlipped, setIsFlipped,
         updateMode, updateIsFlipped,
-
-        // login
         loginPhone, setLoginPhone, password, setPassword,
         resetMode, setResetMode, newPass, setNewPass, confirmNewPass, setConfirmNewPass,
-
-        // 
         userChat,setUserChat,
         aiChat,setAiChat,
-
-        // signup
         signupPhone, setSignupPhone, signupFlipped, setSignupFlipped,
         signupOtp, setSignupOtp, signupTimerLeft, setSignupTimerLeft,
-
-        // onboarding
         dp, setDp, username, setUserName, gender, setGender, dob, setDob, terms, setTerms,
         UserOnBoarding,
-
-        // forgot
         forgotFlipped, setForgotFlipped, forgotPhone, setForgotPhone,
         otp, setOtp, timerLeft, setTimerLeft,
-
-        // meta
         error, setError, loading,
-
-        // actions
         sendSignupOtp, resendSignupOtp, verifySignupOtp,
-        login, startForgot, sendForgotOtp, resendForgotOtp, verifyForgotOtp,
-
-        // misc
+        login,
+        resetPassword,
+        startForgot, sendForgotOtp, resendForgotOtp, verifyForgotOtp,
         isInDB,
-
-        // token
         token, logout,
       }}
     >
