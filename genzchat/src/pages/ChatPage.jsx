@@ -350,11 +350,11 @@ export default function ChatPAge() {
         {/* Messages Area with improved styling - Reverse layout */}
         <div
           ref={messagesContainerRef}
-          className="messages-container flex-1 overflow-y-auto overscroll-contain pt-18 px-6 sm:px-8 mt-6 md:mt-10 lg:mt-14 pb-[calc(env(safe-area-inset-bottom)+120px)] flex flex-col-reverse"
+          className="messages-container flex-1 overflow-y-auto overscroll-contain pt-18 px-6 sm:px-8 mt-6 md:mt-10 lg:mt-14 pb-[calc(env(safe-area-inset-bottom)+120px)] flex flex-col"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="max-w-4xl mx-auto space-y-4 px-2 flex flex-col-reverse">
-            {/* Loading indicator - appears at top in normal view (bottom in reverse) */}
+          <div className="max-w-4xl mx-auto space-y-4 px-2 flex flex-col">
+            {/* Loading indicator - appears at top in normal view  */}
             {loading && (
               <div className="flex justify-start mb-4 message-bubble">
                 <div className="flex items-start gap-3 max-w-[85%]">

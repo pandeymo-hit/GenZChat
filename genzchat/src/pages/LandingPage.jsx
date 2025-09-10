@@ -11,6 +11,7 @@ import SocialMedia from '../components/SocialMedia';
 import CTASection from '../components/CTASection';
 import ChatSuggestions from '../components/ChatSuggestions';
 import MockUp from '../components/MockUp';
+import CommunitySection from '../components/CommunitySection';
 
 const LandingPage = () => {
 
@@ -31,6 +32,7 @@ const LandingPage = () => {
        <LanguageSection/>
        {/* <ChatSuggestions/> */}
        <Stats/>
+       <CommunitySection/>
        <CTASection/>
        <Footer/>
 

@@ -1,73 +1,206 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { FiSend, FiImage } from "react-icons/fi";
+import { BsEmojiSmile } from "react-icons/bs";
+import { MdKeyboardVoice, MdAttachFile } from "react-icons/md";
+import girlimg from "../assets/pfp3.jpg";
 
-/**
- * SmartReplyFeature
- * ---------------------------------------------------------------------------
- * A single, drop‑in feature slice that mimics the reference layout:
- *  • Left: rounded showcase panel with an “app/DM” mock and sample IG‑style chat
- *  • Right: headline + marketing copy supplied by the user
- *  • Optional decorative image (mascot) that sits on the top‑right of the slice
- *
- * Props
- *  - topImageSrc?: string  → small decorative image rendered at the very top‑right
- */
-export default function SmartReplyFeature({ topImageSrc }) {
+export default function HighlightCard() {
+  const [chatMessages] = useState([
+    { id: 1, type: "received", text: "Hey everyone! 👋", sender: "AI" },
+    { id: 2, type: "sent", text: "How's everyone doing?" },
+    { id: 3, type: "received", text: "Great! Just working on some new features 🚀", sender: "AI" },
+    { id: 4, type: "received", text: "Anyone up for a video call later?", sender: "AI" },
+    { id: 5, type: "sent", text: "Sure! What time works for everyone?" },
+    { id: 6, type: "received", text: "How about 3 PM?", sender: "AI" },
+    { id: 7, type: "received", text: "Perfect! See you then 😊", sender: "AI" },
+    { id: 8, type: "sent", text: "Sounds good! I'll send the meeting link" },
+    { id: 9, type: "received", text: "Thanks! Looking forward to it", sender: "AI" },
+    { id: 10, type: "received", text: "Should we prepare anything specific?", sender: "AI" },
+    { id: 11, type: "sent", text: "Just bring your ideas for the new project!" },
+    { id: 12, type: "received", text: "Got it! This is going to be exciting 🎉", sender: "AI" },
+  ]);
+
+  const messagesContainerRef = useRef(null);
+  const sectionRef = useRef(null);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const scrollToBottom = (behavior = "smooth") => {
+    const c = messagesContainerRef.current;
+    if (!c) return;
+    c.scrollTo({ top: c.scrollHeight, behavior });
+  };
+  const scrollToMessage = (messageIndex, behavior = "smooth") => {
+    const c = messagesContainerRef.current;
+    if (!c) return;
+    const el = c.children?.[messageIndex];
+    if (!el) return;
+    const top = el.offsetTop - 8;
+    c.scrollTo({ top, behavior });
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setCurrentMessageIndex(0);
+          requestAnimationFrame(() => scrollToBottom("auto"));
+        }
+      },
+      { threshold: 0.2 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!isVisible) return;
+    const t = setInterval(() => {
+      setCurrentMessageIndex((p) => {
+        const n = (p + 1) % chatMessages.length;
+        requestAnimationFrame(() => scrollToMessage(n));
+        return n;
+      });
+    }, 3000);
+    return () => clearInterval(t);
+  }, [isVisible, chatMessages.length]);
+  useEffect(() => {
+    requestAnimationFrame(() => scrollToBottom("auto"));
+  }, []);
+
   return (
-    <section className="relative w-full max-w-7xl mx-auto px-6 md:px-10 py-14 md:py-20">
-      {/* tiny decorative image on top of the component */}
-      {topImageSrc ? (
-        <img
-          src={topImageSrc}
-          alt="decor"
-          className="pointer-events-none select-none absolute -top-6 right-6 h-14 w-14 object-contain drop-shadow-[0_6px_24px_rgba(0,0,0,0.35)]"
-        />
-      ) : null}
+    <section
+      ref={sectionRef}
+      className="relative w-full max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12"
+    >
+      <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
-      {/* Outer rounded container (kept visually close to the reference) */}
-      <div className="relative rounded-[44px] bg-gradient-to-b from-[#1d2a73] via-[#172162] to-[#121a4b] p-1 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.6)]">
-        <div className="relative rounded-[42px] bg-[#0b0f20] overflow-hidden">
-          {/* soft outer glow ring (like the screenshot card rim) */}
-          <div className="pointer-events-none absolute inset-0 rounded-[42px] ring-1 ring-white/10" />
+      {/* OUTER FEATURE CARD */}
+      <div
+        className="
+          relative overflow-hidden rounded-[2rem]
+          bg-gradient-to-br from-[#6aa5ff1a] via-[#b574ff14] to-transparent
+          p-[2px]
+          shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]
+        "
+      >
+        {/* inner surface */}
+        <div className="relative rounded-[2rem] bg-[#0b0f1a]/80 backdrop-blur-xl">
+          {/* subtle ring */}
+          <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-white/5" />
+          {/* corner glows (lowest z) */}
+          <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl z-0" />
+          <div className="pointer-events-none absolute -right-28 -bottom-28 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl z-0" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10 md:gap-14 p-6 md:p-10">
-            {/* LEFT : Gradient panel with device/chat mock */}
+          {/* CONTENT GRID (isolate stacking contexts) */}
+          <div className="relative grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 p-5 sm:p-8 md:p-10 isolate">
+            {/* MEDIA / CHAT */}
             <div className="order-2 lg:order-1">
-              <div className="relative mx-auto w-full max-w-[640px] aspect-[4/3] rounded-[36px] p-1 bg-[radial-gradient(70%_120%_at_30%_20%,rgba(255,0,153,0.35),rgba(124,58,237,0.25)_45%,rgba(59,130,246,0.2)_70%,transparent_100%)]">
-                <div className="absolute inset-0 rounded-[36px] bg-gradient-to-b from-fuchsia-500/15 via-purple-500/10 to-blue-500/15" />
+              <div
+                className="
+                  rounded-[2rem] overflow-hidden
+                  bg-gradient-to-b from-[#1a1f2e] to-[#0f1220]
+                  ring-1 ring-white/5
+                  shadow-[inset_0_0_40px_rgba(0,0,0,0.35)]
+                "
+              >
+                {/* Header (ensure on top) */}
+                <div className="bg-black/30 backdrop-blur-md px-4 py-3 flex items-center gap-3 z-10 relative">
+                  <button className="p-1 hover:opacity-80">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div className="w-8 h-8 rounded-full overflow-hidden">
+                    <img src={girlimg} alt="pfp" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-white font-semibold text-sm">Sakshi</h3>
+                    <p className="text-gray-400 text-xs">online</p>
+                  </div>
+                </div>
 
-                {/* inner content surface */}
-                <div className="relative m-4 md:m-5 rounded-[28px] bg-[#0d1126]/60 backdrop-blur-md shadow-[0_30px_80px_-20px_rgba(0,0,0,0.65)] ring-1 ring-white/10">
-                  {/* header — mimics DM top bar */}
-                 
+                {/* Messages */}
+                <div className="flex flex-col">
+                  <div
+                    ref={messagesContainerRef}
+                    className="
+                      px-4 pt-3 pb-2 space-y-3 overflow-y-auto overscroll-contain scrollbar-hide
+                      max-h-[230px]             /* < sm clamp */
+                      sm:max-h-none sm:h-[40vh] /* >= sm fill panel */
+                      md:h-[44vh] lg:h-[46vh]
+                    "
+                  >
+                    {chatMessages.map((m) => (
+                      <div key={m.id} className={`flex ${m.type === "sent" ? "justify-end" : "justify-start"}`}>
+                        <div className="flex flex-col gap-1 max-w-[80%]">
+                          {m.type === "received" && m.sender && (
+                            <span className="text-[10px] sm:text-xs text-gray-400 ml-1">{m.sender}</span>
+                          )}
+                          <div
+                            className={`rounded-2xl px-3 py-2 text-white text-[12px] sm:text-sm leading-snug ${
+                              m.type === "sent" ? "bg-white/15" : "bg-black/40"
+                            }`}
+                          >
+                            {m.text}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  {/* message list */}
-                 
+                  {/* Input bar (kept above glows) */}
+                  <div className="px-4 py-3 bg-black/20 border-t border-white/5 z-10 relative">
+                    <div className="flex items-center gap-2 bg-black/30 rounded-2xl px-3 py-2">
+                      <button className="p-1 rounded-full hover:bg-white/10">
+                        <BsEmojiSmile className="w-5 h-5 text-gray-300" />
+                      </button>
+                      <input
+                        type="text"
+                        placeholder="Message #main-chat"
+                        className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none text-sm"
+                      />
+                      <button className="p-1 rounded-full hover:bg-white/10">
+                        <MdAttachFile className="w-5 h-5 text-gray-300" />
+                      </button>
+                      <button className="p-1 rounded-full hover:bg-white/10">
+                        <FiImage className="w-5 h-5 text-gray-300" />
+                      </button>
+                      <button className="p-1 rounded-full hover:bg-white/10">
+                        <MdKeyboardVoice className="w-5 h-5 text-gray-300" />
+                      </button>
+                      <button className="bg-gradient-to-r from-fuchsia-500 to-blue-500 p-2 rounded-full hover:brightness-110">
+                        <FiSend className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* RIGHT : Copy block */}
-            <div className="order-1 lg:order-2 text-white">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-                <span className="mr-2">🧠</span>
-                Smart Reply Generation
+            {/* TEXT / COPY (ensure above) */}
+            <div className="order-1 lg:order-2 text-white self-center relative z-10 lg:pl-4">
+              <h2
+                className="
+                  font-extrabold leading-tight tracking-tight
+                  text-2xl xs:text-3xl sm:text-4xl md:text-5xl
+                "
+              >
+                MAKE YOUR
+                <br />
+                <span className="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                  GROUP CHATS
+                </span>
+                <br />
+                MORE FUN
               </h2>
-              <p className="mt-4 text-lg text-white/80 max-w-prose">“No more boring replies.” AI analyzes your chat and suggests witty, engaging responses that keep the vibe alive.</p>
-              <div className="mt-6 space-y-2 text-[17px]">
-                <div className="flex gap-3 items-start">
-                  <span className="shrink-0">💬</span>
-                  <span className="text-white/85">Instead of: <span className="italic text-white/90">“hmm”</span></span>
-                </div>
-                <div className="flex gap-3 items-start">
-                  <span className="shrink-0">👉</span>
-                  <span className="text-white">GenZChat suggests: <span className="font-semibold">“Haha you’re funny, tell me more 🤭”</span></span>
-                </div>
-              </div>
+
+              <p className="mt-4 text-white/90 text-[13px] xs:text-sm sm:text-base md:text-lg max-w-xl">
+                Use custom emoji, stickers, soundboard effects and more to add your personality to your voice, video, or
+                text chat. Set your avatar and a custom status, and write your own profile to show up in chat your way.
+              </p>
             </div>
           </div>
-
-          {/* Soft inner vignette for depth */}
-          <div className="pointer-events-none absolute inset-0 rounded-[42px] shadow-[inset_0_0_120px_rgba(0,0,0,0.35)]" />
         </div>
       </div>
     </section>

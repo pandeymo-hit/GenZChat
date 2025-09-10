@@ -11,6 +11,11 @@ import { ChatProvider } from "../context/ChatContext";
 import EvolvingText from "../components/EvolvingText";
 import ChatPAge from "./ChatPage";
 
+// imgages
+import boy from "../assets/boyy.webp";
+import girl from "../assets/girl.webp";
+import tog from "../assets/tog.webp";
+
 export default function LoginPage() {
   const {
     showForm,
@@ -750,47 +755,85 @@ export default function LoginPage() {
       </ChatProvider>
     );
   }
-  return (
-    <>
-      <div className="min-h-screen w-full flex items-center justify-center 0 p-6 ">
-        <div
-          ref={containerRef}
-          className="relative overflow-hidden rounded-xl w-[316px] z-10 transition-[height] duration-300"
-          style={{ height: containerHeight }}
-        >
-          {/* Conic gradient background — hidden during flips */}
-          <div
-            className={`pointer-events-none absolute inset-[-70px] -z-10
-                        bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
-                        ${showGradient ? "opacity-100" : "opacity-0"}
-                        transition-opacity duration-300
-                        animate-[spin_8s_ease-in-out_infinite]`}
+return (
+  <>
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-start p-6 sm:justify-center sm:pb-24">
+        <div className="relative flex flex-col items-center">
+
+      {/* Mobile (xs) : top image only */}
+        <div className="sm:hidden ">
+          <img
+            src={tog}
+            alt="GenZChat support"
+            loading="lazy"
+            className="h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
           />
-
-          {/* Countdown display */}
-
-          {mode !== "forgot" ? (
-            <div
-              ref={outerFlipRef}
-              className={`absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]
-              transition-transform duration-700 ease-in-out
-              ${preMainFlip ? "scale-[0.98]" : ""}
-              ${delayedIsFlipped ? "[transform:rotateY(180deg)]" : ""}`}
-            >
-              {LoginCard}
-              {SignupCard}
-            </div>
-          ) : (
-            <div className="absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]">
-              {ForgotCard}
-            </div>
-          )}
-
-          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
+
+        {/* Desktop/Tablet (>= sm): side images */}
+        {/* Left side - boy */}
+        <img
+          src={boy}
+          alt="Support - him"
+          loading="lazy"
+          aria-hidden="true"
+          className="hidden sm:block pointer-events-none select-none 
+                     absolute right-full -mr-[60px] top-52
+                      md:top-52 
+                     h-70  lg:h-68 lg:top-55 w-auto
+                     drop-shadow-[0_0px_10px_rgba(59,130,246,0.35)] z-20"
+        />
+        {/* Right side - girl */}
+        <img
+          src={girl}
+          alt="Support - her"
+          loading="lazy"
+          aria-hidden="true"
+          className="hidden sm:block pointer-events-none select-none
+                     absolute left-full -ml-[60px] top-52 md:top-52
+                     h-70  lg:top-55 w-auto
+                     drop-shadow-[0_0px_10px_rgba(236,72,153,0.35)] z-20"
+        />
+
+      {/* Card container */}
+      <div
+        ref={containerRef}
+        className="relative z-10 overflow-hidden rounded-xl w-[316px] transition-[height] duration-300"
+        style={{ height: containerHeight }}
+        >
+        {/* Conic gradient background — hidden during flips */}
+        <div
+          className={`pointer-events-none absolute inset-[-70px] -z-10
+                      bg-[conic-gradient(from_45deg,transparent_45%,#4210be_90%)]
+                      ${showGradient ? "opacity-100" : "opacity-0"}
+                      transition-opacity duration-300
+                      animate-[spin_8s_ease-in-out_infinite]`}
+        />
+
+        {mode !== "forgot" ? (
+          <div
+          ref={outerFlipRef}
+          className={`absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]
+            transition-transform duration-700 ease-in-out
+            ${preMainFlip ? "scale-[0.98]" : ""}
+            ${delayedIsFlipped ? "[transform:rotateY(180deg)]" : ""}`}
+            >
+            {LoginCard}
+            {SignupCard}
+          </div>
+        ) : (
+          <div className="absolute inset-[1px] z-10 p-4 [transform-style:preserve-3d]">
+            {ForgotCard}
+          </div>
+        )}
+
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
-    </>
-  );
+    </div>
+        </div>
+  </>
+);
+
 }
 
 // background: radial-gradient(circle at 0% 0%, rgba(87, 205, 255, 0.41), rgba(87, 205, 255, 0) 21%),

@@ -4,6 +4,7 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 import toonimg from "../assets/toon.png";
+import HighlightCard2 from "./HighlightCard2";
 
 const features = [
   
@@ -39,6 +40,7 @@ const WhyUs = () => {
   return (
     <>
     <HighlightCard />
+    <HighlightCard2/>
     <section id="about" className="min-h-screen py-16">
       <div className="max-w-5xl mx-auto px-4">
         {/* Heading */}

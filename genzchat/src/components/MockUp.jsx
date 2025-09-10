@@ -1,5 +1,5 @@
 // src/components/MockUp.jsx
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { MdNetworkCell, MdWifi, MdMoreVert, MdMic } from "react-icons/md";
 import { BiChevronLeft, BiImage } from "react-icons/bi";
 import { FiSend } from "react-icons/fi";
@@ -55,6 +55,34 @@ export default function MockUp() {
   const STORAGE_KEY = "mockup:lastThreadIndex";
   const [idx, setIdx] = useState(0);
   const ran = useRef(false); // guard for React 18 StrictMode
+  const [scrollY, setScrollY] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const sectionRef = useRef(null);
+
+  // Handle scroll animation
+  useEffect(() => {
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const sectionTop = rect.top;
+        const sectionHeight = rect.height;
+        const windowHeight = window.innerHeight;
+
+        // Calculate scroll progress based on how much the user has scrolled
+        // Precise timing: wrapper covers heading exactly when heading reaches top with minimal scroll
+        const scrollProgress = Math.max(0, Math.min(1, -sectionTop / (windowHeight * 0.3)));
+        setScrollY(scrollProgress);
+
+        // Set visibility based on scroll position
+        setIsVisible(sectionTop <= windowHeight && sectionTop + sectionHeight >= 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (ran.current) return;
@@ -75,34 +103,46 @@ export default function MockUp() {
 
   const { name, avatar, messages } = chatThreads[idx];
 
+  // Calculate transform values based on scroll - wrapper covers heading with minimal scroll
+  const mockupTransform = `translateY(${scrollY * -21}vh)`;
+
   return (
     <>
-      <section className="relative overflow-y-hidden w-full text-white flex flex-col items-center justify-center px-3 mt-1 sm:mt-1 lg:mt-20 sm:px-4 sm:py-10 overflow-x-hidden">
+      <section
+        ref={sectionRef}
+        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-16 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen"
+      >
         <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
-       {/* HERO HEADING — stacked + masked like the ref */}
-<div
-  className="relative w-full z-0 
-             h-[60vw] sm:h-[46vw] md:h-[36vw] lg:h-[32vw]"
->
-  <div className="absolute inset-0 flex items-center justify-center">
-    <h1
-      aria-hidden
-      className="pointer-events-none select-none text-[#464646] uppercase font-extrabold
+        {/* HERO HEADING — stacked + masked like the ref */}
+        <div className="relative w-full z-0 mb-8 sm:mb-12 mt-50 sm:mt-10">
+          <div className="flex flex-col items-center justify-center">
+            <h1
+              aria-hidden
+              className="pointer-events-none select-none text-[#464646] uppercase font-extrabold
                  text-center tracking-[-0.04em] leading-[0.86]"
-    >
-      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">EXPAND</span>
-      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">YOUR WORLD</span>
-      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">MEET</span>
-      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">NEW</span>
-      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">FRIENDS</span>
-      <span className="block text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">ON GENZCHAT</span>
-    </h1>
-  </div>
-</div>
+            >
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">TURN</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">DRY CHATS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">INTO</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">VIBE</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">CONVERSATIONS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">WITH </span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw] bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
+                GENZCHAT
+              </span>
+            </h1>
+          </div>
+        </div>
 
 
-        <div className="relative z-10 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.70]">
+        <div
+          className="relative z-20 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.80]"
+          style={{
+            transform: mockupTransform,
+            transition: 'transform 0.15s ease-out'
+          }}
+        >
           <div className="relative">
             <DecorChats />
             <div className="relative">
@@ -207,6 +247,8 @@ export default function MockUp() {
           </div>
         </div>
       </section>
+
+
     </>
   );
 }
