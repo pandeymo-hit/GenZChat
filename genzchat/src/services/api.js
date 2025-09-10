@@ -2,8 +2,7 @@ import axios from "axios";
 
 // IMPORTANT: baseURL me "ec2-user@" mat rakho
 export const api = axios.create({
-  baseURL: "http://localhost:8800" 
-  // baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_BASEURL || "http://localhost:8800",
 });
 
 export const setAuthHeader = (token) => {
