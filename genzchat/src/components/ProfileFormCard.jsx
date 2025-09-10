@@ -2,6 +2,9 @@
 import React, { useContext, useMemo, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 
+import boy from "../assets/boyy.webp";
+import girl from "../assets/girl.webp";
+import tog from "../assets/tog.webp";
 /**
  * Profile form with ONLY:
  * - black bg
@@ -80,7 +83,43 @@ export default function ProfileFormCard() {
   return (
     <>
       <div className="relative min-h-screen w-full flex items-center justify-center p-6">
-        <div className="relative overflow-hidden rounded-xl w-[316px] min-h-[520px] z-10">
+          {/* Wrapper to anchor side avatars relative to the card */}
+          <div className="relative inline-block isolate">
+              {/* Mobile (xs) : top image only */}
+              <div className="sm:hidden ">
+                  <img
+                      src={tog}
+                      alt="GenZChat support"
+                      loading="lazy"
+                      className="h-40 w-auto mx-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
+                  />
+              </div>
+
+              {/* Desktop/Tablet (>= sm): side images */}
+              <img
+                  src={boy}
+                  alt="Support - him"
+                  loading="lazy"
+                  aria-hidden="true"
+                  className="hidden sm:block pointer-events-none select-none
+                              absolute right-full -mr-[60px] top-62
+                               md:top-58 md:h-60
+                              h-70 md:h-75 lg:h-68 lg:top-62 w-auto
+                              drop-shadow-[0_0px_10px_rgba(59,130,246,0.35)] z-20"
+              />
+              {/* Right side - girl */}
+              <img
+                  src={girl}
+                  alt="Support - her"
+                  loading="lazy"
+                  aria-hidden="true"
+                  className="hidden sm:block pointer-events-none select-none
+                              absolute left-full -ml-[60px] top-62 md:top-58
+                              h-70 md:h-75 lg:h-68 lg:top-62 w-auto
+                              drop-shadow-[0_0px_10px_rgba(236,72,153,0.35)] z-20"
+              />
+
+              <div className="relative overflow-hidden rounded-xl w-[316px] min-h-[520px] z-10">
           {/* Animated conic gradient border - same as login page */}
           <div
             className="pointer-events-none absolute inset-[-70px] -z-10
@@ -239,6 +278,8 @@ export default function ProfileFormCard() {
           ${selectStyles}
         `}</style>
       </div>
+      </div>
+
     </>
   );
 }
