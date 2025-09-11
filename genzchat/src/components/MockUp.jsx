@@ -60,29 +60,47 @@ export default function MockUp() {
   const sectionRef = useRef(null);
 
   // Handle scroll animation
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (sectionRef.current) {
+  //       const rect = sectionRef.current.getBoundingClientRect();
+  //       const sectionTop = rect.top;
+  //       const sectionHeight = rect.height;
+  //       const windowHeight = window.innerHeight;
+
+  //       // Calculate scroll progress based on how much the user has scrolled
+  //       // Precise timing: wrapper covers heading exactly when heading reaches top with minimal scroll
+  //       const scrollProgress = Math.max(0, Math.min(1, -sectionTop / (windowHeight * 0.)));
+  //       setScrollY(scrollProgress);
+
+  //       // Set visibility based on scroll position
+  //       setIsVisible(sectionTop <= windowHeight && sectionTop + sectionHeight >= 1);
+  //     }
+  //   };
+
+  //   window.addEventListener('scroll', handleScroll);
+  //   handleScroll(); // Initial call
+
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, []);
   useEffect(() => {
-    const handleScroll = () => {
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const sectionTop = rect.top;
-        const sectionHeight = rect.height;
-        const windowHeight = window.innerHeight;
+  const handleScroll = () => {
+    if (sectionRef.current) {
+      const rect = sectionRef.current.getBoundingClientRect();
+      const sectionTop = rect.top;
+      const windowHeight = window.innerHeight;
 
-        // Calculate scroll progress based on how much the user has scrolled
-        // Precise timing: wrapper covers heading exactly when heading reaches top with minimal scroll
-        const scrollProgress = Math.max(0, Math.min(1, -sectionTop / (windowHeight * 0.3)));
-        setScrollY(scrollProgress);
+      // map range [windowHeight → 0] → [0 → 1]
+      const rawProgress = 1 - Math.max(0, Math.min(1, sectionTop / windowHeight));
+      setScrollY(rawProgress);
+    }
+  };
 
-        // Set visibility based on scroll position
-        setIsVisible(sectionTop <= windowHeight && sectionTop + sectionHeight >= 0);
-      }
-    };
+  window.addEventListener("scroll", handleScroll);
+  handleScroll();
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial call
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     if (ran.current) return;
@@ -104,13 +122,16 @@ export default function MockUp() {
   const { name, avatar, messages } = chatThreads[idx];
 
   // Calculate transform values based on scroll - wrapper covers heading with minimal scroll
-  const mockupTransform = `translateY(${scrollY * -15}vh)`;
+  // const mockupTransform = `translateY(${scrollY * -21}vh)`;
+  const maxTranslate = 21; // vh me jitna upar le jaana hai
+const mockupTransform = `translateY(${-scrollY * maxTranslate}vh)`;
+
 
   return (
     <>
       <section
         ref={sectionRef}
-        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-6 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen  max-sm:max-h-[500px] max-sm:max-h-[600px]"
+        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-6 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen  max-sm:max-h-[500px] max-md:max-h-[600px]"
         // className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-16 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen"
       >
         <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
