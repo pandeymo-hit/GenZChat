@@ -71,14 +71,6 @@ const chats = [
 const ChatSlider = () => {
   return (
     <section className="max-w-7xl mx-auto md:px-12 py-10  text-white w-full bg-black/20 backdrop-blur-4xl">
-      <div className="px-4 sm:px-6 md:px-9 mb-6 md:pb-9 text-center md:text-left">
-        <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
-          Real Problems, <span className="">Real Solutions</span>
-        </h2>
-        <p className="text-sm sm:text-base text-gray-300">
-          Swipe to see how AI handles every situations
-        </p>
-      </div>
 
       <Swiper
         effect={"coverflow"}

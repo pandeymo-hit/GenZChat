@@ -2,47 +2,49 @@ import React, { useMemo } from "react";
 import Typewriter from "typewriter-effect";
 
 export default function TypewriterHeading() {
-  const words = ["Coach", "Buddy", "Friend"];
+  const words = ["Convo Starter", "Dating Coach", "Flirty Friend"];
+
+  // longest word for ghost
   const longest = useMemo(
     () => words.reduce((a, b) => (a.length >= b.length ? a : b), ""),
-    []
+    [words]
   );
-  const ghostWord = `${longest}\u00A0`; // extra space for cursor width
+  const ghostWord = `${longest}\u00A0`;
 
   return (
     <h1
-      className="text-5xl lg:text-8xl font-extrabold leading-tight
+      className=" sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl 
+                 font-extrabold leading-tight text-center px-4 max-w-full
                  text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text"
     >
-      {/* keep this phrase stable; optional nowrap on larger screens */}
-      <span className="sm:whitespace-nowrap">
+      <span className="block text-5xl">
         Your Personal AI{" "}
-        <span className="inline-grid align-baseline pl-2 text-center">
-          {/* Ghost sets fixed width */}
+        <span className=" inline-grid align-baseline pl-2 flex-shrink-0">
+          {/* Ghost keeps consistent width */}
           <span
-            className="invisible col-start-1 row-start-1 select-none"
+            className="invisible col-start-1 row-start-1 select-none inline-block"
             aria-hidden="true"
           >
             {ghostWord}
           </span>
 
-          {/* Live typewriter overlays in same grid cell */}
-          <span className="col-start-1 row-start-1">
+          {/* Typewriter overlays ghost */}
+          <span className="col-start-1 row-start-1 inline-block">
             <Typewriter
               options={{
                 strings: words,
                 autoStart: true,
                 loop: true,
-                delay: 75,
-                deleteSpeed: 50,
+                delay: 65,
+                deleteSpeed: 40,
+                cursor: '|',
+                cursorClassName: 'text-white animate-pulse'
               }}
             />
           </span>
         </span>
       </span>
-
-      <br />
-      <span className="text-gray-200">GenZChat</span>
+      <span className="text-gray-200 block text-5xl">GenZChat</span>
     </h1>
   );
 }

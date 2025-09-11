@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FiSend, FiImage } from "react-icons/fi";
-import { BsEmojiSmile } from "react-icons/bs";
-import { MdKeyboardVoice, MdAttachFile } from "react-icons/md";
+import { FiSend } from "react-icons/fi";
+import { MdAttachFile } from "react-icons/md";
 import girlimg from "../assets/pfp3.jpg";
 
 export default function HighlightCard() {
@@ -88,11 +87,11 @@ export default function HighlightCard() {
         <div className="relative rounded-[2rem] bg-[#0b0f1a]/80 backdrop-blur-xl">
           {/* subtle ring */}
           <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-white/5" />
-          {/* corner glows (lowest z) */}
+          {/* corner glows */}
           <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl z-0" />
           <div className="pointer-events-none absolute -right-28 -bottom-28 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl z-0" />
 
-          {/* CONTENT GRID (isolate stacking contexts) */}
+          {/* CONTENT GRID */}
           <div className="relative grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 p-5 sm:p-8 md:p-10 isolate">
             {/* MEDIA / CHAT */}
             <div className="order-2 lg:order-1">
@@ -104,7 +103,7 @@ export default function HighlightCard() {
                   shadow-[inset_0_0_40px_rgba(0,0,0,0.35)]
                 "
               >
-                {/* Header (ensure on top) */}
+                {/* Header */}
                 <div className="bg-black/30 backdrop-blur-md px-4 py-3 flex items-center gap-3 z-10 relative">
                   <button className="p-1 hover:opacity-80">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,10 +124,9 @@ export default function HighlightCard() {
                   <div
                     ref={messagesContainerRef}
                     className="
-                      px-4 pt-3 pb-2 space-y-3 overflow-y-auto overscroll-contain scrollbar-hide
-                      max-h-[230px]             /* < sm clamp */
-                      sm:max-h-none sm:h-[40vh] /* >= sm fill panel */
-                      md:h-[44vh] lg:h-[46vh]
+                      px-4 pt-3 pb-2 space-y-3 
+                      overflow-y-hidden md:overflow-y-auto overscroll-none scrollbar-hide
+                      max-h-[200px] sm:h-[40vh] md:h-[44vh] lg:h-[46vh]
                     "
                   >
                     {chatMessages.map((m) => (
@@ -138,9 +136,8 @@ export default function HighlightCard() {
                             <span className="text-[10px] sm:text-xs text-gray-400 ml-1">{m.sender}</span>
                           )}
                           <div
-                            className={`rounded-2xl px-3 py-2 text-white text-[12px] sm:text-sm leading-snug ${
-                              m.type === "sent" ? "bg-white/15" : "bg-black/40"
-                            }`}
+                            className={`rounded-2xl px-3 py-2 text-white text-[12px] sm:text-sm leading-snug ${m.type === "sent" ? "bg-white/15" : "bg-black/40"
+                              }`}
                           >
                             {m.text}
                           </div>
@@ -149,28 +146,23 @@ export default function HighlightCard() {
                     ))}
                   </div>
 
-                  {/* Input bar (kept above glows) */}
-                  <div className="px-4 py-3 bg-black/20 border-t border-white/5 z-10 relative">
+                  {/* Input bar */}
+                  <div className="px-4 py-3 bg-transparent border-t border-white/5 z-10 relative">
                     <div className="flex items-center gap-2 bg-black/30 rounded-2xl px-3 py-2">
-                      <button className="p-1 rounded-full hover:bg-white/10">
-                        <BsEmojiSmile className="w-5 h-5 text-gray-300" />
-                      </button>
-                      <input
-                        type="text"
-                        placeholder="Message #main-chat"
-                        className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none text-sm"
-                      />
                       <button className="p-1 rounded-full hover:bg-white/10">
                         <MdAttachFile className="w-5 h-5 text-gray-300" />
                       </button>
-                      <button className="p-1 rounded-full hover:bg-white/10">
-                        <FiImage className="w-5 h-5 text-gray-300" />
-                      </button>
-                      <button className="p-1 rounded-full hover:bg-white/10">
-                        <MdKeyboardVoice className="w-5 h-5 text-gray-300" />
-                      </button>
-                      <button className="bg-gradient-to-r from-fuchsia-500 to-blue-500 p-2 rounded-full hover:brightness-110">
-                        <FiSend className="w-4 h-4 text-white" />
+                      <input
+                        type="text"
+                        placeholder="Type a playful reply…"
+                        readOnly
+                        onFocus={(e) => e.target.blur()}   // 🚫 keyboard disable
+                        className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none text-sm cursor-not-allowed"
+                      />
+                      <button className="relative p-[1px] rounded-full bg-gradient-to-r from-fuchsia-500 to-blue-500 hover:brightness-110">
+                        <div className="flex items-center justify-center bg-black rounded-full w-8 h-8">
+                          <FiSend className="w-4 h-4 text-white" />
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -178,26 +170,25 @@ export default function HighlightCard() {
               </div>
             </div>
 
-            {/* TEXT / COPY (ensure above) */}
+            {/* TEXT / COPY */}
             <div className="order-1 lg:order-2 text-white self-center relative z-10 lg:pl-4">
               <h2
                 className="
                   font-extrabold leading-tight tracking-tight
-                  text-2xl xs:text-3xl sm:text-4xl md:text-5xl
+                  text-2xl xs:text-3xl sm:text-3xl md:text-5xl
                 "
               >
-                MAKE YOUR
-                <br />
+                SMART RESPONSE
+                <br className="" />
                 <span className="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                  GROUP CHATS
+                  GENRATION
                 </span>
-                <br />
-                MORE FUN
               </h2>
 
               <p className="mt-4 text-white/90 text-[13px] xs:text-sm sm:text-base md:text-lg max-w-xl">
                 Use custom emoji, stickers, soundboard effects and more to add your personality to your voice, video, or
-                text chat. Set your avatar and a custom status, and write your own profile to show up in chat your way.
+                text chat.
+                <br /> Set your avatar and a custom status, and write your own profile to show up in chat your way.
               </p>
             </div>
           </div>

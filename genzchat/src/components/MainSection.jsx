@@ -14,35 +14,54 @@ const MainSection = () => {
   const lastY = useRef(typeof window !== 'undefined' ? window.scrollY : 0);
   const ticking = useRef(false);
 
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      const delta = y - lastY.current; // negative = scrolling up
-      lastY.current = y;
+  // useEffect(() => {
+  //   const onScroll = () => {
+  //     const y = window.scrollY;
+  //     const delta = y - lastY.current; // negative = scrolling up
+  //     lastY.current = y;
 
-      if (ticking.current) return;
-      ticking.current = true;
+  //     if (ticking.current) return;
+  //     ticking.current = true;
 
-      requestAnimationFrame(() => {
-        if (delta < -4) {
-          // ⬆️ scrolling UP → images go FAR (back to original)
-          setShiftVW(0);
-        } else if (delta > 4) {
-          // ⬇️ scrolling DOWN → images come CLOSER
-          setShiftVW(12); // tweak 8–16 as you like
-        }
-        ticking.current = false;
-      });
-    };
+  //     requestAnimationFrame(() => {
+  //       if (delta < -4) {
+  //         // ⬆️ scrolling UP → images go FAR (back to original)
+  //         setShiftVW(0);
+  //       } else if (delta > 4) {
+  //         // ⬇️ scrolling DOWN → images come CLOSER
+  //         setShiftVW(18); // tweak 8–16 as you like
+  //       }
+  //       ticking.current = false;
+  //     });
+  //   };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  //   window.addEventListener('scroll', onScroll, { passive: true });
+  //   return () => window.removeEventListener('scroll', onScroll);
+  // }, []);
+
+useEffect(() => {
+  const maxShift = 18;   // max door hone ki limit
+  const factor = 30;     // scroll sensitivity (kam = fast, zyada = slow)
+
+  const onScroll = () => {
+    const y = window.scrollY;
+
+    // proportionally calculate shiftVW
+    // clamp between 0 and maxShift
+    const newShift = Math.max(0, Math.min(maxShift, y / factor));
+
+    setShiftVW(newShift);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
+
 
   return (
     <FadeUpSection>
       <section
-        className="relative mx-auto mt-5 overflow-visible" // was overflow-hidden
+        className="relative mx-auto mt-5 sm:mt-8 md:mt-10 overflow-visible" // was overflow-hidden
         style={{
           // ek hi jagah size control — screen ke hisaab se auto
           '--hero-img-h': 'clamp(170px, 30vw, 440px)',
@@ -87,7 +106,7 @@ const MainSection = () => {
           src={girl}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[75px] left-5 sm:left-22 
+          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[-75px] left-6 sm:left-22 
           w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
           drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
           transition-transform duration-1500 ease-out will-change-transform  md:left-25 lg:left-50"
@@ -101,7 +120,7 @@ const MainSection = () => {
           src={boy}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[75px] right-5 sm:right-22
+          className="pointer-events-none select-none absolute -bottom-[30px] sm:-bottom-[70px] md:-bottom-[50px] lg:bottom-[-75px] right-6 sm:right-22
           w-[clamp(140px,28vw,420px)] max-h-[50vh] object-contain z-0
           drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)]
           transition-transform duration-1500 ease-out will-change-transform md:right-25 lg:right-50"

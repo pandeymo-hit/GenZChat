@@ -353,7 +353,7 @@ export default function ChatPAge() {
           className="messages-container flex-1 overflow-y-auto overscroll-contain pt-18 px-6 sm:px-8 mt-6 md:mt-10 lg:mt-14 pb-[calc(env(safe-area-inset-bottom)+120px)] flex flex-col"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="max-w-4xl mx-auto space-y-4 px-2 flex flex-col">
+          <div className="max-w-5xl mx-auto space-y-4 px-2 flex flex-col">
             {/* Loading indicator - appears at top in normal view  */}
             {loading && (
               <div className="flex justify-start mb-4 message-bubble">
@@ -419,18 +419,18 @@ export default function ChatPAge() {
                   <div
                     className={`relative ${
                       chat.sender === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-blue-500 text-white"
-                        : "bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 text-gray-100"
+                        ? "bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 text-gray-100"
+                        : "bg-transparent"
                     } rounded-2xl px-4 py-3 shadow-lg`}
                   >
                     {/* Message tail */}
-                    <div
+                    {/* <div
                       className={`absolute top-3 w-3 h-3 transform rotate-45 ${
                         chat.sender === "user"
                           ? "bg-gradient-to-br from-purple-500 to-blue-500 -right-1"
                           : "bg-gray-800/60 border-l border-t border-gray-700/50 -left-1"
                       }`}
-                    />
+                    /> */}
 
                     {/* Message content */}
                     {chat.text && (
@@ -450,19 +450,7 @@ export default function ChatPAge() {
                       </div>
                     )}
 
-                    {/* Timestamp */}
-                    <div
-                      className={`flex items-center gap-1 mt-2 text-[10px] ${
-                        chat.sender === "user"
-                          ? "text-purple-100"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      <span>{chat.time}</span>
-                      {chat.sender === "user" && (
-                        <FiCheck className="w-3 h-3" />
-                      )}
-                    </div>
+                   
                   </div>
                 </div>
               </div>
@@ -502,10 +490,10 @@ export default function ChatPAge() {
               <div
                 className="relative flex items-center gap-2 sm:gap-3
                 rounded-2xl border border-gray-700/50
-                bg-gray-900/80 backdrop-blur-xl
+                bg-gray-900/90 backdrop-blur-xl
                 px-3 sm:px-4 py-2.5 sm:py-3
                 shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-                hover:border-gray-600/50 transition-colors"
+                hover:border-gray-600/50 transition-colors mb-8"
               >
                 {/* Text input */}
                 <input
@@ -575,20 +563,6 @@ export default function ChatPAge() {
                 </div>
               </div>
 
-              {/* Credits indicator */}
-              <div className="flex items-center justify-center mt-3">
-                <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full
-                  bg-gray-800/60 backdrop-blur-sm border border-gray-700/50
-                  text-xs text-gray-300"
-                >
-                  <FiZap className="w-3.5 h-3.5 text-blue-400" />
-                  <span className="hidden sm:inline">
-                    {credits} messages remaining
-                  </span>
-                  <span className="sm:hidden">{credits} left</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>

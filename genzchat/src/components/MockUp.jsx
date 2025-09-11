@@ -193,7 +193,7 @@ export default function MockUp() {
                     </div>
 
                     {/* Messages */}
-                    <div className="h-[70%] overflow-y-auto space-y-4 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] pr-1">
+                    <div className="h-[70%] overflow-y-hidden space-y-4 scrollbar-hide [scrollbar-width:none] [-ms-overflow-style:none] pr-1">
                       {messages.map((m, i) => (
                         <Bubble key={i} align={m.align}>
                           {m.text}

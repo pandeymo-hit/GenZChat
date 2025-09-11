@@ -13,7 +13,7 @@ import ChatPAge from "./ChatPage";
 // imgages
 import boy from "../assets/boyy.webp";
 import girl from "../assets/girl.webp";
-import tog from "../assets/tog.webp";
+import tog from "../assets/small_img.webp";
 
 export default function LoginPage() {
   const {
@@ -351,7 +351,7 @@ export default function LoginPage() {
   );
 
   const LoginCard = (
-    <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden] backdrop-blur-[90px] bg-black overflow-hidden">
+    <div className="absolute inset-0 rounded-xl p-7 h-full w-full [backface-visibility:hidden] backdrop-blur-[90px] bg-black/85 overflow-hidden">
       <GlowDecor />
       <form
         onSubmit={resetMode ? handleResetPassword : handleLogin}
@@ -727,12 +727,12 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-start p-6 sm:justify-center sm:pb-24">
       <div className="relative flex flex-col items-center">
-        <div className="sm:hidden">
+        <div className="top- sm:hidden z-20 ">
           <img
             src={tog}
             alt="GenZChat support"
             loading="lazy"
-            className="h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)]"
+            className="  h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)] "
           />
         </div>
         <img

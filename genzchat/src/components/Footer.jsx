@@ -55,7 +55,7 @@ const Footer = () => {
 
         {/* bottom line */}
         <div className="mt-8 pt-6 border-t border-white/10">
-          <p className="text-center text-xs text-gray-500">© {year} GenzChat. All rights reserved.</p>
+          <p className="text-center text-xs text-gray-500">© {year}All rights reserved || GenzChat Labs Pvt Ltd.</p>
         </div>
       </div>
     </footer>

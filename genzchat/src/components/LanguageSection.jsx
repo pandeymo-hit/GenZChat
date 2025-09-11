@@ -35,7 +35,7 @@ const LanguageSection = () => {
         {/* Header */}
         <div className="mb-14 text-center">
           <h2 className="text-3xl md:text-5xl pb-2 font-extrabold mb-10 bg-gradient-to-r from-purple-500 via-pink-400 to-blue-400 text-transparent bg-clip-text animate-[gradientShift_4s_linear_infinite]">
-            We don't just translate.We talk like your Vibe.
+            We Don't Just Translate.We Talk Like Your Vibe.
           </h2>
           <ChatSuggestions/>
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">

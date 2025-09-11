@@ -39,19 +39,21 @@ const CTASection = () => {
 
         {/* Subtext */}
         <p className="text-gray-300/90 text-lg mb-8">
-          Join <span className="font-bold text-purple-400">20,000+ Indians</span>who already unlocked better chats. 
+          Join <span className="font-bold text-purple-400">20,000+ Indians</span>who already unlocked better chats.
         </p>
 
         {/* Button */}
         <button
           onClick={() => openForm("signup")}
-          className="bg-gradient-to-r from-purple-500 to-blue-500
-                     text-white font-semibold py-3 px-8 rounded-xl
-                     transition-transform duration-300 hover:scale-110
-                     hover:shadow-[0_0_25px_rgba(59,130,246,0.7)]"
+          type="button"
+          className="relative inline-flex items-center justify-center overflow-hidden rounded-[100px] p-[2px] btn-aurora  transition-transform duration-300 hover:scale-110"
         >
-          🚀 Try Now — It's Free
+          <span className="relative z-[1] inline-flex items-center justify-center gap-2 rounded-[100px] px-8 py-3.5 md:px-10 md:py-4 text-white text-base sm:text-lg font-semibold bg-black/80 shadow-md">
+            {/* <FaPaperPlane className="w-5 h-5" /> */}
+            🚀 Try Now — It's Free
+          </span>
         </button>
+
 
         {/* Disclaimer */}
         <p className="text-gray-400 text-sm mt-4">

@@ -159,14 +159,20 @@ export default function CommunitySection() {
           {/* Testimonials carousel */}
          
 
-          {/* CTA */}
-          <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="group relative overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_rgba(168,85,247,0.5)]">
-              <span className="relative z-10">Join Our Community</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            </button>
+          {/* Button with Aurora Glow Effect */}
+<button
+  onClick={() => openForm("signup")}
+  type="button"
+  className="btn-aurora group relative overflow-hidden rounded-full px-[2px] py-[2px] transition-transform duration-300 hover:scale-110"
+>
+  {/* Glow Layer */}
+  <div className="absolute inset-0 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
 
-          </div>
+  {/* Inner Button Content */}
+  <span className="relative z-10 inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 md:px-10 md:py-4 text-white text-base sm:text-lg font-semibold bg-black/80 shadow-md">
+   Join Our Community
+  </span>
+</button>
         </div>
 
         {/* ===== BOTTOM STRIP ===== */}

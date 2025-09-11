@@ -46,7 +46,7 @@ const WhyUs = () => {
         {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl pb-2 font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
-            Why GenZChat Works
+            WHY GENZCHAT WORKS
           </h2>
           <p className="text-gray-400 mt-3">
             AI-powered features designed to make your dating conversations irresistible
