@@ -104,13 +104,14 @@ export default function MockUp() {
   const { name, avatar, messages } = chatThreads[idx];
 
   // Calculate transform values based on scroll - wrapper covers heading with minimal scroll
-  const mockupTransform = `translateY(${scrollY * -21}vh)`;
+  const mockupTransform = `translateY(${scrollY * -15}vh)`;
 
   return (
     <>
       <section
         ref={sectionRef}
-        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-16 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen"
+        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-6 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen  max-sm:max-h-[500px] max-sm:max-h-[600px]"
+        // className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-16 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen"
       >
         <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
