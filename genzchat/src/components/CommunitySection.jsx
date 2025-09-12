@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee"; // npm i react-fast-marquee
-
+import img from '../assets/pfp4.jpg';
+import img1 from '../assets/pfp3.jpg';
 /** 👉 Replace with your image URLs (more items = richer loop) */
 const images = [
-  "/avatars/1.jpg","/avatars/2.jpg","/avatars/3.jpg","/avatars/4.jpg",
-  "/avatars/5.jpg","/avatars/6.jpg","/avatars/7.jpg","/avatars/8.jpg",
-  "/avatars/1.jpg","/avatars/2.jpg","/avatars/3.jpg","/avatars/4.jpg", // duplicates for smoother loop
+img,img1,
 ];
 
 /** Community testimonials */

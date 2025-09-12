@@ -96,13 +96,13 @@ export default function MockUp() {
         startTriggerOffset = windowHeight * 0.5; // Starts earlier on larger screens
       }
       if (windowHeight > 1000) {
-        startTriggerOffset = windowHeight * 0.4; // Starts even earlier for very large screens
+        startTriggerOffset = windowHeight * 0.1; // Starts even earlier for very large screens
       }
 
       const scrollStart = windowHeight - startTriggerOffset;
 
       // Animation starts only after this threshold is passed
-      const rawProgress = Math.min(1, Math.max(0, (scrollStart - sectionTop) / (sectionHeight * 0.4)));
+      const rawProgress = Math.min(1, Math.max(0, (scrollStart - sectionTop) / (sectionHeight * 0.2)));
       setScrollY(rawProgress);
 
       // Set visibility (optional)
@@ -141,19 +141,20 @@ export default function MockUp() {
     <>
       <section
         ref={sectionRef}
-        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center mt-10 sm:mt-0 px-3 py-6 sm:px-4 sm:pt-10 overflow-x-hidden min-h-screen max-sm:max-h-[600px] max-md:max-h-[1450px]"
+        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center mt-10 sm:mt-0 px-3 py-6 sm:px-4 sm:pt-10 overflow-x-hidden min-h-screen max-sm:max-h-[800px] max-md:max-h-[1450px]"
       >
         <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
         {/* HERO HEADING — stacked + masked like the ref */}
-        <div className="relative w-full z-0 mb-8 sm:mb-22 mt-60 sm:mt-10">
+        <div className="relative w-full z-0 mb-8 sm:mb-22 mt-60 sm:mt-20">
           <div className="flex flex-col items-center justify-center">
             <h1
               aria-hidden
               className="pointer-events-none select-none text-[#464646] uppercase font-extrabold text-center tracking-[-0.04em] leading-[0.86]"
             >
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">TURN</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">DRY CHATS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">{"                         "}</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">{"                         "}</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">TURN DRY CHATS</span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">INTO</span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">VIBE</span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">CONVERSATIONS</span>

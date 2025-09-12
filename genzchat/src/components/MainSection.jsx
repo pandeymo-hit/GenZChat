@@ -29,7 +29,7 @@ const MainSection = () => {
           setShiftVW(0);
         } else if (delta > 4) {
           // ⬇️ scrolling DOWN → images come CLOSER
-          setShiftVW(12); // tweak 8–16 as you like
+          setShiftVW(8); // tweak 8–16 as you like
         }
         ticking.current = false;
       });
@@ -67,7 +67,7 @@ const MainSection = () => {
 
             <div className="pt-3 sm:pt-6">
               <button
-                onClick={() => openForm("signup")}
+                // onClick={() => openForm("signup")}
                 onClick={openSignupForm}
                 type="button"
                 className="btn-aurora relative inline-flex items-center justify-center overflow-hidden rounded-[100px] p-[2px]"
