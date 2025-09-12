@@ -20,13 +20,25 @@ const chatThreads = [
       { align: "right", text: "Good morning 🌞" },
       { align: "left", text: "(3 ghante baad)" },
       { align: "left", text: "Morning 🙂" },
-      { align: "right", text: "Wah, tumhare “morning” ke liye toh suraj overtime kar raha hoga 😂" },
+      {
+        align: "right",
+        text: "Wah, tumhare “morning” ke liye toh suraj overtime kar raha hoga 😂",
+      },
       { align: "left", text: "😅 Sorry thoda busy thi" },
-      { align: "right", text: "Busy toh main bhi hoon… par tumhara reply ka wait karna full-time job ban gaya hai 😏" },
+      {
+        align: "right",
+        text: "Busy toh main bhi hoon… par tumhara reply ka wait karna full-time job ban gaya hai 😏",
+      },
       { align: "left", text: "Hahaha pagal ho tum" },
-      { align: "right", text: "Pagal toh hoon… warna 3 ghante baad bhi tumse baat karne ki excitement nahi hoti." },
+      {
+        align: "right",
+        text: "Pagal toh hoon… warna 3 ghante baad bhi tumse baat karne ki excitement nahi hoti.",
+      },
       { align: "left", text: "🤭 Acha acha, ab main fast reply dungi!" },
-      { align: "right", text: "Good, warna mujhe “slowest texter award” ka nomination dena padta tumhe 🏆😂" },
+      {
+        align: "right",
+        text: "Good, warna mujhe “slowest texter award” ka nomination dena padta tumhe 🏆😂",
+      },
       { align: "left", text: "Hahaha shut up!" },
     ],
   },
@@ -38,15 +50,24 @@ const chatThreads = [
       { align: "left", text: "Hii 🙂" },
       { align: "right", text: "Kya kar rahi ho?" },
       { align: "left", text: "Kuch nahi, bas chill" },
-      { align: "right", text: "Tumhare replies dekh ke lag raha hai ki chill ka matlab “boring mode on” hai 😂" },
+      {
+        align: "right",
+        text: "Tumhare replies dekh ke lag raha hai ki chill ka matlab “boring mode on” hai 😂",
+      },
       { align: "left", text: "😅 haha" },
       { align: "right", text: "Waise seriously, tumhara weekend kaise jaata hai usually?" },
       { align: "left", text: "Bas ghar pe, movies dekhna ya so jana" },
       { align: "right", text: "Matlab tum “Netflix + blanket” wali ho 😏" },
       { align: "left", text: "Hahaha maybe" },
-      { align: "right", text: "Accha ek honest sawaal… agar tumhe choose karna ho: Netflix marathon ya ek unexpected long drive?" },
+      {
+        align: "right",
+        text: "Accha ek honest sawaal… agar tumhe choose karna ho: Netflix marathon ya ek unexpected long drive?",
+      },
       { align: "left", text: "Umm… long drive sounds fun 😅" },
-      { align: "right", text: "Perfect, fir tum ready ho ek proper boring-chat-rescue mission ke liye 😉" },
+      {
+        align: "right",
+        text: "Perfect, fir tum ready ho ek proper boring-chat-rescue mission ke liye 😉",
+      },
     ],
   },
 ];
@@ -59,48 +80,40 @@ export default function MockUp() {
   const [isVisible, setIsVisible] = useState(true);
   const sectionRef = useRef(null);
 
-  // Handle scroll animation
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     if (sectionRef.current) {
-  //       const rect = sectionRef.current.getBoundingClientRect();
-  //       const sectionTop = rect.top;
-  //       const sectionHeight = rect.height;
-  //       const windowHeight = window.innerHeight;
-
-  //       // Calculate scroll progress based on how much the user has scrolled
-  //       // Precise timing: wrapper covers heading exactly when heading reaches top with minimal scroll
-  //       const scrollProgress = Math.max(0, Math.min(1, -sectionTop / (windowHeight * 0.)));
-  //       setScrollY(scrollProgress);
-
-  //       // Set visibility based on scroll position
-  //       setIsVisible(sectionTop <= windowHeight && sectionTop + sectionHeight >= 1);
-  //     }
-  //   };
-
-  //   window.addEventListener('scroll', handleScroll);
-  //   handleScroll(); // Initial call
-
-  //   return () => window.removeEventListener('scroll', handleScroll);
-  // }, []);
   useEffect(() => {
-  const handleScroll = () => {
-    if (sectionRef.current) {
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+
       const rect = sectionRef.current.getBoundingClientRect();
       const sectionTop = rect.top;
+      const sectionHeight = rect.height;
       const windowHeight = window.innerHeight;
 
-      // map range [windowHeight → 0] → [0 → 1]
-      const rawProgress = 1 - Math.max(0, Math.min(1, sectionTop / windowHeight));
+      // Adjust the start trigger offset for different screen sizes
+      let startTriggerOffset = windowHeight * 0.7; // Default for small screens
+
+      if (windowHeight > 800) {
+        startTriggerOffset = windowHeight * 0.5; // Starts earlier on larger screens
+      }
+      if (windowHeight > 1000) {
+        startTriggerOffset = windowHeight * 0.4; // Starts even earlier for very large screens
+      }
+
+      const scrollStart = windowHeight - startTriggerOffset;
+
+      // Animation starts only after this threshold is passed
+      const rawProgress = Math.min(1, Math.max(0, (scrollStart - sectionTop) / (sectionHeight * 0.4)));
       setScrollY(rawProgress);
-    }
-  };
 
-  window.addEventListener("scroll", handleScroll);
-  handleScroll();
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
+      // Set visibility (optional)
+      setIsVisible(sectionTop <= windowHeight && sectionTop + sectionHeight >= 1);
+    };
 
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (ran.current) return;
@@ -121,48 +134,42 @@ export default function MockUp() {
 
   const { name, avatar, messages } = chatThreads[idx];
 
-  // Calculate transform values based on scroll - wrapper covers heading with minimal scroll
-  // const mockupTransform = `translateY(${scrollY * -21}vh)`;
-  const maxTranslate = 21; // vh me jitna upar le jaana hai
-const mockupTransform = `translateY(${-scrollY * maxTranslate}vh)`;
-
+  const maxTranslate = 25; // vh me jitna upar le jaana hai
+  const mockupTransform = `translateY(${-scrollY * maxTranslate}vh)`;
 
   return (
     <>
       <section
         ref={sectionRef}
-        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-6 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen  max-sm:max-h-[500px] max-md:max-h-[600px]"
-        // className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center px-3 py-16 sm:px-4 sm:py-20 overflow-x-hidden min-h-screen"
+        className="relative overflow-hidden w-full text-white flex flex-col items-center justify-center mt-10 sm:mt-0 px-3 py-6 sm:px-4 sm:pt-10 overflow-x-hidden min-h-screen max-sm:max-h-[600px] max-md:max-h-[1450px]"
       >
         <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
 
         {/* HERO HEADING — stacked + masked like the ref */}
-        <div className="relative w-full z-0 mb-8 sm:mb-12 mt-50 sm:mt-10">
+        <div className="relative w-full z-0 mb-8 sm:mb-22 mt-60 sm:mt-10">
           <div className="flex flex-col items-center justify-center">
             <h1
               aria-hidden
-              className="pointer-events-none select-none text-[#464646] uppercase font-extrabold
-                 text-center tracking-[-0.04em] leading-[0.86]"
+              className="pointer-events-none select-none text-[#464646] uppercase font-extrabold text-center tracking-[-0.04em] leading-[0.86]"
             >
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">TURN</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">DRY CHATS</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">INTO</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">VIBE</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">CONVERSATIONS</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw]">WITH </span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[10vw] lg:text-[7.6vw] bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">TURN</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">DRY CHATS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">INTO</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">VIBE</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">CONVERSATIONS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">WITH </span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw] bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">
                 GENZCHAT
               </span>
             </h1>
           </div>
         </div>
 
-
         <div
           className="relative z-20 origin-center sm:scale-90 md:scale-100 max-[460px]:scale-[0.80]"
           style={{
             transform: mockupTransform,
-            transition: 'transform 0.15s ease-out'
+            transition: 'transform 0.55s ease-out'
           }}
         >
           <div className="relative">
@@ -259,18 +266,11 @@ const mockupTransform = `translateY(${-scrollY * maxTranslate}vh)`;
                     </div>
                   </div>
                 </div>
-
-                {/* Side buttons */}
-                <div className="absolute right-1 top-[24%] w-[1%] h-[5%] border border-gray-400 rounded-r" />
-                <div className="absolute left-1 top-[20%] w-[1%] h-[15%] border border-gray-400 rounded-l" />
-                <div className="absolute left-1 top-[38%] w-[1%] h-[7%] border border-gray-400 rounded-l" />
               </div>
             </div>
           </div>
         </div>
       </section>
-
-
     </>
   );
 }

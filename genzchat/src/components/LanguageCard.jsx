@@ -13,7 +13,7 @@ const LanguageCard = ({
   return (
     <div className="relative w-full group">
       {/* Ambient aura */}
-      <div className="pointer-events-none absolute -inset-5 rounded-[1.6rem] -z-10 opacity-10 sm:opacity-15 group-hover:opacity-25 transition-opacity duration-500">
+      <div className="pointer-events-none absolute -inset-5 rounded-[1.6rem] -z-10 opacity-10 sm:opacity-15 group-hover:opacity-25  transition-transform duration-200 ease-out hover:scale-[1.035]">
         <div className="absolute inset-0 rounded-[inherit] blur-2xl bg-[radial-gradient(120%_80%_at_50%_-20%,rgba(168,85,247,0.22),transparent_60%),radial-gradient(140%_100%_at_100%_120%,rgba(59,130,246,0.18),transparent_60%)]" />
       </div>
 
@@ -26,7 +26,7 @@ const LanguageCard = ({
           border transition-all duration-500
           ${noBorder
             ? "!border-transparent"                                   // ✅ force hide border
-            : (active ? "border-violet-500/40" : "border-white/10 group-hover:border-violet-400/30")}
+            : (active ? "border-violet-500/40" : "border-white/10 group-hover:shadow-[0_0_50px_rgba(139,92,246,0.5)]") }
           ${isAction ? "cursor-pointer" : "cursor-default"}
           shadow-[0_0_0_0_rgba(0,0,0,0)] group-hover:shadow-[0_0_24px_rgba(139,92,246,0.20)]
           ${className}                                                // ✅ external overrides

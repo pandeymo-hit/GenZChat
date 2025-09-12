@@ -18,6 +18,7 @@ import tog from "../assets/small_img.webp";
 export default function LoginPage() {
   const {
     showForm,
+    closeForm,
     // view + flips
     mode,
     isFlipped,
@@ -305,7 +306,7 @@ export default function LoginPage() {
   if (!showForm) return null;
 
   // Shared classes
-  const phoneWrapperClass = `w-full flex items-center gap-2 backdrop-blur-[60px] rounded-xl px-1 py-1 text-white
+  const phoneWrapperClass = `w-full flex items-center gap-1 backdrop-blur-[60px] rounded-xl px-[10px] py-1 text-white
     border border-white/10 transition focus-within:ring-1 focus-within:ring-[#8B5CF6]
     focus-within:shadow-[0_0_50px_rgba(139,92,246,0.5)]
     [&_.react-international-phone-input]:!bg-transparent
@@ -336,6 +337,8 @@ export default function LoginPage() {
   const subtleBtn =
     "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-[#373737] text-white transition mt-1 hover:bg-white/25";
 
+   
+
   // ---------- Cards ----------
   const GlowDecor = () => (
     <>
@@ -357,6 +360,10 @@ export default function LoginPage() {
         onSubmit={resetMode ? handleResetPassword : handleLogin}
         className="flex flex-col justify-center items-center gap-3 h-full"
       >
+
+        <button onClick={closeForm}>
+        <h1 className="text-gray-800 font-bold text-xl bg-gray-700/10 px-4 py-1 rounded-full left-4 absolute top-5">!</h1>
+        </button>
         <h1 className="font-bold text-xl text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-clip-text">
           GenZChat
         </h1>
@@ -732,7 +739,7 @@ export default function LoginPage() {
             src={tog}
             alt="GenZChat support"
             loading="lazy"
-            className="  h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)] "
+            className="top-6 relative  h-40 w-auto md:h-24 drop-shadow-[0_10px_30px_rgba(139,92,246,0.35)] "
           />
         </div>
         <img
