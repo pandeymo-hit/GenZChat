@@ -1,27 +1,32 @@
-// src/pages/ChatPAge.jsx
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { MdAttachFile } from "react-icons/md";
 import { ChatContext } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
 import MorePage from "./MorePage";
 import Razorpay from "../trail/razorpay";
 
 import {
-  FiLogOut,
-  FiUser,
+  // Chat Area & General UI Icons
   FiSend,
-  FiEdit2,
   FiZap,
   FiImage,
   FiX,
+  FiEdit2,
+  FiCheck,
+
+  // New Sidebar Icons
+  FiUser,
+  FiPlusCircle,
+  FiGlobe,
+  FiChevronRight,
+  FiMessageSquare,
   FiHelpCircle,
   FiFileText,
-  FiCheck,
 } from "react-icons/fi";
 
 export default function ChatPAge() {
   const {
     user,
-    isChated,
     credits,
     chats,
     sidebarOpen,
@@ -34,11 +39,9 @@ export default function ChatPAge() {
     resetConnectionState,
   } = useContext(ChatContext) || {};
 
-  const { closeForm, logout, username } = useContext(AuthContext);
+  const { logout, username } = useContext(AuthContext);
 
   const [view, setView] = useState("chat");
-  
-  // 1. ऑटो-स्क्रॉल के लिए रेफ (Ref)
   const messagesEndRef = useRef(null);
 
   const [message, setMessage] = useState("");
@@ -49,6 +52,17 @@ export default function ChatPAge() {
   const imageInputRef = useRef(null);
 
   const openRazorpay = () => setView("razorpay");
+
+  // <-- CHANGE: Credit 0 hone par Razorpay kholne ka logic
+  useEffect(() => {
+    if (credits !== null && credits <= 0) {
+      // Thoda delay taki user ko pata chale credits khatam ho gaye hain
+      const timer = setTimeout(() => {
+        setView("razorpay");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [credits]);
 
   const openImagePicker = () => imageInputRef.current?.click();
   const clearImage = () => {
@@ -67,11 +81,9 @@ export default function ChatPAge() {
 
   const safeChats = useMemo(() => (Array.isArray(chats) ? chats : []), [chats]);
 
-  // 1. <--- बदलाव: ऑटो-स्क्रॉल के लिए useEffect
-  // यह useEffect जब भी safeChats बदलेगा (नया मैसेज आएगा) तो नीचे स्क्रॉल करेगा
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [safeChats, loading]); // loading को भी dependency में जोड़ा ताकि 'typing' आने पर भी स्क्रॉल हो
+  }, [safeChats, loading]);
 
   useEffect(() => {
     return () => {
@@ -86,6 +98,12 @@ export default function ChatPAge() {
 
   const handleSendMessage = async () => {
     if (sending) return;
+
+    if (credits <= 0) {
+      setView("razorpay");
+      return;
+    }
+
     const hasText = Boolean(message.trim());
     const hasImage = Boolean(imageFile);
     if (!hasText && !hasImage) return;
@@ -102,7 +120,7 @@ export default function ChatPAge() {
       console.error("Error sending message:", error);
     }
   };
-  
+
   if (view === "razorpay") {
     return <Razorpay onBack={() => setView("chat")} />;
   }
@@ -119,130 +137,120 @@ export default function ChatPAge() {
 
   return (
     <div className="flex h-[100dvh] bg-black text-white relative overflow-hidden">
-      {/* Right Sidebar */}
+      {/* <-- BUG FIX: Nested sidebar ko hatakar structure aab sahi kar diya gaya hai --> */}
+
+      {/* Right Sidebar - New Design */}
       <div
-        className={`fixed inset-y-0 right-0 w-64
-          transform transition-transform duration-300 z-40
-          rounded-l-2xl border-l border-white/10
-          bg-zinc-900/40 backdrop-blur-xl supports-[backdrop-filter]:bg-zinc-900/30
-          shadow-[0_10px_50px_rgba(0,0,0,0.6)]
-          ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed inset-y-0 right-0 w-80 
+        transform transition-transform duration-300 z-40
+        bg-black border-l border-zinc-700/80
+        text-zinc-300
+        ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
         role="dialog"
         aria-modal="true"
       >
         {/* Sidebar content */}
-        <div className="h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/* Profile card */}
-            <div className="relative z-20 rounded-2xl border border-purple-900 bg-transparent backdrop-blur-3xl p-4 sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
-              <button
-                onClick={handleEditClick}
-                className="absolute top-3 right-3 p-1 rounded-lg hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-600"
-                aria-label="Edit profile"
-                title="Edit profile"
-              >
-                <FiEdit2 className="w-4 h-4 text-gray-300" />
-              </button>
-              <div className="flex  items-center text-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
-                  <FiUser className="w-7 h-7 text-white" />
+        <div className="h-full flex flex-col p-4 space-y-6">
+          {/* 1) Profile Section */}
+          <div className="flex items-center gap-4 px-2">
+            <div className="w-12 h-12 rounded-full bg-zinc-700 flex items-center justify-center ring-1 ring-zinc-600">
+              <FiUser className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="font-semibold text-white text-lg">{user?.name || "Guest"}</p>
+              <p className="text-xs text-zinc-400">UID: {user?.id || "3172701"}</p>
+            </div>
+          </div>
+
+          {/* 2) Active Plan Card */}
+          <div className="relative p-[1px] rounded-2xl bg-gradient-to-br from-teal-400/50 via-transparent to-transparent">
+            <div className="rounded-2xl bg-zinc-800/60 backdrop-blur-sm p-4">
+              <div className="flex justify-between items-center text-xs font-medium">
+                <span className="tracking-widest text-teal-300">STANDARD PLAN</span>
+                <span className="text-zinc-400">28 DAYS LEFT</span>
+              </div>
+              <div className="mt-4 flex justify-around items-center text-center">
+                <div>
+                  <p className="text-3xl font-bold text-white">{credits}</p>
+                  <p className="text-xs text-zinc-400 mt-1">Subscription credits</p>
                 </div>
                 <div>
-                  <p className="font-semibold">{user?.name || "Guest"}</p>
-                  <p className="text-xs text-gray-400">
-                    SignUp: {user?.signupDate || "N/A"}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-3xl font-bold text-white">0</p>
+                    <FiPlusCircle className="w-5 h-5 text-zinc-500 hover:text-white transition-colors cursor-pointer" />
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1">Paid credits</p>
                 </div>
               </div>
-              {showEditBlocked && (
-                <div className="absolute -bottom-3 right-3 translate-y-full text-xs bg-black text-gray-200 border border-zinc-700 rounded-md px-3 py-2 shadow-xl">
-                  <span className="mr-1">🔒</span>
-                  Can’t change username before 15 days.
-                </div>
-              )}
-            </div>
-            {/* Active Plan card */}
-            <div className="relative">
-              <div className="rounded-2xl p-[1.5px] bg-gradient-to-r from-cyan-400/20 via-violet-500/10 to-cyan-400/20 shadow-[0_8px_40px_rgba(37,99,235,0.35)]">
-                <div className="rounded-2xl bg-black/50 backdrop-blur-xl px-4 py-3">
-                  <p className="text-[11px]">
-                    <span className="font-semibold  tracking-wide text-blue-200">
-                      Active Plan
-                    </span>
-                    <span className="mx-1 text-gray-500">:</span>
-                    <span className="text-gray-400 font-medium bg-gray-600/30 px-2 py-[5px] rounded-2xl">
-                      none
-                    </span>
-                  </p>
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 ring-1 ring-blue-400/40">
-                      <FiZap className="w-3.5 h-3.5 text-blue-300" />
-                    </span>
-                    <span className="text-gray-200 font-medium">{credits}</span>
-                    <span className="text-gray-400 text-xs">free Chats</span>
-                  </div>
-                  <div className="mt-3 h-3 rounded-full bg-white/10 overflow-hidden">
-                    <div className="h-full w-1/4 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500" />
-                  </div>
-                  <button
-                    onClick={openRazorpay}
-                    type="button"
-                    className="mt-4 w-full rounded-2xl py-2 text-sm font-medium 
-                   bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110"
-                  >
-                    Upgrade
-                  </button>
-                </div>
-              </div>
-            </div>
-            {/* Links card */}
-            <div className="rounded-2xl text-gray-400 border border-white/10 bg-white/5 backdrop-blur-xl sm:shadow-none hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]">
               <button
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
+                onClick={openRazorpay}
                 type="button"
+                className="relative mt-5 w-full overflow-hidden rounded-full p-[2px] btn-aurora transition-transform duration-300 hover:scale-105"
               >
-                <span className="inline-flex items-center gap-2">
-                  <FiHelpCircle className="w-4 h-4 text-white" />
-                  <span>FAQ</span>
-                </span>
-              </button>
-              <button
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
-                type="button"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <FiFileText className="w-4 h-4 text-white" />
-                  <span>Terms &amp; Conditions</span>
-                </span>
-              </button>
-              <button
-                className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/5"
-                type="button"
-                onClick={() => setView("more")}
-                title="Open profile"
-                aria-label="Open profile"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <FiUser className="w-4 h-4 text-white" />
-                  <span>My Profile</span>
+                <span
+                  className="relative z-[1] flex w-full items-center justify-center rounded-full bg-black/80 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-black/60"
+                >
+                  Upgrade Plan
                 </span>
               </button>
             </div>
           </div>
-          <div className="p-4 border-t border-white/10"></div>
+
+          {/* 3) Links List */}
+          <div className="flex flex-col space-y-2 px-2 text-sm font-medium">
+            <button
+              onClick={() => setView("more")}
+              className="w-full flex items-center gap-4 px-3 py-2.5 rounded-lg hover:bg-zinc-700/50 transition-colors"
+            >
+              <FiUser className="w-5 h-5 text-zinc-400" />
+              <span>My Profile</span>
+            </button>
+            <button className="w-full flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg hover:bg-zinc-700/50 transition-colors">
+              <div className="flex items-center gap-4">
+                <FiGlobe className="w-5 h-5 text-zinc-400" />
+                <span>English</span>
+              </div>
+              <FiChevronRight className="w-4 h-4 text-zinc-500" />
+            </button>
+            <button className="w-full flex items-center gap-4 px-3 py-2.5 rounded-lg hover:bg-zinc-700/50 transition-colors">
+              <FiMessageSquare className="w-5 h-5 text-zinc-400" />
+              <span>Contact support</span>
+            </button>
+            <button className="w-full flex items-center gap-4 px-3 py-2.5 rounded-lg hover:bg-zinc-700/50 transition-colors">
+              <FiHelpCircle className="w-5 h-5 text-zinc-400" />
+              <span>FAQ</span>
+            </button>
+            {/* <-- CHANGE: Logout button wapas add kar diya gaya hai --> */}
+
+          </div>
+
+          {/* Footer Text */}
+          <div className="mt-auto text-center px-4 pb-2">
+            <p className="text-xs text-zinc-500">
+              By using GenZChat, you are agreeing to the{" "}
+              <a href="#" className="underline hover:text-zinc-400">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="#" className="underline hover:text-zinc-400">
+                Privacy Policy
+              </a>
+              .
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Backdrop */}
+      {/* <-- CHANGE: Backdrop for closing sidebar on outside click --> */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30"
+          className="fixed inset-0 bg-black/60 z-30"
           onClick={closeSidebar}
           aria-hidden="true"
         />
       )}
 
-      {/* Main Chat Area */}
+      {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-x-hidden">
         {/* Topbar */}
         <div className="fixed top-0 inset-x-0 z-20 h-15 lg:h-20 flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-15 bg-zinc-950/95 shadow-[0_0_20px_rgba(139,92,246,0.5)] backdrop-blur">
@@ -282,39 +290,12 @@ export default function ChatPAge() {
           </div>
         </div>
 
-        {/* Error message */}
-        {!!error && (
-            <div className="fixed top-20 inset-x-4 z-30 max-w-md mx-auto">
-            <div className="bg-red-900/80 backdrop-blur-sm border border-red-700/50 text-red-200 text-sm px-4 py-3 rounded-xl shadow-lg">
-                <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0" />
-                    <span>{error}</span>
-                </div>
-                {(error.includes("wait for") ||
-                    error.includes("Server") ||
-                    error.includes("connect")) && (
-                    <button
-                    onClick={resetConnectionState}
-                    className="ml-3 px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs font-medium transition-colors flex-shrink-0"
-                    title="Reset connection and try again"
-                    >
-                    Retry
-                    </button>
-                )}
-                </div>
-            </div>
-            </div>
-        )}
-
         {/* Messages Area */}
         <div
           className="messages-container flex-1 overflow-y-auto overscroll-contain pt-18 px-6 sm:px-8 mt-6 md:mt-10 lg:mt-14 pb-[calc(env(safe-area-inset-bottom)+120px)] flex flex-col"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="max-w-5xl mx-auto space-y-4 px-2 flex flex-col w-full"> {/* <--- w-full जोड़ा */}
-            
-            {/* Welcome Message */}
+          <div className="max-w-5xl mx-auto space-y-4 px-2 flex flex-col w-full">
             {safeChats.length === 0 && !loading && (
               <div className="flex flex-col items-center justify-center h-64 text-center">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center mb-4">
@@ -328,26 +309,22 @@ export default function ChatPAge() {
                 </p>
               </div>
             )}
-            
-            {/* Chat Messages */}
+
             {safeChats.map((chat, idx) => (
               <div
                 key={idx}
-                className={`flex message-bubble ${
-                  chat.sender === "user" ? "justify-end" : "justify-start"
-                } mb-4`}
+                className={`flex message-bubble ${chat.sender === "user" ? "justify-end" : "justify-start"
+                  } mb-4`}
               >
                 <div
-                  className={`flex items-start gap-3 max-w-[85%] ${
-                    chat.sender === "user" ? "flex-row-reverse" : "flex-row"
-                  }`}
+                  className={`flex items-center gap-3 max-w-[85%] ${chat.sender === "user" ? "flex-row-reverse" : "flex-row"
+                    }`}
                 >
                   <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      chat.sender === "user"
+                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${chat.sender === "user"
                         ? "bg-gradient-to-br from-purple-500 to-blue-500"
                         : "bg-gradient-to-br from-gray-600 to-gray-700"
-                    }`}
+                      }`}
                   >
                     {chat.sender === "user" ? (
                       <FiUser className="w-4 h-4 text-white" />
@@ -356,11 +333,10 @@ export default function ChatPAge() {
                     )}
                   </div>
                   <div
-                    className={`relative ${
-                      chat.sender === "user"
+                    className={`relative ${chat.sender === "user"
                         ? "bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 text-gray-100"
                         : "bg-transparent"
-                    } rounded-2xl px-4 py-3 shadow-lg`}
+                      } rounded-2xl px-4 py-3 shadow-lg`}
                   >
                     {chat.text && (
                       <p className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -381,7 +357,6 @@ export default function ChatPAge() {
               </div>
             ))}
 
-            {/* 2. <--- बदलाव: लोडिंग इंडिकेटर को यहाँ नीचे ले आया गया है */}
             {loading && (
               <div className="flex justify-start mb-4 message-bubble">
                 <div className="flex items-start gap-3 max-w-[85%]">
@@ -402,7 +377,6 @@ export default function ChatPAge() {
               </div>
             )}
 
-            {/* 1. <--- बदलाव: यह खाली div ऑटो-स्क्रॉल के लिए टारगेट का काम करेगा */}
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -411,66 +385,27 @@ export default function ChatPAge() {
         <div className="fixed inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black via-black/95 to-transparent pb-safe pt-6">
           <div className="max-w-4xl mx-auto px-4">
             <div className="relative">
-              {imagePreview && (
-                <div className="absolute bottom-full left-4 mb-4 z-10">
-                  <div className="relative inline-block rounded-xl overflow-hidden shadow-xl">
-                    <img
-                      src={imagePreview}
-                      alt="selected"
-                      className="block w-16 h-16 sm:w-20 sm:h-20 object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={clearImage}
-                      className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full
-                        bg-red-500 hover:bg-red-600 text-white
-                        flex items-center justify-center transition-colors
-                        shadow-md z-20"
-                      aria-label="Remove image"
-                    >
-                      <FiX className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Image Preview */}
 
-              {/* Input container */}
-              <div
-                className="relative flex items-center gap-2 sm:gap-3
-                rounded-2xl border border-gray-700/50
-                bg-gray-900/90 backdrop-blur-xl
-                px-3 sm:px-4 py-2.5 sm:py-3
-                shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-                hover:border-gray-600/50 transition-colors mb-8"
-              >
-                {/* 4. <--- बदलाव: इमेज बटन को इनपुट के बाईं ओर ले आया गया है */}
+              <div className="relative flex items-center gap-2 sm:gap-3 rounded-2xl border border-gray-700/50 bg-gray-900/90 backdrop-blur-xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-gray-600/50 transition-colors mb-8">
                 <button
-                    type="button"
-                    onClick={openImagePicker}
-                    className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-700/50 
-                      text-gray-400 hover:text-gray-300
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      transition-colors flex-shrink-0"
-                    title="Attach image"
-                    disabled={sending}
-                  >
-                    <FiImage className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                
+                  type="button"
+                  onClick={openImagePicker}
+                  className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-700/50 text-gray-400 hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                  title="Attach image"
+                  disabled={sending}
+                >
+                  <MdAttachFile className="w-4 h-4 sm:w-5 sm:h-5 rotate-25" />
+                </button>
+
                 <input
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && !e.shiftKey && handleSendMessage()
-                  }
-                  placeholder={
-                    credits > 0 ? "Message GenZChat..." : "No credits left!"
-                  }
+                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
+                  placeholder={credits > 0 ? "Message GenZChat..." : "No credits left!"}
                   disabled={credits <= 0 || sending}
-                  className="flex-1 bg-transparent text-white text-sm sm:text-base
-                    placeholder-gray-400 focus:outline-none
-                    disabled:opacity-50 resize-none min-w-0"
+                  className="flex-1 bg-transparent text-white text-sm sm:text-base placeholder-gray-400 focus:outline-none disabled:opacity-50 resize-none min-w-0"
                 />
 
                 <input
@@ -481,47 +416,28 @@ export default function ChatPAge() {
                   onChange={onImageSelected}
                   disabled={sending}
                 />
-                
-                {/* Send button (image button यहाँ से हटा दिया गया है) */}
+
                 <button
-                    onClick={handleSendMessage}
-                    disabled={
-                      credits <= 0 || sending || (!message.trim() && !imageFile)
-                    }
-                    // 3. <--- बदलाव: rounded-xl को rounded-full किया गया
-                    className="inline-flex items-center justify-center
-                      w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0
-                      bg-gradient-to-r from-purple-500 to-blue-500
-                      hover:from-purple-600 hover:to-blue-600
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      transition-all duration-200
-                      shadow-lg hover:shadow-xl
-                      transform hover:scale-105 active:scale-95"
-                    title="Send message"
-                  >
+                  onClick={handleSendMessage}
+                  disabled={credits <= 0 || sending || (!message.trim() && !imageFile)}
+                  title="Send message"
+                  className="relative p-[1.5px] rounded-full bg-gradient-to-r from-fuchsia-500 to-blue-500 transition-all duration-300 transform hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 disabled:from-gray-600 disabled:to-gray-600"
+                >
+                  <div className="flex items-center justify-center bg-black rounded-full w-8 h-8 sm:w-10 sm:h-10">
                     {sending ? (
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <FiSend className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                      <FiSend className="w-4 h-4 text-white" />
                     )}
+                  </div>
                 </button>
               </div>
-
             </div>
           </div>
         </div>
       </div>
 
       <style>{`
-        .messages-container {
-          scrollbar-width: none !important;
-          -ms-overflow-style: none !important;
-        }
-        .messages-container::-webkit-scrollbar {
-          display: none !important;
-          width: 0 !important;
-          height: 0 !important;
-        }
         .typing-dot {
             animation: typing 1.4s infinite;
         }

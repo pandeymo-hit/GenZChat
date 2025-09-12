@@ -179,7 +179,7 @@ export default function MorePage() {
   }
 
   return (
-    <div className="min-h-screen  text-white">
+    <div className="min-h-screen  text-white bg-black">
       {/* Top header */}
       <header className="sticky top-0 z-30 backdrop-blur ">
         <div className=" top-0 inset-x-0 z-20 h-15  lg:h-20 flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-15  bg-zinc-950/95 shadow-[0_0_20px_rgba(139,92,246,0.5)] backdrop-blur border-b border-white/10">
