@@ -1,4 +1,3 @@
-// src/chat/ChatContext.jsx
 import React, { createContext, useEffect, useMemo, useState } from "react";
 import { api, setAuthHeader, clearAuthHeader } from "../services/api";
 import axios from "axios";
@@ -77,22 +76,18 @@ export function ChatProvider({ children }) {
     localStorage.setItem(LS.offlineOnce, offlineUsed ? "1" : "0");
   }, [offlineUsed]);
 
-  // -------- <--- बदलाव: API wrappers को स्मार्ट बनाया गया --------
   const safeApiCall = async (apiPromise) => {
     if (mockMode) {
-      // अगर पहले से ही मॉक मोड में हैं, तो सीधे एरर दें
       throw new Error("Mock mode is active. Please try again later.");
     }
     try {
       const response = await apiPromise;
-      // सफल प्रतिक्रिया पर मॉक मोड और ऑफ़लाइन उपयोग को रीसेट करें
       if (mockMode) {
         setMockMode(false);
         setOfflineUsed(false);
       }
       return response;
     } catch (err) {
-      // एरर को आगे भेजें ताकि sendMessage उसे संभाल सके
       throw err;
     }
   };
@@ -123,7 +118,6 @@ export function ChatProvider({ children }) {
       setChats(transformedChats);
     } catch (error) {
       console.error("Error fetching chat history:", error);
-      // इतिहास लाने में विफलता पर मॉक मोड चालू न करें
     }
   };
 
@@ -131,8 +125,16 @@ export function ChatProvider({ children }) {
     setMockMode(false);
     setOfflineUsed(false);
     setError("");
-    // दोबारा कोशिश करने के लिए चैट हिस्ट्री को फिर से लाने का प्रयास करें
     fetchPreviousChats();
+  };
+
+  // ---▼▼▼ NEW: Function to clear the error message ▼▼▼---
+  const clearError = () => setError("");
+
+  // ---▼▼▼ NEW: Function to clear all chats from state and localStorage ▼▼▼---
+  const clearChats = () => {
+    setChats([]);
+    localStorage.removeItem(LS.chats);
   };
 
   const sendMessage = async (payload) => {
@@ -165,7 +167,6 @@ export function ChatProvider({ children }) {
       setError("Request timed out. Please try again.");
     }, 20000);
 
-    // <--- बदलाव: एरर हैंडलिंग लॉजिक को यहाँ बेहतर किया गया है ---
     try {
       let res;
       if (imageFile) {
@@ -200,29 +201,22 @@ export function ChatProvider({ children }) {
       console.error("Error sending message:", error);
       let isServerDown = false;
 
-      // Axios एरर की जाँच करें
       if (axios.isAxiosError(error)) {
         if (!error.response) {
-          // 1. कोई प्रतिक्रिया नहीं = नेटवर्क एरर (सर्वर सचमुच डाउन है)
           setError(`Cannot connect to server at ${api.defaults.baseURL}. Please check your connection.`);
           isServerDown = true;
         } else if (error.response.status >= 500) {
-          // 2. 5xx एरर = सर्वर साइड पर क्रैश
           setError(`Server error: ${error.response.status}. Please try again later.`);
           isServerDown = true;
         } else if (error.response.status === 401 || error.response.status === 403) {
-          // 3. 401/403 एरर = प्रमाणीकरण (Authentication) समस्या
           setError("Authentication failed. Please login again.");
         } else {
-          // 4. अन्य 4xx एरर = क्लाइंट की गलती (जैसे गलत डेटा भेजना)
           setError(`Error: ${error.response.data?.message || error.message}`);
         }
       } else {
-        // अन्य जावास्क्रिप्ट एरर
         setError(`An unexpected error occurred: ${error.message}`);
       }
 
-      // केवल तभी मॉक मोड में जाएँ जब सर्वर वास्तव में डाउन हो
       if (isServerDown) {
         setMockMode(true);
         if (!offlineUsed) {
@@ -240,7 +234,6 @@ export function ChatProvider({ children }) {
         }
       }
     } finally {
-      // अंत में, लोडर और सेफ्टी टाइमर को हमेशा साफ़ करें
       clearTimeout(safety);
       setLoading(false);
       setSending(false);
@@ -273,6 +266,10 @@ export function ChatProvider({ children }) {
         sendMessage,
         resetConnectionState,
         isAuthed,
+        // ---▼▼▼ NEW: Exporting new functions ▼▼▼---
+        clearError,
+        clearChats,
+        // ---▲▲▲ END of new functions ▲▲▲---
       }}
     >
       {children}
