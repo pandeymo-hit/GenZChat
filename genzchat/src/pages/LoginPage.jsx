@@ -335,7 +335,7 @@ export default function LoginPage() {
   const primaryBtn =
     "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-gradient-to-r from-purple-800 to-blue-500 text-white transition mt-1 hover:bg-white/25 disabled:opacity-60 disabled:cursor-not-allowed";
   const subtleBtn =
-    "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center bg-[#373737] text-white transition mt-1 hover:bg-white/25";
+    "w-full h-10 rounded-2xl text-sm font-semibold grid place-content-center  bg-gradient-to-r from-purple-800 to-blue-500 text-white transition mt-1 hover:bg-white/25";
 
    
 
@@ -727,6 +727,7 @@ export default function LoginPage() {
   if (mode === "profile") return <ProfileFormCard />;
   if (mode === "chat-page") {
     return (
+      
       <ChatProvider>
         <ChatPAge />
       </ChatProvider>
