@@ -1,4 +1,4 @@
-
+// src/chat/ChatContext.jsx
 import React, { createContext, useEffect, useMemo, useState } from "react";
 import { api, setAuthHeader, clearAuthHeader } from "../services/api";
 import axios from "axios";
@@ -170,9 +170,9 @@ export function ChatProvider({ children }) {
       let res;
       if (imageFile) {
         const form = new FormData();
-        form.append("message", text || "");
+        form.append("userMessage", text || "");
         form.append("image", imageFile);
-        res = await safeApiCall(api.post("/api/send", form, {
+        res = await safeApiCall(api.post("/chat/image", form, {
           headers: { "Content-Type": "multipart/form-data" },
         }));
       } else {
