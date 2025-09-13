@@ -669,6 +669,7 @@ export default function LoginPage() {
             }}
             className="flex flex-col justify-center items-center gap-3 h-full"
           >
+            
             <span className="w-full text-center text-2xl font-bold py-1.5 text-white">
               Verify OTP
             </span>

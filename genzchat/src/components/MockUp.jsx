@@ -154,9 +154,9 @@ export default function MockUp() {
             >
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">{"                         "}</span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">{"                         "}</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">TURN DRY CHATS</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">INTO</span>
-              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">VIBE</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">TURN DRY</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">CHATS</span>
+              <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">INTO VIBE</span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">CONVERSATIONS</span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw]">WITH </span>
               <span className="block text-[11vw] sm:text-[12vw] md:text-[8vw] lg:text-[6vw] bg-gradient-to-tr from-purple-400 to-blue-500 bg-clip-text text-transparent">

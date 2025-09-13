@@ -17,6 +17,14 @@ const testimonials = [
   { id: 6, name: "Karan",  age: 23, text: "What started as casual chats turned into lifelong friendships. This community is pure magic! ⚡", avatar: "👨🏻‍🚀" },
 ];
 
+// A helper component for a single star SVG to keep the code clean
+const StarIcon = ({ className, fill }) => (
+  <svg className={className} fill={fill} viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.448a1 1 0 00-.364 1.118l1.286 3.958c.3.921-.755 1.688-1.54 1.118l-3.368-2.448a1 1 0 00-1.176 0l-3.368 2.448c-.784.57-1.838-.197-1.54-1.118l1.286-3.958a1 1 0 00-.364-1.118L2.34 9.385c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.958z"></path>
+  </svg>
+);
+
+
 export default function CommunitySection() {
   const imageSpeed = 50;      // Top & bottom image carousels
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -74,6 +82,12 @@ export default function CommunitySection() {
     }
     return Math.floor(currentIndex + (cardsPerView / 2));
   };
+  
+  // NOTE: The `openForm` function is assumed to be passed as a prop or defined elsewhere.
+  const openForm = (type) => {
+    console.log(`Opening ${type} form...`);
+  };
+
 
   return (
     <section className="relative w-full bg-black/10 backdrop-blur-md text-white overflow-x-hidden overflow-y-visible py-16 sm:py-20 md:py-24">
@@ -155,23 +169,41 @@ export default function CommunitySection() {
             </p>
           </div>
 
-          {/* Testimonials carousel */}
-         
+          {/* Testimonials carousel remains unchanged */}
+
+          {/* ---▼▼▼ NEW: 4.5 Star Rating ▼▼▼--- */}
+          <div className="mb-8 flex justify-center items-center gap-1 ">
+            {/* 4 Full Stars */}
+            {[...Array(4)].map((_, i) => (
+              <StarIcon key={`full-${i}`} className="w-7 h-7 text-yellow-400 transition-transform duration-300 hover:scale-110 cursor-default" fill="currentColor" />
+            ))}
+            {/* 1 Half Star */}
+            <div className="relative">
+              {/* Background (empty) part of the star */}
+              <StarIcon className="w-7 h-7 text-gray-600" fill="currentColor" />
+              {/* Foreground (filled) part of the star, clipped to half width */}
+              <div className="absolute top-0 left-0 h-full w-1/2 overflow-hidden">
+                <StarIcon className="w-7 h-7 text-yellow-400" fill="currentColor" />
+              </div>
+            </div>
+          </div>
+          {/* ---▲▲▲ END of Star Rating ▲▲▲--- */}
+
 
           {/* Button with Aurora Glow Effect */}
-<button
-  onClick={() => openForm("signup")}
-  type="button"
-  className="btn-aurora group relative overflow-hidden rounded-full px-[2px] py-[2px] transition-transform duration-300 hover:scale-110"
->
-  {/* Glow Layer */}
-  <div className="absolute inset-0 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+          <button
+            onClick={() => openForm("signup")}
+            type="button"
+            className="btn-aurora group relative overflow-hidden rounded-full px-[2px] py-[2px] transition-transform duration-300 hover:scale-110"
+          >
+            {/* Glow Layer */}
+            <div className="absolute inset-0 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
 
-  {/* Inner Button Content */}
-  <span className="relative z-10 inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 md:px-10 md:py-4 text-white text-base sm:text-lg font-semibold bg-black/80 shadow-md">
-   Join Our Community
-  </span>
-</button>
+            {/* Inner Button Content */}
+            <span className="relative z-10 inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 md:px-10 md:py-4 text-white text-base sm:text-lg font-semibold bg-black/80 shadow-md">
+            Join Our Community
+            </span>
+          </button>
         </div>
 
         {/* ===== BOTTOM STRIP ===== */}
