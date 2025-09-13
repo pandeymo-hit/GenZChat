@@ -294,22 +294,22 @@ function DecorChats() {
   return (
     <>
       <div className="absolute left-75 top-20 sm:top-28 sm:left-90 lg:left-100">
-        <MiniChat text="Check this out ! 👀" name="Emilie" avatar={pfp4} />
+        <MiniChat text="Check this out ! 👀" name="Riya" avatar={pfp4} />
       </div>
       <div className="absolute right-55 sm:right-80 lg:right-120 bottom-36 sm:bottom-40">
-        <MiniChat text="New song drop 🌻" name="Miles" avatar={pfp2} />
+        <MiniChat text="New song drop 🌻" name="Madhav" avatar={pfp2} />
       </div>
       <div className="absolute left-70 sm:left-100 lg:left-125 bottom-6">
-        <MiniChat text="Love the viiibe" name="Emma" avatar={pfp5} />
+        <MiniChat text="Love the viiibe" name="Shweta" avatar={pfp5} />
       </div>
       <div className="absolute right-60 sm:right-80 lg:right-150 top-5 sm:top-16">
-        <MiniChat text="I'm your man ✨" name="Luke" avatar={pfp1} />
+        <MiniChat text="I'm your man ✨" name="Chetan" avatar={pfp1} />
       </div>
       <div className="sm:hidden absolute left-50 sm:left-100 lg:left-90 -top-8">
-        <MiniChat text="Love the viiibe" name="Emma" avatar={pfp5} />
+        <MiniChat text="Love the viiibe" name="Himani" avatar={pfp5} />
       </div>
       <div className="absolute right-55 sm:right-75 lg:right-80 top-1/2">
-        <MiniChat text="It's lit ! 🔥" name="Alina" avatar={pfp3} />
+        <MiniChat text="It's lit ! 🔥" name="Shalini" avatar={pfp3} />
       </div>
     </>
   );

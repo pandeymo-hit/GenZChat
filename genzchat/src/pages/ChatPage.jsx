@@ -6,41 +6,43 @@ import MorePage from "./MorePage";
 import Razorpay from "../trail/razorpay";
 
 import {
-  FiSend,
-  FiZap,
-  FiX,
-  FiUser,
-  FiPlusCircle,
-  FiGlobe,
-  FiChevronRight,
-  FiMessageSquare,
-  FiHelpCircle,
-  FiCopy,
-  FiTrash2,
+  FiSend, FiZap, FiX, FiUser, FiPlusCircle,
+  FiMessageSquare, FiHelpCircle, FiCopy,  FiCheck,FiTrash2,FiEdit,
 } from "react-icons/fi";
 
 export default function ChatPAge() {
   const {
-    user,
-    credits,
+    user, // This is now the full profile object
+    credits, // This is the separate credits state
     chats,
     sidebarOpen,
     toggleSidebar,
     closeSidebar,
     sendMessage,
-    loading, // <--- यह स्टेट "AI is typing..." इंडिकेटर को कंट्रोल करता है
+    loading,
     error,
     sending,
-    resetConnectionState,
     clearError,
     clearChats,
   } = useContext(ChatContext) || {};
 
-  const { logout, username } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
 
   const [view, setView] = useState("chat");
-  const messagesEndRef = useRef(null);
   const [message, setMessage] = useState("");
+  // ... other states remain the same
+
+  // ---▼▼▼ NEW: Helper to format the date nicely ▼▼▼---
+  const registrationDate = useMemo(() => {
+    if (user?.registrationDate) {
+      // Formats the date like "9/13/2025"
+      return new Date(user.registrationDate).toLocaleDateString();
+    }
+    return "N/A";
+  }, [user]);
+
+  // All other functions and useEffects remain unchanged...
+  const messagesEndRef = useRef(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const imageInputRef = useRef(null);
@@ -123,12 +125,13 @@ export default function ChatPAge() {
     }
   };
 
+
   if (view === "razorpay") { return <Razorpay onBack={() => setView("chat")} />; }
-  if (view === "more") { return <MorePage onBack={() => setView("chat")} onLogout={logout} username={username || user?.name || "Guest"} signupDate={user?.signupDate || "N/A"} />; }
+  if (view === "more") { return <MorePage onBack={() => setView("chat")} onLogout={logout} username={user?.username || "Guest"} signupDate={user?.registrationDate || "N/A"} />; }
 
   return (
     <div className="flex h-[100dvh] bg-black text-white relative overflow-hidden">
-      {/* Sidebar (No changes here) */}
+      {/* Sidebar */}
       <div
         className={`fixed inset-y-0 right-0 w-80 transform transition-transform duration-300 z-40 bg-black border-l border-zinc-700/80 text-zinc-300 ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`}
       >
@@ -138,8 +141,9 @@ export default function ChatPAge() {
               <FiUser className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-semibold text-white text-lg">{user?.name || "Guest"}</p>
-              <p className="text-xs text-zinc-400">UID: {user?.id || "3172701"}</p>
+              {/* ---▼▼▼ FIX: Using data from the 'user' object ▼▼▼--- */}
+              <p className="font-semibold text-white text-lg">{user?.username || "Guest"}</p>
+              <p className="text-xs text-zinc-400">Joined: {registrationDate}</p>
             </div>
           </div>
           <div className="relative p-[1px] rounded-2xl bg-gradient-to-br from-teal-400/50 via-transparent to-transparent">
@@ -150,6 +154,7 @@ export default function ChatPAge() {
               </div>
               <div className="mt-4 flex justify-around items-center text-center">
                 <div>
+                  {/* ---▼▼▼ FIX: Using the 'credits' state variable ▼▼▼--- */}
                   <p className="text-3xl font-bold text-white">{credits}</p>
                   <p className="text-xs text-zinc-400 mt-1">Subscription credits</p>
                 </div>
@@ -168,6 +173,7 @@ export default function ChatPAge() {
               </button>
             </div>
           </div>
+          {/* ... other sidebar items ... */}
           <div className="flex flex-col space-y-2 px-2 text-sm font-medium">
             <button onClick={() => setView("more")} className="w-full flex items-center gap-4 px-3 py-2.5 rounded-lg hover:bg-zinc-700/50 transition-colors">
               <FiUser className="w-5 h-5 text-zinc-400" /> <span>My Profile</span>
@@ -189,8 +195,9 @@ export default function ChatPAge() {
           </div>
         </div>
       </div>
-
-      {sidebarOpen && <div className="fixed inset-0 bg-black/60 z-30" onClick={closeSidebar} />}
+      
+      {/* ... The rest of the JSX remains the same ... */}
+       {sidebarOpen && <div className="fixed inset-0 bg-black/60 z-30" onClick={closeSidebar} />}
 
       <div className="flex flex-col flex-1 overflow-x-hidden">
         {/* Topbar (No changes here) */}
@@ -211,59 +218,83 @@ export default function ChatPAge() {
         </div>
 
         {/* Messages Area */}
-        <div className="messages-container flex-1 overflow-y-auto pt-24 pb-[150px] px-6 sm:px-8">
-          <div className="max-w-5xl mx-auto space-y-4 px-2 flex flex-col w-full">
-            {/* Existing chats mapping */}
-            {safeChats.map((chat, idx) => (
-              <div key={idx} className={`flex message-bubble group ${chat.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
-                <div className={`flex items-end gap-3 max-w-[85%] ${chat.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${chat.sender === 'user' ? "bg-gradient-to-br from-purple-500 to-blue-500" : "bg-gradient-to-br from-gray-600 to-gray-700"}`}>
-                    {chat.sender === "user" ? <FiUser className="w-4 h-4 text-white" /> : <span className="text-xs font-bold text-white">AI</span>}
-                  </div>
-                  <div className={`relative ${chat.sender === 'user' ? "bg-gray-800/60" : "bg-zinc-900"} rounded-2xl px-4 py-3 shadow-lg`}>
-                    {chat.text && <p className="whitespace-pre-wrap text-sm leading-relaxed">{chat.text}</p>}
-                    {chat.imageUrl && <div className="mt-3"><img src={chat.imageUrl} alt="attachment" className="rounded-xl max-w-full h-auto shadow-md"/></div>}
-                  </div>
-                  <div className="self-center flex-shrink-0">
-                      <button onClick={() => handleCopy(chat.text, idx)} className="p-1 rounded-full text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-zinc-700 hover:text-zinc-300" title="Copy text">
-                         {copiedIndex === idx ? <FiCheck className="w-4 h-4 text-green-400"/> : <FiCopy className="w-4 h-4"/>}
-                      </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+{/* Messages Area */}
+<div className="messages-container flex-1 overflow-y-auto pt-24 pb-[150px] px-6 sm:px-8">
+  <div className="max-w-5xl mx-auto space-y-4 px-2 flex flex-col w-full">
+    {/* Chats mapping with role-specific icons and improved alignment */}
+    {safeChats.map((chat, idx) => (
+      <div key={idx} className={`flex message-bubble group ${chat.sender === "user" ? "justify-end" : "justify-start"} mb-4`}>
+        <div className="flex flex-col max-w-[85%]">
+        
+          {/* 1. The Message Bubble Row (Avatar + Text) - Unchanged */}
+          <div className={`flex items-end gap-3 ${chat.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
+            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${chat.sender === 'user' ? "bg-gradient-to-br from-purple-500 to-blue-500" : "bg-gradient-to-br from-gray-600 to-gray-700"}`}>
+              {chat.sender === "user" ? <FiUser className="w-4 h-4 text-white" /> : <span className="text-xs font-bold text-white">AI</span>}
+            </div>
+            <div className={`relative ${chat.sender === 'user' ? "bg-gray-800/60" : "bg-zinc-900"} rounded-2xl px-4 py-3 shadow-lg`}>
+              {chat.text && <p className="whitespace-pre-wrap text-sm leading-relaxed">{chat.text}</p>}
+              {chat.imageUrl && <div className="mt-3"><img src={chat.imageUrl} alt="attachment" className="rounded-xl max-w-full h-auto shadow-md"/></div>}
+            </div>
+          </div>
 
-            {/* ---▼▼▼ AI TYPING INDICATOR ▼▼▼--- */}
-            {/* यह ब्लॉक तब दिखाई देगा जब `loading` स्टेट true होगा */}
-            {loading && (
-              <div className="flex justify-start mb-4 message-bubble">
-                <div className="flex items-start gap-3 max-w-[85%]">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">AI</span>
-                  </div>
-                  <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl px-4 py-3 shadow-lg">
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot" />
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot" />
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot" />
-                      </div>
-                      <span className="text-xs">AI is typing...</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* ---▲▲▲ END OF AI TYPING INDICATOR ▲▲▲--- */}
+          {/* 2. UPDATED: Action Icons Bar with better alignment and conditional logic */}
+          <div className={`flex items-center mt-1 transition-opacity opacity-0 group-hover:opacity-100 
+            ${chat.sender === "user" 
+              ? "justify-end pr-[44px]" // Aligns icon under the user bubble
+              : "justify-start pl-[44px]" // Aligns icon under the AI bubble
+            }`}>
             
-            <div ref={messagesEndRef} />
+            {chat.sender === 'user' ? (
+              // --- For User Messages: Only show EDIT button ---
+              <button 
+                onClick={() => handleEdit(chat.text, idx)} 
+                className="p-1 rounded-full text-zinc-500 hover:bg-zinc-700 hover:text-zinc-300" 
+                title="Edit">
+                <FiEdit className="w-4 h-4" />
+              </button>
+            ) : (
+              // --- For AI Messages: Only show COPY button ---
+              <button 
+                onClick={() => handleCopy(chat.text, idx)} 
+                className="p-1 rounded-full text-zinc-500 hover:bg-zinc-700 hover:text-zinc-300" 
+                title="Copy text">
+                {copiedIndex === idx ? <FiCheck className="w-4 h-4 text-green-400"/> : <FiCopy className="w-4 h-4"/>}
+              </button>
+            )}
           </div>
         </div>
+      </div>
+    ))}
+
+    {/* Loading indicator remains the same */}
+    {loading && (
+      <div className="flex justify-start mb-4 message-bubble">
+        <div className="flex items-start gap-3 max-w-[85%]">
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center">
+            <span className="text-xs font-bold text-white">AI</span>
+          </div>
+          <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-2xl px-4 py-3 shadow-lg">
+            <div className="flex items-center gap-2 text-gray-400">
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot" />
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot" />
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot" />
+              </div>
+              <span className="text-xs">AI is typing...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    
+    <div ref={messagesEndRef} />
+  </div>
+</div>
 
         {/* Input Area (No changes here) */}
         <div className="fixed inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black via-black/95 to-transparent pb-safe pt-6">
           <div className="max-w-4xl mx-auto px-4">
-             {error && <p className="text-center text-red-400 text-xs mb-2">{error}</p>}
+             {/* {error && <p className="text-center text-red-400 text-xs mb-2">{error}</p>} */}
             <div className="relative">
               {imagePreview && <div className="absolute bottom-[calc(100%+10px)] left-4 bg-gray-800 p-1 rounded-lg">
                   <img src={imagePreview} alt="Preview" className="h-20 w-20 object-cover rounded"/>
@@ -295,7 +326,7 @@ export default function ChatPAge() {
                 <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={onImageSelected} disabled={sending}/>
                 <button onClick={handleSendMessage} disabled={credits <= 0 || sending || (!message.trim() && !imageFile)} title="Send message" className="relative p-[1.5px] rounded-full bg-gradient-to-r from-fuchsia-500 to-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-600">
                   <div className="flex items-center justify-center bg-black rounded-full w-10 h-10">
-                    {sending ? <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" /> : <FiSend className="w-4 h-4 text-white" />}
+                    {sending ? <div className="w-4 h-4 border-2 bg-gray-700 rounded-xl " /> : <FiSend className="w-4 h-4 text-white" />}
                   </div>
                 </button>
               </div>
